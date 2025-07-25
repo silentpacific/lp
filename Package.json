@@ -1,26 +1,38 @@
 {
   "name": "livepulse-mvp",
   "version": "1.0.0",
-  "description": "LivePulse MVP - Dynamic content updates",
-  "main": "src/index.html",
+  "description": "Smart content-refresh engine that dynamically updates specific words, numbers, phrases, or paragraphs in published blog articles using real-time data and AI models",
+  "main": "src/app.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "netlify dev",
-    "build": "echo 'No build step needed for MVP'",
-    "deploy": "netlify deploy --prod"
+    "build": "npm install",
+    "start": "netlify dev"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
-    "@supabase/supabase-js": "^2.38.0",
-    "dotenv": "^16.0.0"
+    "@supabase/supabase-js": "^2.45.4",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
-    "netlify-cli": "^17.10.1"
+    "netlify-cli": "^17.34.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/silentpacific/lp.git"
   },
   "keywords": [
-    "content",
+    "content-management",
     "ai",
-    "automation"
+    "dynamic-content",
+    "netlify-functions",
+    "gemini-ai",
+    "real-time-data"
   ],
-  "author": "Your Name",
+  "author": "LivePulse Team",
   "license": "MIT"
 }

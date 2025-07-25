@@ -1,8 +1,16 @@
 [build] 
   publish = "src" 
-  functions = "netlify/functions" 
+  functions = "netlify/functions"
+  command = "npm install"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "8"
  
 [dev] 
   publish = "src" 
   functions = "netlify/functions" 
-  port = 8888 
+  port = 8888
+
+[functions]
+  node_bundler = "esbuild"
