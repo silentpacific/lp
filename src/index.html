@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LivePulse MVP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🫀 LivePulse MVP</h1>
+            <p>Test dynamic content updates with AI</p>
+        </header>
+
+        <main>
+            <section class="editor-section">
+                <h2>1. Write Your Article</h2>
+                <textarea id="article-content" placeholder="Paste your article content here...
+
+Example:
+Bitcoin is currently trading at $67,500 and showing high volatility. The weather in Adelaide is sunny with 22°C today. We've had record rainfall this year (2025) compared to previous decades."></textarea>
+            </section>
+
+            <section class="pulse-section">
+                <h2>2. Create Pulse Points</h2>
+                <div class="pulse-form">
+                    <input type="text" id="selected-text" placeholder="Enter text you want to make dynamic (e.g., '$67,500')">
+                    <button id="analyze-btn">Analyze Pulse</button>
+                </div>
+                
+                <div id="analysis-result" class="hidden">
+                    <h3>AI Analysis</h3>
+                    <div id="analysis-content"></div>
+                    <button id="create-pulse-btn" class="hidden">Create Pulse Point</button>
+                </div>
+            </section>
+
+            <section class="preview-section">
+                <h2>3. Article Preview</h2>
+                <div id="article-preview" class="article-preview">
+                    <p>Your article with pulse points will appear here...</p>
+                </div>
+            </section>
+
+            <section class="pulse-list-section">
+                <h2>4. Active Pulses</h2>
+                <div id="pulse-list" class="pulse-list">
+                    <p>No pulses created yet.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

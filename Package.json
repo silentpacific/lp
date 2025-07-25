@@ -1,0 +1,21 @@
+{
+  "name": "livepulse-mvp",
+  "version": "1.0.0",
+  "description": "LivePulse MVP - Dynamic content updates",
+  "main": "src/index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step needed for MVP'",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "@google/generative-ai": "^0.21.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.10.1"
+  },
+  "keywords": ["content", "ai", "automation"],
+  "author": "Your Name",
+  "license": "MIT"
+}
