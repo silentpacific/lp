@@ -9,13 +9,18 @@
     "deploy": "netlify deploy --prod"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@supabase/supabase-js": "^2.38.0",
-    "@google/generative-ai": "^0.21.0"
+    "dotenv": "^17.2.1"
   },
   "devDependencies": {
     "netlify-cli": "^17.10.1"
   },
-  "keywords": ["content", "ai", "automation"],
+  "keywords": [
+    "content",
+    "ai",
+    "automation"
+  ],
   "author": "Your Name",
   "license": "MIT"
 }
