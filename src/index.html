@@ -3,448 +3,709 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LivePulse - Universal Semantic Engine</title>
-    <link rel="stylesheet" href="style.css">
-    <meta name="description" content="LivePulse: Intelligent content analysis and automatic updates with semantic cluster detection">
-    <meta name="keywords" content="content management, AI, dynamic content, semantic analysis, automatic updates">
+    <title>LivePulse - Intelligent Content Analysis & Automatic Updates</title>
+    <meta name="description" content="LivePulse automatically identifies and updates dynamic facts in your content while preserving semantic meaning and relationships.">
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
     
-    <!-- Open Graph meta tags for social sharing -->
-    <meta property="og:title" content="LivePulse - Universal Semantic Engine">
-    <meta property="og:description" content="Intelligent content analysis and automatic updates with semantic cluster detection">
-    <meta property="og:type" content="website">
-    
-    <!-- Performance optimization -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Analytics placeholder -->
-    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script> -->
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #f59e0b;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --surface-dark: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --pulse-gradient: linear-gradient(45deg, #ff6b6b, #ee5a24, #ff9ff3, #54a0ff);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--background);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .cta-button {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-60px); }
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            opacity: 0.95;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: var(--surface);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Demo Section */
+        .demo {
+            padding: 6rem 2rem;
+            background: var(--surface-dark);
+        }
+
+        .demo-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 3rem;
+        }
+
+        .demo-before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .demo-panel {
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .demo-panel.before {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .demo-panel.after {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .demo-label {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .demo-text {
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .pulse-highlight {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .updated-highlight {
+            background: linear-gradient(45deg, #00d2d3, #54a0ff);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 2rem;
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-description {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 3rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo-icon {
+            font-size: 2rem;
+        }
+
+        .footer-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 6rem 1rem 3rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .demo-before-after {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid,
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Notifications Container (dynamically created) -->
-    
-    <div class="container">
-        <!-- Header Section -->
-        <header class="main-header">
-            <div class="header-content">
-                <h1>
-                    <span class="logo">🫀</span>
-                    <span class="title">LivePulse</span>
-                    <span class="subtitle">Universal Semantic Engine</span>
-                </h1>
-                <p class="tagline">Intelligent content analysis with semantic cluster detection and automatic updates</p>
-                
-                <!-- Status Bar -->
-                <div class="status-bar">
-                    <div class="status-item">
-                        <span class="status-label">Engine Status:</span>
-                        <span class="status-indicator online">🟢 Online</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Data Sources:</span>
-                        <span class="status-value">Universal API</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Version:</span>
-                        <span class="status-value">3.0 - Semantic Clusters</span>
-                    </div>
-                </div>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="#" class="logo">
+                <span class="logo-icon">🫀</span>
+                <span class="logo-text">LivePulse</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#demo">Demo</a></li>
+            </ul>
+            <a href="/app.html" class="cta-button">Try LivePulse</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Intelligent Content That Stays Current</h1>
+            <p class="hero-subtitle">Automatically detect and update dynamic facts while preserving meaning</p>
+            <p class="hero-description">
+                <strong>LivePulse</strong> is an intelligent content analysis and update system that automatically identifies, tracks, and refreshes dynamic facts in blog posts while preserving semantic meaning and contextual relationships. The system uses AI-powered analysis to detect "Pulse Points" - specific facts that are likely to change over time - and enables controlled, scheduled updates with full semantic cluster preservation.
+            </p>
+            <div class="hero-actions">
+                <a href="/app.html" class="btn-primary">Start Analyzing Content</a>
+                <a href="#demo" class="btn-secondary">See How It Works</a>
             </div>
-        </header>
-
-        <main class="main-content">
-            <!-- Article Editor Section -->
-            <section class="editor-section card">
-                <div class="section-header">
-                    <h2>
-                        <span class="section-icon">📝</span>
-                        1. Article Content
-                    </h2>
-                    <div class="section-actions">
-                        <button id="scan-full-article" class="btn-secondary">
-                            <span class="btn-icon">🔍</span>
-                            Scan Full Article
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="editor-container">
-                    <textarea 
-                        id="article-content" 
-                        placeholder="Paste your article content here...
-
-Example article with semantic clusters:
-
-Tesla Earnings Impact Market Sentiment
-
-Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday's close of $257.75. The electric vehicle manufacturer has seen increased volatility following Q3 earnings released last week.
-
-Weather conditions in Adelaide are currently sunny with 25°C, a pleasant 5 degrees warmer than yesterday's 20°C high. This represents a significant improvement from last week's cooler pattern.
-
-Bitcoin continues its volatile trading pattern, currently at $67,500 and showing strong momentum. The cryptocurrency market has gained attention from institutional investors in 2025.
-
-Population growth in Sydney continues, with the metropolitan area now home to 5.4 million residents as of the latest census data."
-                        rows="12"
-                        spellcheck="true">
-                    </textarea>
-                    
-                    <div class="editor-stats">
-                        <span id="word-count">0 words</span>
-                        <span id="char-count">0 characters</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Pulse Analysis Section -->
-            <section class="pulse-section card">
-                <div class="section-header">
-                    <h2>
-                        <span class="section-icon">🎯</span>
-                        2. Smart Pulse Analysis
-                    </h2>
-                    <div class="help-text">
-                        Select text to analyze for pulse points and semantic relationships
-                    </div>
-                </div>
-                
-                <div class="pulse-form">
-                    <div class="input-group">
-                        <input 
-                            type="text" 
-                            id="selected-text" 
-                            placeholder="Enter text to analyze (e.g., 'Tesla shares closed at $248.50, down 3.2% from $257.75')"
-                            autocomplete="off"
-                        >
-                        <button id="analyze-btn" class="btn-primary">
-                            <span class="btn-icon">🔬</span>
-                            Analyze Pulse
-                        </button>
-                    </div>
-                    
-                    <div class="analysis-tips">
-                        <details>
-                            <summary>💡 Analysis Tips</summary>
-                            <ul>
-                                <li><strong>Single Values:</strong> "$67,500", "25°C", "2025"</li>
-                                <li><strong>Semantic Clusters:</strong> "Tesla at $248.50, down 3.2% from $257.75"</li>
-                                <li><strong>Comparisons:</strong> "25°C, 5 degrees warmer than yesterday's 20°C"</li>
-                                <li><strong>Best Results:</strong> Include surrounding context for better relationship detection</li>
-                            </ul>
-                        </details>
-                    </div>
-                </div>
-                
-                <!-- Analysis Results -->
-                <div id="analysis-result" class="analysis-result hidden">
-                    <div id="analysis-content" class="analysis-content">
-                        <!-- Analysis results will be populated here -->
-                    </div>
-                    
-                    <div class="analysis-actions">
-                        <button id="create-pulse-btn" class="btn-success hidden">
-                            <span class="btn-icon">✨</span>
-                            Create Pulse Point(s)
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Article Preview Section -->
-            <section class="preview-section card">
-                <div class="section-header">
-                    <h2>
-                        <span class="section-icon">👁️</span>
-                        3. Live Preview
-                    </h2>
-                    <div class="preview-controls">
-                        <button class="btn-small" onclick="togglePreviewMode()">
-                            <span id="preview-mode-icon">📖</span>
-                            <span id="preview-mode-text">Reading Mode</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="article-preview" class="article-preview">
-                    <div class="preview-placeholder">
-                        <div class="placeholder-icon">📄</div>
-                        <h3>Your Live Article Preview</h3>
-                        <p>Articles with pulse points will appear here with:</p>
-                        <ul>
-                            <li>🟡 Highlighted pulse points</li>
-                            <li>🔗 Semantic cluster indicators</li>
-                            <li>📝 Automatic footnotes with sources</li>
-                            <li>⚡ Real-time value updates</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Active Pulses Management Section -->
-            <section class="pulse-list-section card">
-                <div class="section-header">
-                    <h2>
-                        <span class="section-icon">⚡</span>
-                        4. Active Pulse Points & Clusters
-                    </h2>
-                    <div class="pulse-stats">
-                        <span id="pulse-count">0 Pulses</span>
-                        <span id="cluster-count">0 Clusters</span>
-                        <span id="next-update">Next update: --</span>
-                    </div>
-                </div>
-                
-                <div class="pulse-controls">
-                    <div class="control-group">
-                        <button class="btn-small" onclick="pauseAllPulses()">
-                            <span class="btn-icon">⏸️</span>
-                            Pause All
-                        </button>
-                        <button class="btn-small" onclick="resumeAllPulses()">
-                            <span class="btn-icon">▶️</span>
-                            Resume All
-                        </button>
-                        <button class="btn-small" onclick="updateAllPulses()">
-                            <span class="btn-icon">🔄</span>
-                            Update All
-                        </button>
-                    </div>
-                    <div class="control-group">
-                        <button class="btn-small secondary" onclick="exportPulses()">
-                            <span class="btn-icon">📤</span>
-                            Export
-                        </button>
-                        <button class="btn-small secondary" onclick="importPulses()">
-                            <span class="btn-icon">📥</span>
-                            Import
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="pulse-list" class="pulse-list">
-                    <div class="empty-state">
-                        <div class="empty-icon">🎯</div>
-                        <h3>No Pulse Points Created Yet</h3>
-                        <p>Start by analyzing some text above to create your first pulse point or semantic cluster.</p>
-                        <div class="empty-suggestions">
-                            <h4>Try These Examples:</h4>
-                            <div class="suggestion-items">
-                                <button class="suggestion-item" onclick="loadExample('tesla')">
-                                    📈 Tesla Stock Price Cluster
-                                </button>
-                                <button class="suggestion-item" onclick="loadExample('weather')">
-                                    🌤️ Weather Comparison Cluster
-                                </button>
-                                <button class="suggestion-item" onclick="loadExample('crypto')">
-                                    ₿ Bitcoin Price Update
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Debug & Developer Section (Collapsible) -->
-            <section class="debug-section card">
-                <details class="debug-details">
-                    <summary class="debug-header">
-                        <h2>
-                            <span class="section-icon">🔧</span>
-                            Developer Tools & Debug Info
-                        </h2>
-                    </summary>
-                    
-                    <div class="debug-content">
-                        <div class="debug-tabs">
-                            <button class="debug-tab active" onclick="showDebugTab('logs')">Console Logs</button>
-                            <button class="debug-tab" onclick="showDebugTab('data')">Data Structure</button>
-                            <button class="debug-tab" onclick="showDebugTab('api')">API Testing</button>
-                        </div>
-                        
-                        <div id="debug-logs" class="debug-panel">
-                            <div class="debug-controls">
-                                <button class="btn-small" onclick="clearDebugLogs()">Clear Logs</button>
-                                <button class="btn-small" onclick="downloadLogs()">Download</button>
-                            </div>
-                            <div id="debug-log-content" class="debug-log-content">
-                                <div class="log-entry info">
-                                    <span class="log-time">2025-07-26 10:30:00</span>
-                                    <span class="log-level">INFO</span>
-                                    <span class="log-message">LivePulse Universal Engine initialized</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="debug-data" class="debug-panel hidden">
-                            <pre id="debug-data-content" class="debug-json">
-                                // Current application state will be displayed here
-                            </pre>
-                        </div>
-                        
-                        <div id="debug-api" class="debug-panel hidden">
-                            <div class="api-test-controls">
-                                <h4>Test Universal Data Engine</h4>
-                                <div class="input-group">
-                                    <select id="test-pulse-type">
-                                        <option value="crypto">Crypto</option>
-                                        <option value="weather">Weather</option>
-                                        <option value="stock">Stock</option>
-                                        <option value="date">Date</option>
-                                    </select>
-                                    <input type="text" id="test-specific-type" placeholder="specific type (e.g., crypto:btc:price)">
-                                    <button onclick="testDataSource()" class="btn-small">Test API</button>
-                                </div>
-                                <div id="api-test-result" class="api-test-result"></div>
-                            </div>
-                        </div>
-                    </div>
-                </details>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="main-footer">
-            <div class="footer-content">
-                <div class="footer-info">
-                    <p>
-                        <strong>LivePulse Universal Semantic Engine</strong> - 
-                        Intelligent content analysis with automatic updates
-                    </p>
-                    <p class="footer-tech">
-                        Powered by Google Gemini AI, Universal Data Sources, and Semantic Cluster Detection
-                    </p>
-                </div>
-                <div class="footer-links">
-                    <a href="#" onclick="showAbout()">About</a>
-                    <a href="#" onclick="showHelp()">Help</a>
-                    <a href="https://github.com/silentpacific/lp" target="_blank">GitHub</a>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Loading Overlay (for heavy operations) -->
-    <div id="loading-overlay" class="loading-overlay hidden">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <h3 id="loading-title">Processing...</h3>
-            <p id="loading-message">Please wait while we analyze your content</p>
         </div>
-    </div>
+    </section>
 
-    <!-- Hidden file input for import functionality -->
-    <input type="file" id="file-input" accept=".json,.csv" style="display: none;">
-
-    <!-- Scripts -->
-    <script src="app.js"></script>
-    
-    <!-- Additional utility scripts -->
-    <script>
-        // Global utility functions
-        window.togglePreviewMode = function() {
-            const preview = document.getElementById('article-preview');
-            const icon = document.getElementById('preview-mode-icon');
-            const text = document.getElementById('preview-mode-text');
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Powerful Features</h2>
+                <p class="section-subtitle">
+                    Advanced AI technology that understands your content and keeps it fresh automatically
+                </p>
+            </div>
             
-            preview.classList.toggle('reading-mode');
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3 class="feature-title">Universal Data Engine</h3>
+                    <p class="feature-description">
+                        One intelligent system handles all data types (crypto, weather, stocks, etc.) with seamless integration and automatic source detection.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3 class="feature-title">Semantic Cluster Awareness</h3>
+                    <p class="feature-description">
+                        Detects and maintains relationships between related data points, ensuring mathematical and logical consistency across updates.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Relationship-Driven Updates</h3>
+                    <p class="feature-description">
+                        Mathematical and logical consistency across dependent values. When price changes, percentages and trends update automatically.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🏗️</div>
+                    <h3 class="feature-title">Headless Design</h3>
+                    <p class="feature-description">
+                        Plugs into any CMS or platform as a service layer. WordPress, Ghost, custom sites - LivePulse works everywhere.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How LivePulse Works</h2>
+                <p class="section-subtitle">
+                    Simple process, powerful results
+                </p>
+            </div>
             
-            if (preview.classList.contains('reading-mode')) {
-                icon.textContent = '📝';
-                text.textContent = 'Edit Mode';
-            } else {
-                icon.textContent = '📖';
-                text.textContent = 'Reading Mode';
-            }
-        };
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Analyze Content</h3>
+                    <p class="step-description">
+                        AI scans your content to identify dynamic facts and their relationships to other data points.
+                    </p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Detect Clusters</h3>
+                    <p class="step-description">
+                        Semantic analysis finds related data points that must update together for consistency.
+                    </p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Schedule Updates</h3>
+                    <p class="step-description">
+                        Set update frequencies based on data volatility. From minutes to months, fully customizable.
+                    </p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Stay Current</h3>
+                    <p class="step-description">
+                        Content updates automatically while preserving your writing style and semantic meaning.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        window.loadExample = function(type) {
-            const examples = {
-                tesla: 'Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday\'s close of $257.75. The electric vehicle manufacturer has seen increased volatility following Q3 earnings.',
-                weather: 'Adelaide is experiencing sunny weather with 25°C, a pleasant 5 degrees warmer than yesterday\'s 20°C high.',
-                crypto: 'Bitcoin continues its volatile trading pattern, currently at $67,500 and showing strong momentum in 2025.'
-            };
+    <!-- Demo Section -->
+    <section id="demo" class="demo">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">See LivePulse in Action</h2>
+                <p class="section-subtitle">
+                    Real example showing semantic cluster updates
+                </p>
+            </div>
             
-            document.getElementById('article-content').value = examples[type] || '';
-            document.getElementById('article-content').dispatchEvent(new Event('input'));
+            <div class="demo-container">
+                <div class="demo-before-after">
+                    <div class="demo-panel before">
+                        <div class="demo-label">📝 Before Update</div>
+                        <div class="demo-text">
+                            Tesla shares closed at <span class="pulse-highlight">$248.50</span> on Friday, <span class="pulse-highlight">down 3.2%</span> from Thursday's close of <span class="pulse-highlight">$257.75</span>. The electric vehicle manufacturer continues to face market volatility.
+                        </div>
+                    </div>
+                    
+                    <div class="demo-panel after">
+                        <div class="demo-label">✨ After Automatic Update</div>
+                        <div class="demo-text">
+                            Tesla shares closed at <span class="updated-highlight">$275.30</span> on Friday, <span class="updated-highlight">up 6.8%</span> from Thursday's close of <span class="updated-highlight">$257.75</span>. The electric vehicle manufacturer continues to face market volatility.
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem; color: var(--text-secondary);">
+                    <small>
+                        🔗 <strong>Semantic Cluster:</strong> Price change automatically updated percentage and direction while preserving context
+                    </small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="cta-title">Ready to Keep Your Content Current?</h2>
+            <p class="cta-description">
+                Start analyzing your content with LivePulse's intelligent semantic engine
+            </p>
+            <a href="/app.html" class="btn-primary">Try LivePulse Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <span class="footer-logo-icon">🫀</span>
+                <span class="footer-logo-text">LivePulse</span>
+            </div>
             
-            // Auto-suggest analysis text based on example
-            const suggestions = {
-                tesla: 'Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday\'s close of $257.75',
-                weather: 'sunny weather with 25°C, a pleasant 5 degrees warmer than yesterday\'s 20°C',
-                crypto: 'currently at $67,500'
-            };
+            <div class="footer-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="/app.html">Try LivePulse</a>
+                <a href="https://github.com/silentpacific/lp">GitHub</a>
+            </div>
             
-            document.getElementById('selected-text').value = suggestions[type] || '';
-        };
-
-        window.showAbout = function() {
-            alert('LivePulse Universal Semantic Engine v3.0\n\nIntelligent content analysis with semantic cluster detection and automatic updates.\n\nBuilt with AI-powered semantic understanding.');
-        };
-
-        window.showHelp = function() {
-            alert('Help:\n\n1. Enter your article content\n2. Select text to analyze for pulse points\n3. Create pulse points or semantic clusters\n4. Watch your content update automatically\n\nFor semantic clusters, select text with multiple related data points (like prices and percentages).');
-        };
-
-        // Placeholder functions for additional features
-        window.pauseAllPulses = function() { console.log('Pause all pulses'); };
-        window.resumeAllPulses = function() { console.log('Resume all pulses'); };
-        window.updateAllPulses = function() { console.log('Update all pulses'); };
-        window.exportPulses = function() { console.log('Export pulses'); };
-        window.importPulses = function() { console.log('Import pulses'); };
-        window.showDebugTab = function(tab) { console.log('Show debug tab:', tab); };
-        window.clearDebugLogs = function() { console.log('Clear debug logs'); };
-        window.downloadLogs = function() { console.log('Download logs'); };
-        window.testDataSource = function() { console.log('Test data source'); };
-
-        // Update word/character count
-        document.getElementById('article-content')?.addEventListener('input', function() {
-            const text = this.value;
-            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const chars = text.length;
-            
-            document.getElementById('word-count').textContent = `${words} words`;
-            document.getElementById('char-count').textContent = `${chars} characters`;
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Ctrl+Enter to analyze
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('analyze-btn')?.click();
-            }
-            
-            // Ctrl+Shift+S to scan full article
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
-                e.preventDefault();
-                document.getElementById('scan-full-article')?.click();
-            }
-        });
-
-        // Initialize tooltips and accessibility
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add ARIA labels and improve accessibility
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                if (!button.getAttribute('aria-label') && button.title) {
-                    button.setAttribute('aria-label', button.title);
-                }
-            });
-
-            // Add loading states to all async buttons
-            const asyncButtons = document.querySelectorAll('[onclick*="async"], .btn-primary, .btn-secondary');
-            asyncButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    if (!this.disabled) {
-                        this.classList.add('loading');
-                    }
-                });
-            });
-
-            console.log('🫀 LivePulse Universal Semantic Engine initialized');
-        });
-    </script>
+            <div class="footer-bottom">
+                <p>Copyright © LoFi Simplify. All Rights Reserved.</p>
+                <p>Contact: <a href="mailto:rahulrrao@gmail.com" style="color: rgba(255, 255, 255, 0.8);">rahulrrao@gmail.com</a></p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
