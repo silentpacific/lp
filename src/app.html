@@ -254,7 +254,7 @@
             transform: none !important;
         }
 
-		/* Analysis results */
+        /* Analysis results */
         .analysis-result {
             background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -301,7 +301,7 @@
         }
 
         .pulse-point-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--app-glass-border);
             border-radius: 12px;
             padding: 1.5rem;
@@ -310,12 +310,28 @@
 
         .pulse-point-card.primary {
             border-color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.05);
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .pulse-point-card.dependent {
             border-color: #54a0ff;
-            background: rgba(84, 160, 255, 0.05);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .pulse-point-card h4,
+        .pulse-point-card p,
+        .pulse-point-card span,
+        .pulse-point-card div {
+            color: #1f2937;
+        }
+
+        .pulse-point-card .detail-row label {
+            color: #4b5563;
+            font-weight: 600;
+        }
+
+        .pulse-point-card .detail-row span {
+            color: #374151;
         }
 
         .pulse-role {
@@ -340,22 +356,22 @@
         .text-breakdown {
             margin: 1rem 0;
             padding: 1rem;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .static-text {
-            color: rgba(255, 255, 255, 0.6);
+            color: #4b5563;
         }
 
         .dynamic-text {
-            color: #ff6b6b;
+            color: #dc2626;
             font-weight: 600;
-            background: rgba(255, 107, 107, 0.1);
+            background: rgba(220, 38, 38, 0.1);
             padding: 2px 6px;
             border-radius: 4px;
-            border: 1px dashed #ff6b6b;
+            border: 1px dashed #dc2626;
         }
 
         .detail-row {
@@ -381,22 +397,48 @@
 
         /* Preview area */
         .preview-area {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--app-glass-border);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 16px;
             padding: 2rem;
             min-height: 300px;
             backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-area .article-content {
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .preview-area h1,
+        .preview-area h2,
+        .preview-area h3,
+        .preview-area h4,
+        .preview-area h5,
+        .preview-area h6 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-area p {
+            color: #374151;
+            margin-bottom: 1rem;
         }
 
         .preview-placeholder {
             text-align: center;
-            color: rgba(255, 255, 255, 0.5);
+            color: #6b7280;
             padding: 3rem;
         }
 
+        .preview-placeholder h3 {
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+
         .pulse-point {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            background: linear-gradient(45deg, #dc2626, #b91c1c);
             color: white;
             padding: 2px 6px;
             border-radius: 4px;
@@ -405,12 +447,17 @@
         }
 
         .pulse-point sup {
-            background: rgba(255, 255, 255, 0.9);
-            color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.95);
+            color: #dc2626;
             border-radius: 3px;
             padding: 1px 4px;
             font-size: 0.7rem;
             margin-left: 2px;
+        }
+
+        .pulse-point sup a {
+            color: #dc2626;
+            text-decoration: none;
         }
 
         /* Pulse management */
@@ -482,18 +529,22 @@
         .footnotes-section {
             margin-top: 2rem;
             padding-top: 1.5rem;
-            border-top: 1px solid var(--app-glass-border);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .footnotes-section h4 {
-            color: rgba(255, 255, 255, 0.9);
+            color: #1f2937;
             margin-bottom: 1rem;
         }
 
         .footnote-item {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: #4b5563;
             margin-bottom: 0.5rem;
+        }
+
+        .footnote-cluster strong {
+            color: #374151;
         }
 
         /* Notifications */
@@ -555,6 +606,170 @@
             }
         }
 
+        /* Scan results container */
+        .scan-results-container {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .scan-results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .scan-results-header h3 {
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .scan-summary-stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .scan-stat {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .discovered-pulses,
+        .discovered-clusters {
+            margin-bottom: 1.5rem;
+        }
+
+        .discovered-pulses h4,
+        .discovered-clusters h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .discovered-pulse-card,
+        .discovered-cluster-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .discovered-pulse-card.priority-high {
+            border-left: 4px solid #dc2626;
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .discovered-pulse-card.priority-medium {
+            border-left: 4px solid #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .discovered-pulse-card.priority-low {
+            border-left: 4px solid #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .pulse-preview {
+            flex: 1;
+        }
+
+        .pulse-text {
+            display: block;
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .pulse-priority {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .pulse-priority.high {
+            background: #dc2626;
+            color: white;
+        }
+
+        .pulse-priority.medium {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .pulse-priority.low {
+            background: #10b981;
+            color: white;
+        }
+
+        .pulse-info {
+            display: flex;
+            gap: 0.75rem;
+            color: #6b7280;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .cluster-pulses {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .cluster-pulse {
+            background: rgba(99, 102, 241, 0.1);
+            color: #4338ca;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .discovered-cluster-card h5 {
+            color: #1f2937;
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .manual-analysis-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Button state modifications */
+        .btn.btn-disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #6b7280;
+        }
+
+        .btn.btn-disabled:hover {
+            transform: none;
+            box-shadow: none;
+            background: #6b7280;
+        }
+
         /* Hidden class */
         .hidden {
             display: none;
@@ -613,6 +828,7 @@
                     Article Content
                 </h2>
                 
+                <!-- 1. Article content textarea -->
                 <div class="form-group">
                     <label class="form-label">Enter your article content for analysis:</label>
                     <textarea 
@@ -632,28 +848,46 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     ></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Select specific text to analyze:</label>
-                    <div style="display: flex; gap: 1rem;">
-                        <input 
-                            type="text" 
-                            id="selected-text" 
-                            class="form-input"
-                            placeholder="e.g., 'Tesla shares closed at $248.50, down 3.2% from $257.75'"
-                            style="flex: 1;"
-                        >
-                        <button id="analyze-btn" class="btn btn-primary">
-                            <span>🔬</span>
-                            Analyze
-                        </button>
-                    </div>
-                </div>
-
+                <!-- 2. Scan full article button -->
                 <div class="form-group">
                     <button id="scan-full-article" class="btn btn-secondary">
                         <span>🔍</span>
                         Scan Full Article for Pulse Points
                     </button>
+                </div>
+
+                <!-- 3. Scan results display area -->
+                <div id="full-scan-results" class="scan-results-container hidden">
+                    <div class="scan-results-header">
+                        <h3>🔍 Article Scan Results</h3>
+                        <div class="scan-summary-stats">
+                            <span id="scan-pulse-count" class="scan-stat">0 pulse points</span>
+                            <span id="scan-cluster-count" class="scan-stat">0 clusters</span>
+                        </div>
+                    </div>
+                    <div id="scan-results-content">
+                        <!-- Scan results will be populated here -->
+                    </div>
+                </div>
+
+                <!-- 4. Manual pulse analysis section -->
+                <div class="manual-analysis-section">
+                    <div class="form-group">
+                        <label class="form-label">Select specific text to analyze:</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <input 
+                                type="text" 
+                                id="selected-text" 
+                                class="form-input"
+                                placeholder="e.g., 'Tesla shares closed at $248.50, down 3.2% from $257.75'"
+                                style="flex: 1;"
+                            >
+                            <button id="analyze-btn" class="btn btn-primary">
+                                <span>🔬</span>
+                                Analyze
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -723,126 +957,4 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     Pulse Management
                 </h3>
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                    <button onclick="updateAllPulses()" class="btn btn-small btn-primary">
-                        <span>🔄</span>
-                        Update All
-                    </button>
-                    <button onclick="pauseAllPulses()" class="btn btn-small btn-warning">
-                        <span>⏸️</span>
-                        Pause All
-                    </button>
-                </div>
-                
-                <div id="pulse-list">
-                    <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.5);">
-                        <div style="font-size: 2rem; margin-bottom: 1rem;">🎯</div>
-                        <p>No pulse points created yet.</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Analyze some text to get started!</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Example Content -->
-            <div class="glass-card">
-                <h3>
-                    <span>💡</span>
-                    Try Examples
-                </h3>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <button onclick="loadExample('tesla')" class="btn btn-small btn-secondary">
-                        📈 Tesla Stock Cluster
-                    </button>
-                    <button onclick="loadExample('weather')" class="btn btn-small btn-secondary">
-                        🌤️ Weather Comparison
-                    </button>
-                    <button onclick="loadExample('crypto')" class="btn btn-small btn-secondary">
-                        ₿ Bitcoin Price
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Load the main app JavaScript -->
-    <script src="app.js"></script>
-    
-    <!-- App-specific functionality -->
-    <script>
-        // Example loading function
-        window.loadExample = function(type) {
-            const examples = {
-                tesla: {
-                    content: 'Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday\'s close of $257.75. The electric vehicle manufacturer has seen increased volatility following Q3 earnings released last week.',
-                    selection: 'Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday\'s close of $257.75'
-                },
-                weather: {
-                    content: 'Adelaide is experiencing sunny weather with 25°C, a pleasant 5 degrees warmer than yesterday\'s 20°C high. This represents a significant improvement from last week\'s cooler pattern.',
-                    selection: 'sunny weather with 25°C, a pleasant 5 degrees warmer than yesterday\'s 20°C'
-                },
-                crypto: {
-                    content: 'Bitcoin continues its volatile trading pattern, currently at $67,500 and showing strong momentum. The cryptocurrency market has gained attention from institutional investors in 2025.',
-                    selection: 'currently at $67,500'
-                }
-            };
-            
-            const example = examples[type];
-            if (example) {
-                document.getElementById('article-content').value = example.content;
-                document.getElementById('selected-text').value = example.selection;
-                
-                // Trigger input event to update preview
-                document.getElementById('article-content').dispatchEvent(new Event('input'));
-                
-                showNotification(`Loaded ${type} example. Click "Analyze" to see semantic cluster detection!`, 'success');
-            }
-        };
-
-        // Bulk operations
-        window.updateAllPulses = function() {
-            showNotification('Updating all pulse points...', 'info');
-            // Implementation will be handled by app.js
-        };
-
-        window.pauseAllPulses = function() {
-            showNotification('Pausing all pulse points...', 'info');
-            // Implementation will be handled by app.js
-        };
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const container = document.querySelector('.notifications-container') || createNotificationsContainer();
-            
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <div class="notification-content">
-                    <span class="notification-icon">${type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️'}</span>
-                    <span class="notification-message">${message}</span>
-                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
-                </div>
-            `;
-            
-            container.appendChild(notification);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 5000);
-        }
-
-        function createNotificationsContainer() {
-            const container = document.createElement('div');
-            container.className = 'notifications-container';
-            document.body.appendChild(container);
-            return container;
-        }
-
-        // Make functions globally available
-        window.showNotification = showNotification;
-
-        console.log('🫀 LivePulse App Interface loaded');
-    </script>
-</body>
-</html>
+                    

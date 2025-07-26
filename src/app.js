@@ -35,8 +35,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Scan full article button
         scanFullArticleBtn.addEventListener('click', scanFullArticle);
         
-        // Article content change - update preview
-        articleContent.addEventListener('input', debounce(updatePreview, 300));
+        // Article content change - update preview and clear scan results
+        articleContent.addEventListener('input', debounce(function() {
+            updatePreview();
+            clearScanResults();
+        }, 300));
         
         // Selected text change - clear previous analysis
         selectedText.addEventListener('input', function() {
@@ -96,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             showError('Network error: ' + error.message);
         } finally {
-            setButtonLoading(analyzeBtn, 'Analyze Pulse', false);
+            setButtonLoading(analyzeBtn, 'Analyze', false);
         }
     }
 
@@ -112,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         setButtonLoading(scanFullArticleBtn, 'Scanning Article...');
+        scanFullArticleBtn.classList.add('btn-disabled');
         
         try {
             const response = await fetch('/.netlify/functions/analyze-pulse', {
@@ -130,16 +134,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (data.success) {
-                displayFullArticleScan(data.analysis);
+                displayInlineScanResults(data.analysis);
                 showSuccess(`Found ${data.analysis.pulsePoints?.length || 0} potential pulse points and ${data.analysis.semanticClusters?.length || 0} clusters`);
+                
+                // Keep button disabled after successful scan
+                scanFullArticleBtn.textContent = '✅ Article Scanned';
+                scanFullArticleBtn.classList.add('btn-disabled');
+                scanFullArticleBtn.disabled = true;
             } else {
                 showError('Article scan failed: ' + data.error);
+                resetScanButton();
             }
 
         } catch (error) {
             showError('Network error: ' + error.message);
-        } finally {
-            setButtonLoading(scanFullArticleBtn, 'Scan Full Article', false);
+            resetScanButton();
         }
     }
 
@@ -247,73 +256,76 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
-     * Display full article scan results
+     * Display scan results inline below the scan button
      */
-    function displayFullArticleScan(analysis) {
-        const modal = createModal('full-article-scan', 'Full Article Scan Results');
-        
-        let modalContent = `
-            <div class="scan-summary">
-                <h3>📖 Article Analysis</h3>
-                <div class="scan-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">${analysis.pulsePoints?.length || 0}</span>
-                        <span class="stat-label">Pulse Points</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${analysis.semanticClusters?.length || 0}</span>
-                        <span class="stat-label">Clusters</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${analysis.recommendations?.highPriority || 0}</span>
-                        <span class="stat-label">High Priority</span>
-                    </div>
-                </div>
-            </div>
-        `;
+    function displayInlineScanResults(analysis) {
+        const fullScanResults = document.getElementById('full-scan-results');
+        const scanResultsContent = document.getElementById('scan-results-content');
+        const scanPulseCount = document.getElementById('scan-pulse-count');
+        const scanClusterCount = document.getElementById('scan-cluster-count');
+
+        // Update stats
+        scanPulseCount.textContent = `${analysis.pulsePoints?.length || 0} pulse points`;
+        scanClusterCount.textContent = `${analysis.semanticClusters?.length || 0} clusters`;
+
+        let resultsHTML = '';
 
         if (analysis.pulsePoints && analysis.pulsePoints.length > 0) {
-            modalContent += '<div class="discovered-pulses"><h4>🎯 Discovered Pulse Points:</h4>';
+            resultsHTML += '<div class="discovered-pulses"><h4>🎯 Discovered Pulse Points:</h4>';
             
             analysis.pulsePoints.forEach((pulse, index) => {
-                modalContent += `
-                    <div class="discovered-pulse-card priority-${pulse.priority}">
+                const priorityClass = `priority-${pulse.priority || 'medium'}`;
+                resultsHTML += `
+                    <div class="discovered-pulse-card ${priorityClass}">
                         <div class="pulse-preview">
-                            <span class="pulse-text">"${pulse.text}"</span>
-                            <span class="pulse-priority">${pulse.priority}</span>
+                            <span class="pulse-text">"${pulse.text || pulse.dynamicPart}"</span>
+                            <span class="pulse-priority ${pulse.priority || 'medium'}">${pulse.priority || 'medium'}</span>
+                            <div class="pulse-info">
+                                <span>${pulse.pulseType}</span>
+                                <span>${formatFrequency(pulse.updateFrequency)}</span>
+                                <span>Confidence: ${pulse.confidence}</span>
+                            </div>
                         </div>
-                        <div class="pulse-info">
-                            <span>${pulse.pulseType}</span>
-                            <span>${formatFrequency(pulse.updateFrequency)}</span>
-                            <span>Confidence: ${pulse.confidence}</span>
-                        </div>
-                        <button onclick="createPulseFromScan(${index})" class="btn-small">Create Pulse</button>
+                        <button onclick="createPulseFromScan(${index})" class="btn btn-small btn-success">Create Pulse</button>
                     </div>
                 `;
             });
             
-            modalContent += '</div>';
+            resultsHTML += '</div>';
         }
 
         if (analysis.semanticClusters && analysis.semanticClusters.length > 0) {
-            modalContent += '<div class="discovered-clusters"><h4>🔗 Discovered Clusters:</h4>';
+            resultsHTML += '<div class="discovered-clusters"><h4>🔗 Discovered Clusters:</h4>';
             
             analysis.semanticClusters.forEach((cluster, index) => {
-                modalContent += `
+                resultsHTML += `
                     <div class="discovered-cluster-card">
-                        <h5>${cluster.clusterName}</h5>
-                        <div class="cluster-pulses">
-                            ${cluster.pulseIndices.map(i => `<span class="cluster-pulse">"${analysis.pulsePoints[i]?.dynamicPart}"</span>`).join(' → ')}
+                        <div style="flex: 1;">
+                            <h5>${cluster.clusterName}</h5>
+                            <div class="cluster-pulses">
+                                ${cluster.pulseIndices.map(i => `<span class="cluster-pulse">"${analysis.pulsePoints[i]?.dynamicPart || analysis.pulsePoints[i]?.text}"</span>`).join('')}
+                            </div>
                         </div>
-                        <button onclick="createClusterFromScan(${index})" class="btn-small">Create Cluster</button>
+                        <button onclick="createClusterFromScan(${index})" class="btn btn-small btn-success">Create Cluster</button>
                     </div>
                 `;
             });
             
-            modalContent += '</div>';
+            resultsHTML += '</div>';
         }
 
-        modal.querySelector('.modal-content').innerHTML = modalContent;
+        if (!analysis.pulsePoints?.length && !analysis.semanticClusters?.length) {
+            resultsHTML = `
+                <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
+                    <h4 style="color: #4b5563;">No pulse points detected</h4>
+                    <p>Try analyzing specific text manually below, or check if your article contains numerical data, dates, or other dynamic content.</p>
+                </div>
+            `;
+        }
+
+        scanResultsContent.innerHTML = resultsHTML;
+        fullScanResults.classList.remove('hidden');
         
         // Store scan results for later use
         window.lastScanResults = analysis;
@@ -429,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function updatePulseList() {
         if (pulses.length === 0 && semanticClusters.length === 0) {
-            pulseList.innerHTML = '<p>No pulses created yet.</p>';
+            pulseList.innerHTML = '<div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.5);"><div style="font-size: 2rem; margin-bottom: 1rem;">🎯</div><p>No pulse points created yet.</p><p style="font-size: 0.9rem; margin-top: 0.5rem;">Analyze some text to get started!</p></div>';
             return;
         }
 
@@ -462,9 +474,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>Pulse count: ${clusterPulses.length}</span>
                     </div>
                     <div class="cluster-actions">
-                        <button onclick="testClusterUpdate('${cluster.id}')" class="btn-small">Test Update</button>
-                        <button onclick="toggleCluster('${cluster.id}')" class="btn-small ${cluster.isActive ? 'warning' : 'success'}">${cluster.isActive ? 'Pause' : 'Resume'}</button>
-                        <button onclick="removeCluster('${cluster.id}')" class="btn-small danger">Remove</button>
+                        <button onclick="testClusterUpdate('${cluster.id}')" class="btn btn-small">Test Update</button>
+                        <button onclick="toggleCluster('${cluster.id}')" class="btn btn-small ${cluster.isActive ? 'btn-warning' : 'btn-success'}">${cluster.isActive ? 'Pause' : 'Resume'}</button>
+                        <button onclick="removeCluster('${cluster.id}')" class="btn btn-small btn-danger">Remove</button>
                     </div>
                 </div>
             `;
@@ -493,9 +505,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>Count: ${pulse.updateCount} updates</span>
                     </div>
                     <div class="pulse-actions">
-                        <button onclick="testPulseUpdate(${pulse.id})" class="btn-small">Test Update</button>
-                        <button onclick="togglePulse(${pulse.id})" class="btn-small ${pulse.isActive ? 'warning' : 'success'}">${pulse.isActive ? 'Pause' : 'Resume'}</button>
-                        <button onclick="removePulse(${pulse.id})" class="btn-small danger">Remove</button>
+                        <button onclick="testPulseUpdate(${pulse.id})" class="btn btn-small">Test Update</button>
+                        <button onclick="togglePulse(${pulse.id})" class="btn btn-small ${pulse.isActive ? 'btn-warning' : 'btn-success'}">${pulse.isActive ? 'Pause' : 'Resume'}</button>
+                        <button onclick="removePulse(${pulse.id})" class="btn btn-small btn-danger">Remove</button>
                     </div>
                 </div>
             `;
@@ -511,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let content = articleContent.value;
         
         if (!content.trim()) {
-            articlePreview.innerHTML = '<p>Your article with pulse points will appear here...</p>';
+            articlePreview.innerHTML = '<div class="preview-placeholder"><div style="font-size: 3rem; margin-bottom: 1rem;">📄</div><h3>Your Live Article Preview</h3><p>Articles with pulse points will appear here with highlighted dynamic content and automatic footnotes.</p></div>';
             return;
         }
 
@@ -735,92 +747,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showSuccess('Cluster and all related pulses removed');
     };
 
-    // Helper functions
-    function formatFrequency(minutes) {
-        if (minutes < 60) return `${minutes} minutes`;
-        if (minutes < 1440) return `${Math.round(minutes / 60)} hours`;
-        if (minutes < 10080) return `${Math.round(minutes / 1440)} days`;
-        if (minutes < 43200) return `${Math.round(minutes / 10080)} weeks`;
-        return `${Math.round(minutes / 43200)} months`;
-    }
-
-    function escapeRegExp(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    function extractArticleTitle(content) {
-        const lines = content.split('\n');
-        const firstLine = lines[0].trim();
-        return firstLine.length > 0 && firstLine.length < 100 ? firstLine : 'Untitled Article';
-    }
-
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    function setButtonLoading(button, loadingText, isLoading = true) {
-        if (isLoading) {
-            button.disabled = true;
-            button.dataset.originalText = button.textContent;
-            button.textContent = loadingText;
-        } else {
-            button.disabled = false;
-            button.textContent = button.dataset.originalText || loadingText;
-        }
-    }
-
-    function createModal(id, title) {
-        // Remove existing modal if present
-        const existingModal = document.getElementById(id);
-        if (existingModal) {
-            existingModal.remove();
-        }
-
-        const modal = document.createElement('div');
-        modal.id = id;
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-            <div class="modal-container">
-                <div class="modal-header">
-                    <h3>${title}</h3>
-                    <button class="modal-close" onclick="closeModal('${id}')">&times;</button>
-                </div>
-                <div class="modal-content">
-                    <!-- Content will be inserted here -->
-                </div>
-                <div class="modal-footer">
-                    <button onclick="closeModal('${id}')" class="btn-secondary">Close</button>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-        
-        // Close on backdrop click
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeModal(id);
-            }
-        });
-
-        return modal;
-    }
-
-    window.closeModal = function(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.remove();
-        }
-    };
-
     window.createPulseFromScan = function(pulseIndex) {
         if (!window.lastScanResults || !window.lastScanResults.pulsePoints) return;
         
@@ -843,7 +769,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         createSinglePulse(convertedPulse);
-        closeModal('full-article-scan');
         showSuccess(`Created pulse point: "${convertedPulse.dynamicPart}"`);
     };
 
@@ -883,9 +808,74 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         createSemanticCluster(convertedAnalysis);
-        closeModal('full-article-scan');
         showSuccess(`Created semantic cluster: "${clusterData.clusterName}" with ${clusterData.pulseIndices.length} pulse points`);
     };
+
+    /**
+     * Clear scan results when article content changes
+     */
+    function clearScanResults() {
+        const fullScanResults = document.getElementById('full-scan-results');
+        fullScanResults.classList.add('hidden');
+        resetScanButton();
+        window.lastScanResults = null;
+    }
+
+    /**
+     * Reset scan button to original state
+     */
+    function resetScanButton() {
+        scanFullArticleBtn.textContent = '🔍 Scan Full Article for Pulse Points';
+        scanFullArticleBtn.classList.remove('btn-disabled');
+        scanFullArticleBtn.disabled = false;
+    }
+
+    // Helper functions
+    function formatFrequency(minutes) {
+        if (minutes < 60) return `${minutes} minutes`;
+        if (minutes < 1440) return `${Math.round(minutes / 60)} hours`;
+        if (minutes < 10080) return `${Math.round(minutes / 1440)} days`;
+        if (minutes < 43200) return `${Math.round(minutes / 10080)} weeks`;
+        return `${Math.round(minutes / 43200)} months`;
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\    window.removeCluster = function(clusterId) {
+        semanticClusters = semanticClusters.filter(c => c.id !== clusterId);
+        pulses = pulses.filter(p => p.clusterId !== clusterId);
+        updatePulseList();
+        updatePreview();
+        show');
+    }
+
+    function extractArticleTitle(content) {
+        const lines = content.split('\n');
+        const firstLine = lines[0].trim();
+        return firstLine.length > 0 && firstLine.length < 100 ? firstLine : 'Untitled Article';
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function setButtonLoading(button, loadingText, isLoading = true) {
+        if (isLoading) {
+            button.disabled = true;
+            button.dataset.originalText = button.textContent;
+            button.textContent = loadingText;
+        } else {
+            button.disabled = false;
+            button.textContent = button.dataset.originalText || loadingText;
+        }
+    }
 
     function showError(message) {
         showNotification(message, 'error');
