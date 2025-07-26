@@ -103,12 +103,7 @@ button:disabled {
     display: none;
 }
 
-#analysis-result {
-    background: #f8fafc;
-    padding: 20px;
-    border-radius: 8px;
-    border-left: 4px solid #2563eb;
-}
+ /* Analysis results */
 
 .analysis-item {
     margin-bottom: 15px;

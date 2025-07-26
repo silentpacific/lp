@@ -254,14 +254,31 @@
             transform: none !important;
         }
 
-        /* Analysis results */
+		/* Analysis results */
         .analysis-result {
-            background: var(--app-glass-bg);
-            border: 1px solid var(--app-glass-border);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 16px;
             padding: 1.5rem;
             margin-top: 1rem;
             backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .analysis-result h2,
+        .analysis-result h3,
+        .analysis-result h4 {
+            color: #1f2937;
+        }
+
+        .analysis-result p,
+        .analysis-result span,
+        .analysis-result div {
+            color: #374151;
+        }
+
+        .analysis-result .cluster-description {
+            color: #4b5563;
         }
 
         .analysis-badge {
