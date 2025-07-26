@@ -3,55 +3,448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LivePulse MVP</title>
+    <title>LivePulse - Universal Semantic Engine</title>
     <link rel="stylesheet" href="style.css">
+    <meta name="description" content="LivePulse: Intelligent content analysis and automatic updates with semantic cluster detection">
+    <meta name="keywords" content="content management, AI, dynamic content, semantic analysis, automatic updates">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
+    
+    <!-- Open Graph meta tags for social sharing -->
+    <meta property="og:title" content="LivePulse - Universal Semantic Engine">
+    <meta property="og:description" content="Intelligent content analysis and automatic updates with semantic cluster detection">
+    <meta property="og:type" content="website">
+    
+    <!-- Performance optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Analytics placeholder -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script> -->
 </head>
 <body>
+    <!-- Notifications Container (dynamically created) -->
+    
     <div class="container">
-        <header>
-            <h1>🫀 LivePulse MVP</h1>
-            <p>Test dynamic content updates with AI</p>
+        <!-- Header Section -->
+        <header class="main-header">
+            <div class="header-content">
+                <h1>
+                    <span class="logo">🫀</span>
+                    <span class="title">LivePulse</span>
+                    <span class="subtitle">Universal Semantic Engine</span>
+                </h1>
+                <p class="tagline">Intelligent content analysis with semantic cluster detection and automatic updates</p>
+                
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-label">Engine Status:</span>
+                        <span class="status-indicator online">🟢 Online</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Data Sources:</span>
+                        <span class="status-value">Universal API</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Version:</span>
+                        <span class="status-value">3.0 - Semantic Clusters</span>
+                    </div>
+                </div>
+            </div>
         </header>
 
-        <main>
-            <section class="editor-section">
-                <h2>1. Write Your Article</h2>
-                <textarea id="article-content" placeholder="Paste your article content here...
-
-Example:
-Bitcoin is currently trading at $67,500 and showing high volatility. The weather in Adelaide is sunny with 22°C today. We've had record rainfall this year (2025) compared to previous decades."></textarea>
-            </section>
-
-            <section class="pulse-section">
-                <h2>2. Create Pulse Points</h2>
-                <div class="pulse-form">
-                    <input type="text" id="selected-text" placeholder="Enter text you want to make dynamic (e.g., '$67,500')">
-                    <button id="analyze-btn">Analyze Pulse</button>
+        <main class="main-content">
+            <!-- Article Editor Section -->
+            <section class="editor-section card">
+                <div class="section-header">
+                    <h2>
+                        <span class="section-icon">📝</span>
+                        1. Article Content
+                    </h2>
+                    <div class="section-actions">
+                        <button id="scan-full-article" class="btn-secondary">
+                            <span class="btn-icon">🔍</span>
+                            Scan Full Article
+                        </button>
+                    </div>
                 </div>
                 
-                <div id="analysis-result" class="hidden">
-                    <h3>AI Analysis</h3>
-                    <div id="analysis-content"></div>
-                    <button id="create-pulse-btn" class="hidden">Create Pulse Point</button>
+                <div class="editor-container">
+                    <textarea 
+                        id="article-content" 
+                        placeholder="Paste your article content here...
+
+Example article with semantic clusters:
+
+Tesla Earnings Impact Market Sentiment
+
+Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday's close of $257.75. The electric vehicle manufacturer has seen increased volatility following Q3 earnings released last week.
+
+Weather conditions in Adelaide are currently sunny with 25°C, a pleasant 5 degrees warmer than yesterday's 20°C high. This represents a significant improvement from last week's cooler pattern.
+
+Bitcoin continues its volatile trading pattern, currently at $67,500 and showing strong momentum. The cryptocurrency market has gained attention from institutional investors in 2025.
+
+Population growth in Sydney continues, with the metropolitan area now home to 5.4 million residents as of the latest census data."
+                        rows="12"
+                        spellcheck="true">
+                    </textarea>
+                    
+                    <div class="editor-stats">
+                        <span id="word-count">0 words</span>
+                        <span id="char-count">0 characters</span>
+                    </div>
                 </div>
             </section>
 
-            <section class="preview-section">
-                <h2>3. Article Preview</h2>
+            <!-- Pulse Analysis Section -->
+            <section class="pulse-section card">
+                <div class="section-header">
+                    <h2>
+                        <span class="section-icon">🎯</span>
+                        2. Smart Pulse Analysis
+                    </h2>
+                    <div class="help-text">
+                        Select text to analyze for pulse points and semantic relationships
+                    </div>
+                </div>
+                
+                <div class="pulse-form">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="selected-text" 
+                            placeholder="Enter text to analyze (e.g., 'Tesla shares closed at $248.50, down 3.2% from $257.75')"
+                            autocomplete="off"
+                        >
+                        <button id="analyze-btn" class="btn-primary">
+                            <span class="btn-icon">🔬</span>
+                            Analyze Pulse
+                        </button>
+                    </div>
+                    
+                    <div class="analysis-tips">
+                        <details>
+                            <summary>💡 Analysis Tips</summary>
+                            <ul>
+                                <li><strong>Single Values:</strong> "$67,500", "25°C", "2025"</li>
+                                <li><strong>Semantic Clusters:</strong> "Tesla at $248.50, down 3.2% from $257.75"</li>
+                                <li><strong>Comparisons:</strong> "25°C, 5 degrees warmer than yesterday's 20°C"</li>
+                                <li><strong>Best Results:</strong> Include surrounding context for better relationship detection</li>
+                            </ul>
+                        </details>
+                    </div>
+                </div>
+                
+                <!-- Analysis Results -->
+                <div id="analysis-result" class="analysis-result hidden">
+                    <div id="analysis-content" class="analysis-content">
+                        <!-- Analysis results will be populated here -->
+                    </div>
+                    
+                    <div class="analysis-actions">
+                        <button id="create-pulse-btn" class="btn-success hidden">
+                            <span class="btn-icon">✨</span>
+                            Create Pulse Point(s)
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Article Preview Section -->
+            <section class="preview-section card">
+                <div class="section-header">
+                    <h2>
+                        <span class="section-icon">👁️</span>
+                        3. Live Preview
+                    </h2>
+                    <div class="preview-controls">
+                        <button class="btn-small" onclick="togglePreviewMode()">
+                            <span id="preview-mode-icon">📖</span>
+                            <span id="preview-mode-text">Reading Mode</span>
+                        </button>
+                    </div>
+                </div>
+                
                 <div id="article-preview" class="article-preview">
-                    <p>Your article with pulse points will appear here...</p>
+                    <div class="preview-placeholder">
+                        <div class="placeholder-icon">📄</div>
+                        <h3>Your Live Article Preview</h3>
+                        <p>Articles with pulse points will appear here with:</p>
+                        <ul>
+                            <li>🟡 Highlighted pulse points</li>
+                            <li>🔗 Semantic cluster indicators</li>
+                            <li>📝 Automatic footnotes with sources</li>
+                            <li>⚡ Real-time value updates</li>
+                        </ul>
+                    </div>
                 </div>
             </section>
 
-            <section class="pulse-list-section">
-                <h2>4. Active Pulses</h2>
-                <div id="pulse-list" class="pulse-list">
-                    <p>No pulses created yet.</p>
+            <!-- Active Pulses Management Section -->
+            <section class="pulse-list-section card">
+                <div class="section-header">
+                    <h2>
+                        <span class="section-icon">⚡</span>
+                        4. Active Pulse Points & Clusters
+                    </h2>
+                    <div class="pulse-stats">
+                        <span id="pulse-count">0 Pulses</span>
+                        <span id="cluster-count">0 Clusters</span>
+                        <span id="next-update">Next update: --</span>
+                    </div>
                 </div>
+                
+                <div class="pulse-controls">
+                    <div class="control-group">
+                        <button class="btn-small" onclick="pauseAllPulses()">
+                            <span class="btn-icon">⏸️</span>
+                            Pause All
+                        </button>
+                        <button class="btn-small" onclick="resumeAllPulses()">
+                            <span class="btn-icon">▶️</span>
+                            Resume All
+                        </button>
+                        <button class="btn-small" onclick="updateAllPulses()">
+                            <span class="btn-icon">🔄</span>
+                            Update All
+                        </button>
+                    </div>
+                    <div class="control-group">
+                        <button class="btn-small secondary" onclick="exportPulses()">
+                            <span class="btn-icon">📤</span>
+                            Export
+                        </button>
+                        <button class="btn-small secondary" onclick="importPulses()">
+                            <span class="btn-icon">📥</span>
+                            Import
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="pulse-list" class="pulse-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">🎯</div>
+                        <h3>No Pulse Points Created Yet</h3>
+                        <p>Start by analyzing some text above to create your first pulse point or semantic cluster.</p>
+                        <div class="empty-suggestions">
+                            <h4>Try These Examples:</h4>
+                            <div class="suggestion-items">
+                                <button class="suggestion-item" onclick="loadExample('tesla')">
+                                    📈 Tesla Stock Price Cluster
+                                </button>
+                                <button class="suggestion-item" onclick="loadExample('weather')">
+                                    🌤️ Weather Comparison Cluster
+                                </button>
+                                <button class="suggestion-item" onclick="loadExample('crypto')">
+                                    ₿ Bitcoin Price Update
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Debug & Developer Section (Collapsible) -->
+            <section class="debug-section card">
+                <details class="debug-details">
+                    <summary class="debug-header">
+                        <h2>
+                            <span class="section-icon">🔧</span>
+                            Developer Tools & Debug Info
+                        </h2>
+                    </summary>
+                    
+                    <div class="debug-content">
+                        <div class="debug-tabs">
+                            <button class="debug-tab active" onclick="showDebugTab('logs')">Console Logs</button>
+                            <button class="debug-tab" onclick="showDebugTab('data')">Data Structure</button>
+                            <button class="debug-tab" onclick="showDebugTab('api')">API Testing</button>
+                        </div>
+                        
+                        <div id="debug-logs" class="debug-panel">
+                            <div class="debug-controls">
+                                <button class="btn-small" onclick="clearDebugLogs()">Clear Logs</button>
+                                <button class="btn-small" onclick="downloadLogs()">Download</button>
+                            </div>
+                            <div id="debug-log-content" class="debug-log-content">
+                                <div class="log-entry info">
+                                    <span class="log-time">2025-07-26 10:30:00</span>
+                                    <span class="log-level">INFO</span>
+                                    <span class="log-message">LivePulse Universal Engine initialized</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="debug-data" class="debug-panel hidden">
+                            <pre id="debug-data-content" class="debug-json">
+                                // Current application state will be displayed here
+                            </pre>
+                        </div>
+                        
+                        <div id="debug-api" class="debug-panel hidden">
+                            <div class="api-test-controls">
+                                <h4>Test Universal Data Engine</h4>
+                                <div class="input-group">
+                                    <select id="test-pulse-type">
+                                        <option value="crypto">Crypto</option>
+                                        <option value="weather">Weather</option>
+                                        <option value="stock">Stock</option>
+                                        <option value="date">Date</option>
+                                    </select>
+                                    <input type="text" id="test-specific-type" placeholder="specific type (e.g., crypto:btc:price)">
+                                    <button onclick="testDataSource()" class="btn-small">Test API</button>
+                                </div>
+                                <div id="api-test-result" class="api-test-result"></div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
             </section>
         </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p>
+                        <strong>LivePulse Universal Semantic Engine</strong> - 
+                        Intelligent content analysis with automatic updates
+                    </p>
+                    <p class="footer-tech">
+                        Powered by Google Gemini AI, Universal Data Sources, and Semantic Cluster Detection
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" onclick="showAbout()">About</a>
+                    <a href="#" onclick="showHelp()">Help</a>
+                    <a href="https://github.com/silentpacific/lp" target="_blank">GitHub</a>
+                </div>
+            </div>
+        </footer>
     </div>
 
+    <!-- Loading Overlay (for heavy operations) -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3 id="loading-title">Processing...</h3>
+            <p id="loading-message">Please wait while we analyze your content</p>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import functionality -->
+    <input type="file" id="file-input" accept=".json,.csv" style="display: none;">
+
+    <!-- Scripts -->
     <script src="app.js"></script>
+    
+    <!-- Additional utility scripts -->
+    <script>
+        // Global utility functions
+        window.togglePreviewMode = function() {
+            const preview = document.getElementById('article-preview');
+            const icon = document.getElementById('preview-mode-icon');
+            const text = document.getElementById('preview-mode-text');
+            
+            preview.classList.toggle('reading-mode');
+            
+            if (preview.classList.contains('reading-mode')) {
+                icon.textContent = '📝';
+                text.textContent = 'Edit Mode';
+            } else {
+                icon.textContent = '📖';
+                text.textContent = 'Reading Mode';
+            }
+        };
+
+        window.loadExample = function(type) {
+            const examples = {
+                tesla: 'Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday\'s close of $257.75. The electric vehicle manufacturer has seen increased volatility following Q3 earnings.',
+                weather: 'Adelaide is experiencing sunny weather with 25°C, a pleasant 5 degrees warmer than yesterday\'s 20°C high.',
+                crypto: 'Bitcoin continues its volatile trading pattern, currently at $67,500 and showing strong momentum in 2025.'
+            };
+            
+            document.getElementById('article-content').value = examples[type] || '';
+            document.getElementById('article-content').dispatchEvent(new Event('input'));
+            
+            // Auto-suggest analysis text based on example
+            const suggestions = {
+                tesla: 'Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday\'s close of $257.75',
+                weather: 'sunny weather with 25°C, a pleasant 5 degrees warmer than yesterday\'s 20°C',
+                crypto: 'currently at $67,500'
+            };
+            
+            document.getElementById('selected-text').value = suggestions[type] || '';
+        };
+
+        window.showAbout = function() {
+            alert('LivePulse Universal Semantic Engine v3.0\n\nIntelligent content analysis with semantic cluster detection and automatic updates.\n\nBuilt with AI-powered semantic understanding.');
+        };
+
+        window.showHelp = function() {
+            alert('Help:\n\n1. Enter your article content\n2. Select text to analyze for pulse points\n3. Create pulse points or semantic clusters\n4. Watch your content update automatically\n\nFor semantic clusters, select text with multiple related data points (like prices and percentages).');
+        };
+
+        // Placeholder functions for additional features
+        window.pauseAllPulses = function() { console.log('Pause all pulses'); };
+        window.resumeAllPulses = function() { console.log('Resume all pulses'); };
+        window.updateAllPulses = function() { console.log('Update all pulses'); };
+        window.exportPulses = function() { console.log('Export pulses'); };
+        window.importPulses = function() { console.log('Import pulses'); };
+        window.showDebugTab = function(tab) { console.log('Show debug tab:', tab); };
+        window.clearDebugLogs = function() { console.log('Clear debug logs'); };
+        window.downloadLogs = function() { console.log('Download logs'); };
+        window.testDataSource = function() { console.log('Test data source'); };
+
+        // Update word/character count
+        document.getElementById('article-content')?.addEventListener('input', function() {
+            const text = this.value;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            
+            document.getElementById('word-count').textContent = `${words} words`;
+            document.getElementById('char-count').textContent = `${chars} characters`;
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Enter to analyze
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('analyze-btn')?.click();
+            }
+            
+            // Ctrl+Shift+S to scan full article
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                document.getElementById('scan-full-article')?.click();
+            }
+        });
+
+        // Initialize tooltips and accessibility
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add ARIA labels and improve accessibility
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                if (!button.getAttribute('aria-label') && button.title) {
+                    button.setAttribute('aria-label', button.title);
+                }
+            });
+
+            // Add loading states to all async buttons
+            const asyncButtons = document.querySelectorAll('[onclick*="async"], .btn-primary, .btn-secondary');
+            asyncButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!this.disabled) {
+                        this.classList.add('loading');
+                    }
+                });
+            });
+
+            console.log('🫀 LivePulse Universal Semantic Engine initialized');
+        });
+    </script>
 </body>
 </html>
