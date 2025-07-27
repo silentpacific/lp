@@ -638,36 +638,37 @@ document.addEventListener('DOMContentLoaded', function() {
         pulsePoints.forEach((pulse, index) => {
             const isPrimary = pulse.role === 'primary';
             const roleIcon = isPrimary ? '🔥' : pulse.role === 'dependent' ? '⚡' : '📌';
+            const roleClass = pulse.role || 'single';
             
             analysisHTML += `
-                <div class="pulse-point-card ${pulse.role}">
+                <div class="pulse-point-card ${roleClass}">
                     <div class="pulse-header">
-                        <span class="pulse-role">${roleIcon} ${pulse.role.toUpperCase()}</span>
-                        <span class="pulse-confidence confidence-${pulse.confidence}">${pulse.confidence}</span>
+                        <span class="pulse-role ${roleClass}">${roleIcon} ${(pulse.role || 'single').toUpperCase()}</span>
+                        <span class="pulse-confidence confidence-${pulse.confidence || 'medium'}">${pulse.confidence || 'medium'}</span>
                     </div>
                     
                     <div class="text-breakdown">
                         <div class="text-parts">
-                            <span class="static-text">${pulse.staticPrefix || ''}</span><span class="dynamic-text" title="This will update automatically">${pulse.dynamicPart}</span><span class="static-text">${pulse.staticSuffix || ''}</span>
+                            <span class="static-text">${pulse.staticPrefix || ''}</span><span class="dynamic-text" title="This will update automatically">${pulse.dynamicPart || ''}</span><span class="static-text">${pulse.staticSuffix || ''}</span>
                         </div>
                     </div>
                     
                     <div class="pulse-details">
                         <div class="detail-row">
                             <label>Type:</label>
-                            <span>${pulse.pulseType} → ${pulse.specificType}</span>
+                            <span>${pulse.pulseType || 'unknown'} → ${pulse.specificType || 'unknown'}</span>
                         </div>
                         <div class="detail-row">
                             <label>Update Frequency:</label>
-                            <span>${formatFrequency(pulse.updateFrequency)}</span>
+                            <span>${formatFrequency(pulse.updateFrequency || 180)}</span>
                         </div>
                         <div class="detail-row">
                             <label>Data Source:</label>
-                            <span>${pulse.dataSource}</span>
+                            <span>${pulse.dataSource || 'Unknown'}</span>
                         </div>
                         <div class="detail-row">
                             <label>Reasoning:</label>
-                            <span>${pulse.reasoning}</span>
+                            <span>${pulse.reasoning || 'No reasoning provided'}</span>
                         </div>
                     </div>
                 </div>
@@ -677,25 +678,27 @@ document.addEventListener('DOMContentLoaded', function() {
         analysisHTML += '</div>';
 
         // Display relationships if cluster
-        if (isCluster && cluster.relationships && cluster.relationships.length > 0) {
+        if (isCluster && cluster && cluster.relationships && cluster.relationships.length > 0) {
             analysisHTML += '<div class="relationships-section"><h4>🔄 Relationships:</h4>';
             
             cluster.relationships.forEach(rel => {
                 const sourcePulse = pulsePoints[rel.sourcePulseIndex];
                 const targetPulse = pulsePoints[rel.targetPulseIndex];
                 
-                analysisHTML += `
-                    <div class="relationship-card">
-                        <div class="relationship-flow">
-                            <span class="source-pulse">${sourcePulse?.dynamicPart}</span>
-                            <span class="relationship-arrow">→</span>
-                            <span class="target-pulse">${targetPulse?.dynamicPart}</span>
+                if (sourcePulse && targetPulse) {
+                    analysisHTML += `
+                        <div class="relationship-card">
+                            <div class="relationship-flow">
+                                <span class="source-pulse">${sourcePulse.dynamicPart}</span>
+                                <span class="relationship-arrow">→</span>
+                                <span class="target-pulse">${targetPulse.dynamicPart}</span>
+                            </div>
+                            <div class="relationship-details">
+                                <strong>${rel.relationshipType}</strong>: ${rel.calculationRule}
+                            </div>
                         </div>
-                        <div class="relationship-details">
-                            <strong>${rel.relationshipType}</strong>: ${rel.calculationRule}
-                        </div>
-                    </div>
-                `;
+                    `;
+                }
             });
             
             analysisHTML += '</div>';
@@ -860,23 +863,29 @@ document.addEventListener('DOMContentLoaded', function() {
     function createPulseFromData(pulseData) {
         const nextUpdate = new Date(Date.now() + (pulseData.updateFrequency * 60 * 1000));
         
+        // Clean and validate the text data
+        const cleanOriginalText = String(pulseData.fullSelection || pulseData.dynamicPart || '').trim();
+        const cleanDynamicPart = String(pulseData.dynamicPart || '').trim();
+        const cleanStaticPrefix = String(pulseData.staticPrefix || '').trim();
+        const cleanStaticSuffix = String(pulseData.staticSuffix || '').trim();
+        
         return {
             id: pulseCounter++,
-            originalText: pulseData.fullSelection || pulseData.dynamicPart,
-            dynamicPart: pulseData.dynamicPart,
-            staticPrefix: pulseData.staticPrefix || '',
-            staticSuffix: pulseData.staticSuffix || '',
-            currentValue: pulseData.dynamicPart,
-            pulseType: pulseData.pulseType,
-            specificType: pulseData.specificType,
-            updateFrequency: pulseData.updateFrequency,
-            dataSource: pulseData.dataSource,
-            reasoning: pulseData.reasoning,
-            confidence: pulseData.confidence,
-            action: pulseData.action,
-            subject: pulseData.subject,
-            entity: pulseData.entity,
-            emotion: pulseData.emotion,
+            originalText: cleanOriginalText,
+            dynamicPart: cleanDynamicPart,
+            staticPrefix: cleanStaticPrefix,
+            staticSuffix: cleanStaticSuffix,
+            currentValue: cleanDynamicPart,
+            pulseType: pulseData.pulseType || 'unknown',
+            specificType: pulseData.specificType || 'unknown',
+            updateFrequency: pulseData.updateFrequency || 180,
+            dataSource: pulseData.dataSource || 'Unknown',
+            reasoning: pulseData.reasoning || 'No reasoning provided',
+            confidence: pulseData.confidence || 'medium',
+            action: pulseData.action || 'update',
+            subject: pulseData.subject || 'content',
+            entity: pulseData.entity || 'unknown',
+            emotion: pulseData.emotion || 'neutral',
             lastUpdated: new Date().toISOString(),
             nextUpdate: nextUpdate.toISOString(),
             updateCount: 0,
@@ -982,19 +991,19 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Replace pulse text with highlighted versions
+        // Replace pulse text with highlighted versions - use a simpler approach
         pulses.forEach(pulse => {
             try {
-                const fullText = pulse.staticPrefix + pulse.currentValue + pulse.staticSuffix;
-                const originalText = pulse.originalText;
+                const originalText = String(pulse.originalText || '').trim();
+                const currentValue = String(pulse.currentValue || '').trim();
                 
-                // Only proceed if we have valid text
-                if (originalText && originalText.trim().length > 0) {
-                    const escapedOriginal = escapeRegExp(originalText);
-                    const originalRegex = new RegExp(escapedOriginal, 'g');
-                    content = content.replace(originalRegex, 
-                        `<span class="pulse-point" data-pulse-id="${pulse.id}" title="${pulse.specificType}">${fullText}<sup><a href="#footnote-${pulse.id}">${pulse.id}</a></sup></span>`
-                    );
+                // Only proceed if we have valid, clean text
+                if (originalText && originalText.length > 0 && !originalText.includes('if (analysis.semanticClusters')) {
+                    // Use simple string replacement instead of regex for safety
+                    if (content.includes(originalText)) {
+                        const replacement = `<span class="pulse-point" data-pulse-id="${pulse.id}" title="${pulse.specificType}">${currentValue}<sup><a href="#footnote-${pulse.id}">${pulse.id}</a></sup></span>`;
+                        content = content.replace(originalText, replacement);
+                    }
                 }
             } catch (error) {
                 console.warn('Error processing pulse for preview:', pulse.id, error);
@@ -1197,18 +1206,31 @@ document.addEventListener('DOMContentLoaded', function() {
         const pulseData = window.lastScanResults.pulsePoints[pulseIndex];
         if (!pulseData) return;
 
-        // Convert scan result to pulse format
+        // Convert scan result to pulse format with proper text cleaning
+        const dynamicText = String(pulseData.dynamicPart || pulseData.text || '').trim();
+        const contextText = String(pulseData.staticContext || '').trim();
+        
+        // Try to extract prefix and suffix from context
+        let staticPrefix = '';
+        let staticSuffix = '';
+        
+        if (contextText && dynamicText && contextText.includes(dynamicText)) {
+            const parts = contextText.split(dynamicText);
+            staticPrefix = parts[0] || '';
+            staticSuffix = parts.slice(1).join(dynamicText) || '';
+        }
+
         const convertedPulse = {
-            dynamicPart: pulseData.dynamicPart || pulseData.text,
-            staticPrefix: pulseData.staticContext?.split(pulseData.dynamicPart)[0] || '',
-            staticSuffix: pulseData.staticContext?.split(pulseData.dynamicPart)[1] || '',
-            fullSelection: pulseData.text,
-            pulseType: pulseData.pulseType,
-            specificType: pulseData.specificType,
-            updateFrequency: pulseData.updateFrequency,
+            dynamicPart: dynamicText,
+            staticPrefix: staticPrefix,
+            staticSuffix: staticSuffix,
+            fullSelection: dynamicText, // Use just the dynamic part as selection
+            pulseType: pulseData.pulseType || 'unknown',
+            specificType: pulseData.specificType || 'unknown',
+            updateFrequency: pulseData.updateFrequency || 180,
             dataSource: pulseData.dataSource || 'Unknown',
-            reasoning: pulseData.reasoning,
-            confidence: pulseData.confidence,
+            reasoning: pulseData.reasoning || 'Created from scan',
+            confidence: pulseData.confidence || 'medium',
             role: 'single'
         };
 
@@ -1223,36 +1245,64 @@ document.addEventListener('DOMContentLoaded', function() {
         const pulsePoints = window.lastScanResults.pulsePoints;
         if (!clusterData || !pulsePoints) return;
 
+        // Validate pulse indices exist
+        if (!clusterData.pulseIndices || clusterData.pulseIndices.length === 0) {
+            showError('No pulse points found in cluster');
+            return;
+        }
+
         // Convert scan cluster to analysis format
         const convertedAnalysis = {
             analysisType: 'semantic_cluster',
             pulsePoints: clusterData.pulseIndices.map((pulseIndex, i) => {
                 const pulse = pulsePoints[pulseIndex];
+                if (!pulse) {
+                    console.warn(`Pulse at index ${pulseIndex} not found`);
+                    return null;
+                }
+                
+                const dynamicText = String(pulse.dynamicPart || pulse.text || '').trim();
+                const contextText = String(pulse.staticContext || '').trim();
+                
+                let staticPrefix = '';
+                let staticSuffix = '';
+                
+                if (contextText && dynamicText && contextText.includes(dynamicText)) {
+                    const parts = contextText.split(dynamicText);
+                    staticPrefix = parts[0] || '';
+                    staticSuffix = parts.slice(1).join(dynamicText) || '';
+                }
+                
                 return {
-                    dynamicPart: pulse.dynamicPart || pulse.text,
-                    staticPrefix: pulse.staticContext?.split(pulse.dynamicPart)[0] || '',
-                    staticSuffix: pulse.staticContext?.split(pulse.dynamicPart)[1] || '',
-                    fullSelection: pulse.text,
-                    pulseType: pulse.pulseType,
-                    specificType: pulse.specificType,
-                    updateFrequency: pulse.updateFrequency,
+                    dynamicPart: dynamicText,
+                    staticPrefix: staticPrefix,
+                    staticSuffix: staticSuffix,
+                    fullSelection: dynamicText,
+                    pulseType: pulse.pulseType || 'unknown',
+                    specificType: pulse.specificType || 'unknown',
+                    updateFrequency: pulse.updateFrequency || 180,
                     dataSource: pulse.dataSource || 'Unknown',
-                    reasoning: pulse.reasoning,
-                    confidence: pulse.confidence,
+                    reasoning: pulse.reasoning || 'Created from cluster scan',
+                    confidence: pulse.confidence || 'medium',
                     role: i === 0 ? 'primary' : 'dependent'
                 };
-            }),
+            }).filter(Boolean), // Remove any null entries
             semanticCluster: {
                 clusterId: `scan_cluster_${clusterIndex}`,
-                clusterName: clusterData.clusterName,
+                clusterName: clusterData.clusterName || 'Unnamed Cluster',
                 clusterType: clusterData.clusterType || 'mathematical',
                 relationships: clusterData.relationships || [],
-                semanticRule: `Cluster created from article scan: ${clusterData.clusterName}`
+                semanticRule: `Cluster created from article scan: ${clusterData.clusterName || 'Unnamed Cluster'}`
             }
         };
 
+        if (convertedAnalysis.pulsePoints.length === 0) {
+            showError('No valid pulse points found in cluster');
+            return;
+        }
+
         createSemanticCluster(convertedAnalysis);
-        showSuccess(`Created semantic cluster: "${clusterData.clusterName}" with ${clusterData.pulseIndices.length} pulse points`);
+        showSuccess(`Created semantic cluster: "${convertedAnalysis.semanticCluster.clusterName}" with ${convertedAnalysis.pulsePoints.length} pulse points`);
     };
 
     /**

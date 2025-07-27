@@ -266,6 +266,23 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
+        .analysis-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .analysis-header h3 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .analysis-type {
+            margin-bottom: 1rem;
+        }
+
         .analysis-result h2,
         .analysis-result h3,
         .analysis-result h4 {
@@ -301,22 +318,78 @@
             color: white;
         }
 
+        .cluster-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cluster-info h4 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .cluster-description {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .cluster-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cluster-meta span {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .pulse-points-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .pulse-points-section h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
         .pulse-point-card {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--app-glass-border);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
         }
 
         .pulse-point-card.primary {
-            border-color: #ff6b6b;
-            background: rgba(255, 255, 255, 0.12);
+            border-left: 4px solid #ff6b6b;
+            background: rgba(255, 107, 107, 0.05);
         }
 
         .pulse-point-card.dependent {
-            border-color: #54a0ff;
-            background: rgba(255, 255, 255, 0.12);
+            border-left: 4px solid #54a0ff;
+            background: rgba(84, 160, 255, 0.05);
+        }
+
+        .pulse-point-card.single {
+            border-left: 4px solid #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .pulse-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
 
         .pulse-point-card h4,
@@ -354,12 +427,23 @@
             color: white;
         }
 
+        .pulse-role.single {
+            background: #10b981;
+            color: white;
+        }
+
         .text-breakdown {
             margin: 1rem 0;
             padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.05);
             border-radius: 8px;
             border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .text-parts {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.95rem;
+            line-height: 1.4;
         }
 
         .static-text {
@@ -375,6 +459,10 @@
             border: 1px dashed #dc2626;
         }
 
+        .pulse-details {
+            margin-top: 1rem;
+        }
+
         .detail-row {
             display: flex;
             justify-content: space-between;
@@ -384,11 +472,62 @@
 
         .detail-row label {
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.8);
+            color: #6b7280;
+            min-width: 120px;
         }
 
         .detail-row span {
-            color: rgba(255, 255, 255, 0.9);
+            color: #374151;
+            flex: 1;
+            text-align: right;
+        }
+
+        .relationships-section {
+            margin-top: 1.5rem;
+        }
+
+        .relationships-section h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .relationship-card {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .relationship-flow {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .source-pulse, .target-pulse {
+            background: rgba(168, 85, 247, 0.2);
+            color: #7c3aed;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .relationship-arrow {
+            color: #7c3aed;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .relationship-details {
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .relationship-details strong {
+            color: #7c3aed;
         }
 
         /* Confidence indicators */
