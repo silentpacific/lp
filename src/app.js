@@ -1318,7 +1318,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function escapeRegExp(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\                            <span class="pulse-text"');
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\        if (analysis.semanticClusters && analysis.semanticClusters.');
     }
 
     function extractArticleTitle(content) {
@@ -1387,6 +1387,65 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(container);
         return container;
     }
+
+    // Additional global functions for sidebar controls
+    window.updateAllPulses = function() {
+        if (pulses.length === 0) {
+            showError('No pulse points to update');
+            return;
+        }
+
+        pulses.forEach(pulse => {
+            if (pulse.isActive) {
+                const updateData = generateMockUpdate(pulse);
+                pulse.currentValue = updateData.updatedValue;
+                pulse.lastUpdated = updateData.timestamp;
+                pulse.updateCount++;
+                
+                const nextUpdate = new Date(Date.now() + (pulse.updateFrequency * 60 * 1000));
+                pulse.nextUpdate = nextUpdate.toISOString();
+            }
+        });
+
+        updatePulseList();
+        updatePreview();
+        showSuccess(`Updated ${pulses.filter(p => p.isActive).length} active pulse points`);
+    };
+
+    window.pauseAllPulses = function() {
+        if (pulses.length === 0) {
+            showError('No pulse points to pause');
+            return;
+        }
+
+        pulses.forEach(pulse => {
+            pulse.isActive = false;
+        });
+
+        semanticClusters.forEach(cluster => {
+            cluster.isActive = false;
+        });
+
+        updatePulseList();
+        showSuccess('All pulse points and clusters paused');
+    };
+
+    window.clearAllPulses = function() {
+        if (pulses.length === 0 && semanticClusters.length === 0) {
+            showError('No pulse points to clear');
+            return;
+        }
+
+        const totalCount = pulses.length + semanticClusters.length;
+        pulses = [];
+        semanticClusters = [];
+        pulseCounter = 1;
+        clusterCounter = 1;
+
+        updatePulseList();
+        updatePreview();
+        showSuccess(`Cleared ${totalCount} pulse points and clusters`);
+    };
 
     // Initialize the application
     updatePreview();

@@ -1,5 +1,5 @@
 [build] 
-  publish = "src" 
+  publish = "." 
   functions = "netlify/functions"
   command = "npm install"
 
@@ -8,7 +8,7 @@
   NPM_VERSION = "8"
  
 [dev] 
-  publish = "src" 
+  publish = "." 
   functions = "netlify/functions" 
   port = 8888
 

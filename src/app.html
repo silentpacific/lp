@@ -170,6 +170,7 @@
             font-size: 1rem;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            box-sizing: border-box;
         }
 
         .form-input:focus {
@@ -933,14 +934,6 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     Quick Stats
                 </h3>
                 <div class="detail-row">
-                    <label>Active Pulses:</label>
-                    <span id="active-pulse-count">0</span>
-                </div>
-                <div class="detail-row">
-                    <label>Clusters:</label>
-                    <span id="cluster-count">0</span>
-                </div>
-                <div class="detail-row">
                     <label>Next Update:</label>
                     <span id="next-update-time">--</span>
                 </div>
@@ -957,4 +950,31 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     Pulse Management
                 </h3>
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                    
+                    <button class="btn btn-small btn-success" onclick="updateAllPulses()">Update All</button>
+                    <button class="btn btn-small btn-warning" onclick="pauseAllPulses()">Pause All</button>
+                    <button class="btn btn-small btn-danger" onclick="clearAllPulses()">Clear All</button>
+                </div>
+                
+                <div id="pulse-list">
+                    <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.5);">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">🎯</div>
+                        <p>No pulse points created yet.</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Analyze some text to get started!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the main JavaScript file -->
+    <script src="app.js"></script>
+</body>
+</html>
+                    <label>Active Pulses:</label>
+                    <span id="active-pulse-count">0</span>
+                </div>
+                <div class="detail-row">
+                    <label>Clusters:</label>
+                    <span id="cluster-count">0</span>
+                </div>
+                <div class="detail-row">
