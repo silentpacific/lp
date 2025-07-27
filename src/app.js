@@ -936,7 +936,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>Pulse count: ${clusterPulses.length}</span>
                     </div>
                     <div class="cluster-actions">
-                        <button onclick="testClusterUpdate('${cluster.id}')" class="btn btn-small">Test Update</button>
+                        <button onclick="testClusterUpdate('${cluster.id}')" class="btn btn-small">Update</button>
                         <button onclick="toggleCluster('${cluster.id}')" class="btn btn-small ${cluster.isActive ? 'btn-warning' : 'btn-success'}">${cluster.isActive ? 'Pause' : 'Resume'}</button>
                         <button onclick="removeCluster('${cluster.id}')" class="btn btn-small btn-danger">Remove</button>
                     </div>
@@ -967,7 +967,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>Count: ${pulse.updateCount} updates</span>
                     </div>
                     <div class="pulse-actions">
-                        <button onclick="testPulseUpdate(${pulse.id})" class="btn btn-small">Test Update</button>
+                        <button onclick="testPulseUpdate(${pulse.id})" class="btn btn-small">Update</button>
                         <button onclick="togglePulse(${pulse.id})" class="btn btn-small ${pulse.isActive ? 'btn-warning' : 'btn-success'}">${pulse.isActive ? 'Pause' : 'Resume'}</button>
                         <button onclick="removePulse(${pulse.id})" class="btn btn-small btn-danger">Remove</button>
                     </div>
@@ -1118,7 +1118,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             showError('Update failed: ' + error.message);
         } finally {
-            setButtonLoading(button, 'Test Update', false);
+            setButtonLoading(button, 'Update', false);
         }
     };
 
@@ -1153,7 +1153,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             showError('Cluster update failed: ' + error.message);
         } finally {
-            setButtonLoading(button, 'Test Update', false);
+            setButtonLoading(button, 'Update', false);
         }
     };
 
@@ -1509,6 +1509,74 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the application
     updatePreview();
+    initializeMobileMenu();
     
     console.log('🫀 LivePulse App fully loaded and ready!');
+
+    /**
+     * Initialize mobile menu functionality
+     */
+    function initializeMobileMenu() {
+        // Add scroll spy functionality for mobile menu
+        const sections = document.querySelectorAll('.section-anchor');
+        const menuItems = document.querySelectorAll('.mobile-menu-item[href^="#"]');
+        
+        function updateActiveMenuItem() {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === '#' + current) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // Update active menu item on scroll
+        window.addEventListener('scroll', updateActiveMenuItem);
+        
+        // Set initial active state
+        updateActiveMenuItem();
+        
+        // Add click handlers for smooth scrolling
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    }
+
+    // Mobile menu functions
+    window.toggleMobileMenu = function() {
+        const menu = document.getElementById('mobile-menu');
+        const overlay = document.querySelector('.mobile-menu-overlay');
+        
+        menu.classList.toggle('open');
+        overlay.classList.toggle('open');
+    };
+
+    window.closeMobileMenu = function() {
+        const menu = document.getElementById('mobile-menu');
+        const overlay = document.querySelector('.mobile-menu-overlay');
+        
+        menu.classList.remove('open');
+        overlay.classList.remove('open');
+    };
 });

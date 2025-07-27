@@ -98,6 +98,163 @@
             color: white;
         }
 
+        /* Mobile Hamburger Menu */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            backdrop-filter: blur(5px);
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background: var(--app-glass-bg);
+            backdrop-filter: blur(30px);
+            border-left: 1px solid var(--app-glass-border);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-menu.open {
+            right: 0;
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--app-glass-border);
+        }
+
+        .mobile-menu-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-menu-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu-content {
+            padding: 1.5rem;
+        }
+
+        .mobile-menu-section {
+            margin-bottom: 2rem;
+        }
+
+        .mobile-menu-section h3 {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .mobile-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .mobile-menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--app-glass-border);
+        }
+
+        .mobile-menu-item.active {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .mobile-menu-icon {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .mobile-menu-actions {
+            padding-top: 1rem;
+            border-top: 1px solid var(--app-glass-border);
+        }
+
+        .mobile-menu-action-btn {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-action-btn.success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .mobile-menu-action-btn.warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .mobile-menu-action-btn.danger {
+            background: var(--error-color);
+            color: white;
+        }
+
         /* Main container */
         .app-container {
             max-width: 1400px;
@@ -271,7 +428,7 @@
         }
 
         .analysis-header h3 {
-            color: #1f2937;
+            color: #000000;
             margin-bottom: 1rem;
             font-size: 1.25rem;
             display: flex;
@@ -286,7 +443,7 @@
         .analysis-result h2,
         .analysis-result h3,
         .analysis-result h4 {
-            color: #1f2937;
+            color: #000000;
         }
 
         .analysis-result p,
@@ -915,29 +1072,80 @@
             display: none;
         }
 
-        /* Responsive design */
+        /* Section anchors for navigation */
+        .section-anchor {
+            scroll-margin-top: 100px;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Show hamburger menu on mobile */
         @media (max-width: 1024px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .app-nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-overlay.open {
+                display: block;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
             .app-container {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
             }
             
+            .main-content {
+                order: 1;
+            }
+            
             .sidebar {
-                order: -1;
+                order: 2;
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            /* Mobile order: Article Content, Pulse Management, Live Preview, Quick Stats */
+            .sidebar .glass-card:first-child {
+                order: 2; /* Quick Stats goes last */
+            }
+            
+            .sidebar .glass-card:last-child {
+                order: 1; /* Pulse Management goes first */
+            }
+            
+            .main-content .glass-card:last-child {
+                order: 3; /* Live Preview goes after Pulse Management */
             }
         }
 
         @media (max-width: 768px) {
             .app-container {
                 padding: 1rem;
+                grid-template-columns: 1fr;
             }
             
             .glass-card {
                 padding: 1.5rem;
             }
             
+            .app-header {
+                padding: 1rem;
+            }
+            
             .app-nav {
-                padding: 0 1rem;
+                padding: 0;
             }
         }
     </style>
@@ -954,15 +1162,78 @@
                 <a href="/">← Back to Home</a>
                 <a href="#help">Help</a>
             </div>
+            
+            <!-- Mobile Hamburger Menu Button -->
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                ☰
+            </button>
         </nav>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-title">Navigation</span>
+            <button class="mobile-menu-close" onclick="closeMobileMenu()">×</button>
+        </div>
+        
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-section">
+                <h3>Sections</h3>
+                <a href="#article-section" class="mobile-menu-item" onclick="closeMobileMenu()">
+                    <span class="mobile-menu-icon">📝</span>
+                    <span>Article Content</span>
+                </a>
+                <a href="#pulse-section" class="mobile-menu-item" onclick="closeMobileMenu()">
+                    <span class="mobile-menu-icon">⚡</span>
+                    <span>Pulse Management</span>
+                </a>
+                <a href="#preview-section" class="mobile-menu-item" onclick="closeMobileMenu()">
+                    <span class="mobile-menu-icon">👁️</span>
+                    <span>Live Preview</span>
+                </a>
+                <a href="#stats-section" class="mobile-menu-item" onclick="closeMobileMenu()">
+                    <span class="mobile-menu-icon">📈</span>
+                    <span>Quick Stats</span>
+                </a>
+            </div>
+            
+            <div class="mobile-menu-section">
+                <h3>Quick Actions</h3>
+                <button class="mobile-menu-action-btn success" onclick="window.updateAllPulses(); closeMobileMenu();">
+                    Update All Pulses
+                </button>
+                <button class="mobile-menu-action-btn warning" onclick="window.pauseAllPulses(); closeMobileMenu();">
+                    Pause All Pulses
+                </button>
+                <button class="mobile-menu-action-btn danger" onclick="window.clearAllPulses(); closeMobileMenu();">
+                    Clear All Pulses
+                </button>
+            </div>
+            
+            <div class="mobile-menu-section">
+                <h3>Links</h3>
+                <a href="/" class="mobile-menu-item" onclick="closeMobileMenu()">
+                    <span class="mobile-menu-icon">🏠</span>
+                    <span>Back to Home</span>
+                </a>
+                <a href="#help" class="mobile-menu-item" onclick="closeMobileMenu()">
+                    <span class="mobile-menu-icon">❓</span>
+                    <span>Help</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- Main App Container -->
     <div class="app-container">
         <!-- Main Content Area -->
         <div class="main-content">
             <!-- Article Editor -->
-            <div class="glass-card">
+            <div id="article-section" class="glass-card section-anchor">
                 <h2>
                     <span>📝</span>
                     Article Content
@@ -1049,7 +1320,7 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
             </div>
 
             <!-- Live Preview -->
-            <div class="glass-card">
+            <div id="preview-section" class="glass-card section-anchor">
                 <h2>
                     <span>👁️</span>
                     Live Preview
@@ -1067,7 +1338,7 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
         <!-- Sidebar -->
         <div class="sidebar">
             <!-- Quick Stats -->
-            <div class="glass-card">
+            <div id="stats-section" class="glass-card section-anchor">
                 <h3>
                     <span>📈</span>
                     Quick Stats
@@ -1091,7 +1362,7 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
             </div>
 
             <!-- Pulse Management -->
-            <div class="glass-card">
+            <div id="pulse-section" class="glass-card section-anchor">
                 <h3>
                     <span>⚡</span>
                     Pulse Management
