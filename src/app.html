@@ -934,6 +934,14 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     Quick Stats
                 </h3>
                 <div class="detail-row">
+                    <label>Active Pulses:</label>
+                    <span id="active-pulse-count">0</span>
+                </div>
+                <div class="detail-row">
+                    <label>Clusters:</label>
+                    <span id="cluster-count">0</span>
+                </div>
+                <div class="detail-row">
                     <label>Next Update:</label>
                     <span id="next-update-time">--</span>
                 </div>
@@ -950,9 +958,9 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     Pulse Management
                 </h3>
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                    <button class="btn btn-small btn-success" onclick="updateAllPulses()">Update All</button>
-                    <button class="btn btn-small btn-warning" onclick="pauseAllPulses()">Pause All</button>
-                    <button class="btn btn-small btn-danger" onclick="clearAllPulses()">Clear All</button>
+                    <button class="btn btn-small btn-success" onclick="window.updateAllPulses()">Update All</button>
+                    <button class="btn btn-small btn-warning" onclick="window.pauseAllPulses()">Pause All</button>
+                    <button class="btn btn-small btn-danger" onclick="window.clearAllPulses()">Clear All</button>
                 </div>
                 
                 <div id="pulse-list">
@@ -970,11 +978,3 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
     <script src="app.js"></script>
 </body>
 </html>
-                    <label>Active Pulses:</label>
-                    <span id="active-pulse-count">0</span>
-                </div>
-                <div class="detail-row">
-                    <label>Clusters:</label>
-                    <span id="cluster-count">0</span>
-                </div>
-                <div class="detail-row">

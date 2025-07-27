@@ -984,11 +984,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Replace pulse text with highlighted versions
         pulses.forEach(pulse => {
-            const fullText = pulse.staticPrefix + pulse.currentValue + pulse.staticSuffix;
-            const originalRegex = new RegExp(escapeRegExp(pulse.originalText), 'g');
-            content = content.replace(originalRegex, 
-                `<span class="pulse-point" data-pulse-id="${pulse.id}" title="${pulse.specificType}">${fullText}<sup><a href="#footnote-${pulse.id}">${pulse.id}</a></sup></span>`
-            );
+            try {
+                const fullText = pulse.staticPrefix + pulse.currentValue + pulse.staticSuffix;
+                const originalText = pulse.originalText;
+                
+                // Only proceed if we have valid text
+                if (originalText && originalText.trim().length > 0) {
+                    const escapedOriginal = escapeRegExp(originalText);
+                    const originalRegex = new RegExp(escapedOriginal, 'g');
+                    content = content.replace(originalRegex, 
+                        `<span class="pulse-point" data-pulse-id="${pulse.id}" title="${pulse.specificType}">${fullText}<sup><a href="#footnote-${pulse.id}">${pulse.id}</a></sup></span>`
+                    );
+                }
+            } catch (error) {
+                console.warn('Error processing pulse for preview:', pulse.id, error);
+            }
         });
 
         // Add footnotes
