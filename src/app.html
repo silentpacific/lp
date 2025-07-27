@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="app">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LivePulse App - Semantic Content Analysis</title>
-    <link rel="stylesheet" href="style.css">
     <meta name="description" content="LivePulse app for analyzing and managing dynamic content with semantic cluster detection">
     
     <!-- Favicon -->
@@ -15,1142 +14,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <style>
-        /* App-specific overrides for glassmorphism theme */
-        :root {
-            --app-glass-bg: rgba(255, 255, 255, 0.08);
-            --app-glass-border: rgba(255, 255, 255, 0.15);
-            --app-surface: rgba(15, 23, 42, 0.8);
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* App header - simplified */
-        .app-header {
-            background: var(--app-glass-bg);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--app-glass-border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .app-nav {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .app-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: white;
-        }
-
-        .app-logo-icon {
-            font-size: 1.5rem;
-            animation: heartbeat 2s infinite;
-        }
-
-        .app-logo-text {
-            font-size: 1.25rem;
-            font-weight: 600;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24, #ff9ff3, #54a0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            14% { transform: scale(1.05); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.05); }
-            70% { transform: scale(1); }
-        }
-
-        .app-nav-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
-
-        .app-nav-links a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .app-nav-links a:hover {
-            color: white;
-        }
-
-        /* Mobile Hamburger Menu */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: background 0.3s ease;
-        }
-
-        .mobile-menu-toggle:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .mobile-menu-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1999;
-            backdrop-filter: blur(5px);
-        }
-
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 280px;
-            height: 100vh;
-            background: var(--app-glass-bg);
-            backdrop-filter: blur(30px);
-            border-left: 1px solid var(--app-glass-border);
-            z-index: 2000;
-            transition: right 0.3s ease;
-            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .mobile-menu.open {
-            right: 0;
-        }
-
-        .mobile-menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--app-glass-border);
-        }
-
-        .mobile-menu-title {
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .mobile-menu-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: background 0.3s ease;
-        }
-
-        .mobile-menu-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .mobile-menu-content {
-            padding: 1.5rem;
-        }
-
-        .mobile-menu-section {
-            margin-bottom: 2rem;
-        }
-
-        .mobile-menu-section h3 {
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 1rem;
-            opacity: 0.7;
-        }
-
-        .mobile-menu-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-
-        .mobile-menu-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--app-glass-border);
-        }
-
-        .mobile-menu-item.active {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-        }
-
-        .mobile-menu-icon {
-            font-size: 1.2rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        .mobile-menu-actions {
-            padding-top: 1rem;
-            border-top: 1px solid var(--app-glass-border);
-        }
-
-        .mobile-menu-action-btn {
-            width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .mobile-menu-action-btn.success {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .mobile-menu-action-btn.warning {
-            background: var(--warning-color);
-            color: white;
-        }
-
-        .mobile-menu-action-btn.danger {
-            background: var(--error-color);
-            color: white;
-        }
-
-        /* Main container */
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 2rem;
-            min-height: calc(100vh - 80px);
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        /* Glass cards */
-        .glass-card {
-            background: var(--app-glass-bg);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--app-glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .glass-card h2 {
-            color: white;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .glass-card h3 {
-            color: white;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        /* Form elements */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--app-glass-border);
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-sizing: border-box;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .form-textarea {
-            min-height: 200px;
-            resize: vertical;
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            border: 1px solid transparent;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--app-glass-bg);
-            color: white;
-            border: 1px solid var(--app-glass-border);
-            backdrop-filter: blur(20px);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--warning-color);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--error-color);
-            color: white;
-        }
-
-        .btn-small {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* Analysis results */
-        .analysis-result {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-top: 1rem;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .analysis-header {
-            margin-bottom: 1.5rem;
-        }
-
-        .analysis-header h3 {
-            color: #000000;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .analysis-type {
-            margin-bottom: 1rem;
-        }
-
-        .analysis-result h2,
-        .analysis-result h3,
-        .analysis-result h4 {
-            color: #000000;
-        }
-
-        .analysis-result p,
-        .analysis-result span,
-        .analysis-result div {
-            color: #374151;
-        }
-
-        .analysis-result .cluster-description {
-            color: #4b5563;
-        }
-
-        .analysis-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .analysis-badge.cluster {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-        }
-
-        .analysis-badge.single {
-            background: linear-gradient(45deg, #54a0ff, #ff9ff3);
-            color: white;
-        }
-
-        .cluster-info {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .cluster-info h4 {
-            color: #1e40af;
-            margin-bottom: 0.5rem;
-        }
-
-        .cluster-description {
-            color: #374151;
-            margin-bottom: 1rem;
-            font-style: italic;
-        }
-
-        .cluster-meta {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .cluster-meta span {
-            background: rgba(59, 130, 246, 0.1);
-            color: #1e40af;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .pulse-points-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .pulse-points-section h4 {
-            color: #1f2937;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .pulse-point-card {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .pulse-point-card.primary {
-            border-left: 4px solid #ff6b6b;
-            background: rgba(255, 107, 107, 0.05);
-        }
-
-        .pulse-point-card.dependent {
-            border-left: 4px solid #54a0ff;
-            background: rgba(84, 160, 255, 0.05);
-        }
-
-        .pulse-point-card.single {
-            border-left: 4px solid #10b981;
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .pulse-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .pulse-point-card h4,
-        .pulse-point-card p,
-        .pulse-point-card span,
-        .pulse-point-card div {
-            color: #1f2937;
-        }
-
-        .pulse-point-card .detail-row label {
-            color: #4b5563;
-            font-weight: 600;
-        }
-
-        .pulse-point-card .detail-row span {
-            color: #374151;
-        }
-
-        .pulse-role {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .pulse-role.primary {
-            background: #ff6b6b;
-            color: white;
-        }
-
-        .pulse-role.dependent {
-            background: #54a0ff;
-            color: white;
-        }
-
-        .pulse-role.single {
-            background: #10b981;
-            color: white;
-        }
-
-        .text-breakdown {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .text-parts {
-            font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .static-text {
-            color: #4b5563;
-        }
-
-        .dynamic-text {
-            color: #dc2626;
-            font-weight: 600;
-            background: rgba(220, 38, 38, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px dashed #dc2626;
-        }
-
-        .pulse-details {
-            margin-top: 1rem;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            align-items: center;
-        }
-
-        .detail-row label {
-            font-weight: 500;
-            color: #6b7280;
-            min-width: 120px;
-        }
-
-        .detail-row span {
-            color: #374151;
-            flex: 1;
-            text-align: right;
-        }
-
-        .relationships-section {
-            margin-top: 1.5rem;
-        }
-
-        .relationships-section h4 {
-            color: #1f2937;
-            margin-bottom: 1rem;
-        }
-
-        .relationship-card {
-            background: rgba(168, 85, 247, 0.1);
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .relationship-flow {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .source-pulse, .target-pulse {
-            background: rgba(168, 85, 247, 0.2);
-            color: #7c3aed;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .relationship-arrow {
-            color: #7c3aed;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .relationship-details {
-            color: #374151;
-            font-size: 0.9rem;
-        }
-
-        .relationship-details strong {
-            color: #7c3aed;
-        }
-
-        /* Confidence indicators */
-        .confidence-high { color: #10b981; }
-        .confidence-medium { color: #f59e0b; }
-        .confidence-low { color: #ef4444; }
-
-        /* Preview area */
-        .preview-area {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 2rem;
-            min-height: 300px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .preview-area .article-content {
-            color: #374151;
-            line-height: 1.6;
-        }
-
-        .preview-area h1,
-        .preview-area h2,
-        .preview-area h3,
-        .preview-area h4,
-        .preview-area h5,
-        .preview-area h6 {
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .preview-area p {
-            color: #374151;
-            margin-bottom: 1rem;
-        }
-
-        .preview-placeholder {
-            text-align: center;
-            color: #6b7280;
-            padding: 3rem;
-        }
-
-        .preview-placeholder h3 {
-            color: #4b5563;
-            margin-bottom: 1rem;
-        }
-
-        .pulse-point {
-            background: linear-gradient(45deg, #dc2626, #b91c1c);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            position: relative;
-            font-weight: 600;
-        }
-
-        .pulse-point sup {
-            background: rgba(255, 255, 255, 0.95);
-            color: #dc2626;
-            border-radius: 3px;
-            padding: 1px 4px;
-            font-size: 0.7rem;
-            margin-left: 2px;
-        }
-
-        .pulse-point sup a {
-            color: #dc2626;
-            text-decoration: none;
-        }
-
-        /* Pulse management */
-        .pulse-item, .cluster-item {
-            background: var(--app-glass-bg);
-            border: 1px solid var(--app-glass-border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            backdrop-filter: blur(20px);
-        }
-
-        .pulse-item h4, .cluster-item h4 {
-            color: white;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .pulse-meta, .cluster-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin: 1rem 0;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .pulse-actions, .cluster-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-
-        /* Status indicators */
-        .status-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 0.5rem;
-        }
-
-        .status-indicator.active {
-            background: #10b981;
-            animation: pulse-glow 2s infinite;
-        }
-
-        .status-indicator.paused {
-            background: #f59e0b;
-        }
-
-        .status-indicator.error {
-            background: #ef4444;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { 
-                box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
-            }
-            50% { 
-                box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
-            }
-        }
-
-        /* Footnotes */
-        .footnotes-section {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .footnotes-section h4 {
-            color: #1f2937;
-            margin-bottom: 1rem;
-        }
-
-        .footnote-item {
-            font-size: 0.9rem;
-            color: #4b5563;
-            margin-bottom: 0.5rem;
-        }
-
-        .footnote-cluster strong {
-            color: #374151;
-        }
-
-        /* Notifications */
-        .notifications-container {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .notification {
-            background: var(--app-glass-bg);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--app-glass-border);
-            border-radius: 12px;
-            padding: 1rem;
-            max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.3s ease;
-        }
-
-        .notification.success {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .notification.error {
-            border-color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .notification-content {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: white;
-        }
-
-        .notification-close {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-left: auto;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Scan results container */
-        .scan-results-container {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .scan-results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .scan-results-header h3 {
-            color: #1f2937;
-            margin: 0;
-        }
-
-        .scan-summary-stats {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .scan-stat {
-            background: rgba(59, 130, 246, 0.1);
-            color: #1d4ed8;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .discovered-pulses,
-        .discovered-clusters {
-            margin-bottom: 1.5rem;
-        }
-
-        .discovered-pulses h4,
-        .discovered-clusters h4 {
-            color: #1f2937;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .discovered-pulse-card,
-        .discovered-cluster-card {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .discovered-pulse-card.priority-high {
-            border-left: 4px solid #dc2626;
-            background: rgba(220, 38, 38, 0.05);
-        }
-
-        .discovered-pulse-card.priority-medium {
-            border-left: 4px solid #f59e0b;
-            background: rgba(245, 158, 11, 0.05);
-        }
-
-        .discovered-pulse-card.priority-low {
-            border-left: 4px solid #10b981;
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .pulse-preview {
-            flex: 1;
-        }
-
-        .pulse-text {
-            display: block;
-            color: #1f2937;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            font-size: 0.95rem;
-        }
-
-        .pulse-priority {
-            display: inline-block;
-            padding: 0.125rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .pulse-priority.high {
-            background: #dc2626;
-            color: white;
-        }
-
-        .pulse-priority.medium {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .pulse-priority.low {
-            background: #10b981;
-            color: white;
-        }
-
-        .pulse-info {
-            display: flex;
-            gap: 0.75rem;
-            color: #6b7280;
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
-        }
-
-        .cluster-pulses {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
-        }
-
-        .cluster-pulse {
-            background: rgba(99, 102, 241, 0.1);
-            color: #4338ca;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .discovered-cluster-card h5 {
-            color: #1f2937;
-            margin: 0 0 0.5rem 0;
-            font-size: 1rem;
-        }
-
-        .manual-analysis-section {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* Button state modifications */
-        .btn.btn-disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            background: #6b7280;
-        }
-
-        .btn.btn-disabled:hover {
-            transform: none;
-            box-shadow: none;
-            background: #6b7280;
-        }
-
-        /* Hidden class */
-        .hidden {
-            display: none;
-        }
-
-        /* Section anchors for navigation */
-        .section-anchor {
-            scroll-margin-top: 100px;
-        }
-
-        /* Smooth scroll behavior */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Show hamburger menu on mobile */
-        @media (max-width: 1024px) {
-            .mobile-menu-toggle {
-                display: block;
-            }
-            
-            .app-nav-links {
-                display: none;
-            }
-            
-            .mobile-menu-overlay.open {
-                display: block;
-            }
-            
-            .mobile-menu {
-                display: block;
-            }
-            
-            .app-container {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .main-content {
-                order: 1;
-            }
-            
-            .sidebar {
-                order: 2;
-                display: flex;
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-            
-            /* Mobile order: Article Content, Pulse Management, Live Preview, Quick Stats */
-            .sidebar .glass-card:first-child {
-                order: 2; /* Quick Stats goes last */
-            }
-            
-            .sidebar .glass-card:last-child {
-                order: 1; /* Pulse Management goes first */
-            }
-            
-            .main-content .glass-card:last-child {
-                order: 3; /* Live Preview goes after Pulse Management */
-            }
-        }
-
-        @media (max-width: 768px) {
-            .app-container {
-                padding: 1rem;
-                grid-template-columns: 1fr;
-            }
-            
-            .glass-card {
-                padding: 1.5rem;
-            }
-            
-            .app-header {
-                padding: 1rem;
-            }
-            
-            .app-nav {
-                padding: 0;
-            }
-        }
-    </style>
+    <!-- External Styles -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="app-body">
     <!-- App Header -->
     <header class="app-header">
         <nav class="app-nav">
@@ -1239,7 +106,7 @@
                     Article Content
                 </h2>
                 
-                <!-- 1. Article content textarea -->
+                <!-- Article content textarea -->
                 <div class="form-group">
                     <label class="form-label">Enter your article content for analysis:</label>
                     <textarea 
@@ -1259,7 +126,7 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     ></textarea>
                 </div>
 
-                <!-- 2. Scan full article button -->
+                <!-- Scan full article button -->
                 <div class="form-group">
                     <button id="scan-full-article" class="btn btn-secondary">
                         <span>🔍</span>
@@ -1267,7 +134,7 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     </button>
                 </div>
 
-                <!-- 3. Scan results display area -->
+                <!-- Scan results display area -->
                 <div id="full-scan-results" class="scan-results-container hidden">
                     <div class="scan-results-header">
                         <h3>🔍 Article Scan Results</h3>
@@ -1281,7 +148,7 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     </div>
                 </div>
 
-                <!-- 4. Manual pulse analysis section -->
+                <!-- Manual pulse analysis section -->
                 <div class="manual-analysis-section">
                     <div class="form-group">
                         <label class="form-label">Select specific text to analyze:</label>
@@ -1319,17 +186,33 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                 </div>
             </div>
 
-            <!-- Live Preview -->
+            <!-- Live Preview with Editor Features -->
             <div id="preview-section" class="glass-card section-anchor">
                 <h2>
                     <span>👁️</span>
-                    Live Preview
+                    Editor Preview with Footnotes
                 </h2>
+                <div class="preview-controls">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <button id="toggle-footnotes" class="btn btn-small btn-secondary">
+                            <span>📝</span>
+                            Toggle Footnotes
+                        </button>
+                        <button id="toggle-superscripts" class="btn btn-small btn-secondary">
+                            <span>¹²³</span>
+                            Toggle Superscripts
+                        </button>
+                        <button id="export-html" class="btn btn-small btn-primary">
+                            <span>📤</span>
+                            Export HTML
+                        </button>
+                    </div>
+                </div>
                 <div id="article-preview" class="preview-area">
                     <div class="preview-placeholder">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
-                        <h3>Your Live Article Preview</h3>
-                        <p>Articles with pulse points will appear here with highlighted dynamic content and automatic footnotes.</p>
+                        <h3>Editor Article Preview</h3>
+                        <p>Articles with pulse points will appear here with highlighted dynamic content, superscripts, and automatic footnotes for editorial review.</p>
                     </div>
                 </div>
             </div>
@@ -1359,6 +242,14 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     <label>Success Rate:</label>
                     <span id="success-rate">--</span>
                 </div>
+                <div class="detail-row">
+                    <label>Show Footnotes:</label>
+                    <span id="footnotes-status">Enabled</span>
+                </div>
+                <div class="detail-row">
+                    <label>Show Superscripts:</label>
+                    <span id="superscripts-status">Enabled</span>
+                </div>
             </div>
 
             <!-- Pulse Management -->
@@ -1386,5 +277,258 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
 
     <!-- Include the main JavaScript file -->
     <script src="app.js"></script>
+    
+    <!-- Editor-specific functionality -->
+    <script>
+        // Editor-specific state
+        let showFootnotes = true;
+        let showSuperscripts = true;
+
+        // Initialize editor features
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEditorFeatures();
+        });
+
+        /**
+         * Initialize editor-specific features
+         */
+        function initializeEditorFeatures() {
+            const toggleFootnotesBtn = document.getElementById('toggle-footnotes');
+            const toggleSuperscriptsBtn = document.getElementById('toggle-superscripts');
+            const exportHtmlBtn = document.getElementById('export-html');
+
+            // Toggle footnotes
+            if (toggleFootnotesBtn) {
+                toggleFootnotesBtn.addEventListener('click', function() {
+                    showFootnotes = !showFootnotes;
+                    updateFootnotesDisplay();
+                    updatePreviewForEditor();
+                    updateStatsDisplay();
+                });
+            }
+
+            // Toggle superscripts
+            if (toggleSuperscriptsBtn) {
+                toggleSuperscriptsBtn.addEventListener('click', function() {
+                    showSuperscripts = !showSuperscripts;
+                    updateSuperscriptsDisplay();
+                    updatePreviewForEditor();
+                    updateStatsDisplay();
+                });
+            }
+
+            // Export HTML
+            if (exportHtmlBtn) {
+                exportHtmlBtn.addEventListener('click', exportArticleHtml);
+            }
+
+            // Update initial stats
+            updateStatsDisplay();
+        }
+
+        /**
+         * Update footnotes display
+         */
+        function updateFootnotesDisplay() {
+            const footnotesSection = document.querySelector('.footnotes-section');
+            if (footnotesSection) {
+                footnotesSection.style.display = showFootnotes ? 'block' : 'none';
+            }
+        }
+
+        /**
+         * Update superscripts display
+         */
+        function updateSuperscriptsDisplay() {
+            const superscripts = document.querySelectorAll('.pulse-point sup');
+            superscripts.forEach(sup => {
+                sup.style.display = showSuperscripts ? 'inline' : 'none';
+            });
+        }
+
+        /**
+         * Update preview specifically for editor use
+         */
+        function updatePreviewForEditor() {
+            // Call the main updatePreview function
+            if (window.updatePreview) {
+                window.updatePreview();
+            }
+            
+            // Apply editor-specific settings
+            setTimeout(() => {
+                updateFootnotesDisplay();
+                updateSuperscriptsDisplay();
+            }, 100);
+        }
+
+        /**
+         * Update stats display with editor features
+         */
+        function updateStatsDisplay() {
+            const footnotesStatus = document.getElementById('footnotes-status');
+            const superscriptsStatus = document.getElementById('superscripts-status');
+            
+            if (footnotesStatus) {
+                footnotesStatus.textContent = showFootnotes ? 'Enabled' : 'Disabled';
+                footnotesStatus.style.color = showFootnotes ? '#10b981' : '#ef4444';
+            }
+            
+            if (superscriptsStatus) {
+                superscriptsStatus.textContent = showSuperscripts ? 'Enabled' : 'Disabled';
+                superscriptsStatus.style.color = showSuperscripts ? '#10b981' : '#ef4444';
+            }
+        }
+
+        /**
+         * Export article HTML with pulse points
+         */
+        function exportArticleHtml() {
+            const previewContent = document.getElementById('article-preview');
+            if (!previewContent) {
+                alert('No content to export');
+                return;
+            }
+
+            const articleContent = previewContent.querySelector('.article-content');
+            if (!articleContent) {
+                alert('No article content to export');
+                return;
+            }
+
+            // Create a clean HTML version
+            const cleanHtml = createCleanHtmlExport(articleContent);
+            
+            // Create download
+            const blob = new Blob([cleanHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'livepulse-article.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Show success message
+            if (window.showSuccess) {
+                window.showSuccess('Article HTML exported successfully!');
+            }
+        }
+
+        /**
+         * Create clean HTML export
+         */
+        function createCleanHtmlExport(articleContent) {
+            const title = document.getElementById('article-content')?.value.split('\n')[0]?.trim() || 'LivePulse Article';
+            
+            const cleanContent = articleContent.innerHTML;
+            
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+        .pulse-point {
+            background: linear-gradient(45deg, #dc2626, #b91c1c);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .pulse-point sup {
+            background: rgba(255, 255, 255, 0.95);
+            color: #dc2626;
+            border-radius: 3px;
+            padding: 1px 4px;
+            font-size: 0.7rem;
+            margin-left: 2px;
+        }
+        .pulse-point sup a {
+            color: #dc2626;
+            text-decoration: none;
+        }
+        .footnotes-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footnotes-section h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .footnote-item {
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+        .footnote-cluster strong {
+            color: #374151;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <article>
+        ${cleanContent}
+    </article>
+    
+    <footer style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; font-size: 0.9rem; color: #6b7280; text-align: center;">
+        <p>Generated by <strong>LivePulse</strong> - Intelligent Content Analysis & Automatic Updates</p>
+        <p>Export Date: ${new Date().toLocaleString()}</p>
+    </footer>
+</body>
+</html>`;
+        }
+
+        // Override the main updatePreview function to include editor features
+        const originalUpdatePreview = window.updatePreview;
+        window.updatePreview = function() {
+            // Call original function
+            if (originalUpdatePreview) {
+                originalUpdatePreview();
+            }
+            
+            // Apply editor-specific features
+            setTimeout(() => {
+                updateFootnotesDisplay();
+                updateSuperscriptsDisplay();
+                updateStatsDisplay();
+            }, 100);
+        };
+
+        // Global functions for mobile menu
+        window.toggleMobileMenu = function() {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.querySelector('.mobile-menu-overlay');
+            
+            menu.classList.toggle('open');
+            overlay.classList.toggle('open');
+        };
+
+        window.closeMobileMenu = function() {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.querySelector('.mobile-menu-overlay');
+            
+            menu.classList.remove('open');
+            overlay.classList.remove('open');
+        };
+    </script>
 </body>
 </html>

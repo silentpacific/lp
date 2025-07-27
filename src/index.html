@@ -14,556 +14,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <style>
-        :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
-            --secondary-color: #f59e0b;
-            --background: #ffffff;
-            --surface: #f8fafc;
-            --surface-dark: #f1f5f9;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --pulse-gradient: linear-gradient(45deg, #ff6b6b, #ee5a24, #ff9ff3, #54a0ff);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background: var(--background);
-            overflow-x: hidden;
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
-        .cta-button {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .cta-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 8rem 2rem 4rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-            animation: float 20s infinite linear;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-60px); }
-        }
-
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-
-        .hero-description {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 3rem;
-            opacity: 0.95;
-        }
-
-        .hero-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            background: white;
-            color: var(--primary-color);
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: white;
-        }
-
-        /* Features Section */
-        .features {
-            padding: 6rem 2rem;
-            background: var(--surface);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .section-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--gradient);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .feature-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .feature-description {
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
-
-        /* How It Works Section */
-        .how-it-works {
-            padding: 6rem 2rem;
-            background: white;
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            margin-top: 3rem;
-        }
-
-        .step {
-            text-align: center;
-            position: relative;
-        }
-
-        .step-number {
-            width: 50px;
-            height: 50px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin: 0 auto 1.5rem;
-        }
-
-        .step-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .step-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        /* Demo Section */
-        .demo {
-            padding: 6rem 2rem;
-            background: var(--surface-dark);
-        }
-
-        .demo-examples {
-            display: flex;
-            flex-direction: column;
-            gap: 3rem;
-            margin-top: 3rem;
-        }
-
-        .demo-container {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .demo-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-            text-align: center;
-        }
-
-        .demo-before-after {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .demo-panel {
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-        }
-
-        .demo-panel.before {
-            background: #fef2f2;
-            border-color: #fecaca;
-        }
-
-        .demo-panel.after {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-        }
-
-        .demo-label {
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .demo-text {
-            font-family: 'Georgia', serif;
-            line-height: 1.8;
-            color: var(--text-primary);
-        }
-
-        .pulse-highlight {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .updated-highlight {
-            background: linear-gradient(45deg, #00d2d3, #54a0ff);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-            animation: pulseGlow 2s infinite;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { 
-                box-shadow: 0 0 5px rgba(0, 210, 211, 0.5);
-            }
-            50% { 
-                box-shadow: 0 0 15px rgba(0, 210, 211, 0.8);
-            }
-        }
-
-        .demo-meta {
-            text-align: center;
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .update-indicator {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: #10b981;
-            color: white;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .last-updated {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        /* CTA Section */
-        .cta-section {
-            padding: 6rem 2rem;
-            background: var(--gradient);
-            color: white;
-            text-align: center;
-        }
-
-        .cta-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .cta-description {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--text-primary);
-            color: white;
-            padding: 3rem 2rem 2rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-logo-icon {
-            font-size: 2rem;
-        }
-
-        .footer-logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding-top: 2rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .nav {
-                padding: 1rem;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .hero {
-                padding: 6rem 1rem 3rem;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .demo-before-after {
-                grid-template-columns: 1fr;
-            }
-
-            .features-grid,
-            .steps-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <!-- External Styles -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Header -->
@@ -706,26 +158,26 @@
                         <div class="demo-panel before">
                             <div class="demo-label">
                                 📝 Static Content
-                                <span class="last-updated">Fixed: July 27, 2025</span>
+                                <span class="demo-date">Fixed: July 27, 2025</span>
                             </div>
                             <div class="demo-text">
-                                Tesla shares closed at <span class="pulse-highlight">$248.50</span> on Friday, <span class="pulse-highlight">down 3.2%</span> from Thursday's close of <span class="pulse-highlight">$257.75</span>. The electric vehicle manufacturer continues to navigate market volatility amid earnings expectations.
+                                Tesla shares closed at <span class="static-highlight">$248.50</span> on Friday, <span class="static-highlight">down 3.2%</span> from Thursday's close of <span class="static-highlight">$257.75</span>. The electric vehicle manufacturer continues to navigate market volatility amid earnings expectations.
                             </div>
                         </div>
                         
                         <div class="demo-panel after">
                             <div class="demo-label">
                                 ✨ LivePulse Dynamic Content
-                                <span class="update-indicator">LIVE</span>
+                                <span class="demo-indicator live">LIVE</span>
                             </div>
-                            <div class="demo-text">
-                                Tesla shares closed at <span class="updated-highlight" id="tesla-price">$248.50</span> on Friday, <span class="updated-highlight" id="tesla-change">down 3.2%</span> from Thursday's close of <span class="updated-highlight" id="tesla-prev">$257.75</span>. The electric vehicle manufacturer continues to navigate market volatility amid earnings expectations.
+                            <div class="demo-text" id="tesla-demo">
+                                <!-- Content will be populated server-side -->
+                                Loading current data...
                             </div>
                         </div>
                     </div>
                     <div class="demo-meta">
                         🔗 <strong>Semantic Cluster:</strong> Price, percentage change, and direction update together automatically daily at market close
-                        <br><span id="tesla-last-update">Fetching real data...</span>
                     </div>
                 </div>
 
@@ -736,26 +188,26 @@
                         <div class="demo-panel before">
                             <div class="demo-label">
                                 📝 Static Content
-                                <span class="last-updated">Fixed: July 27, 2025</span>
+                                <span class="demo-date">Fixed: July 27, 2025</span>
                             </div>
                             <div class="demo-text">
-                                Adelaide is experiencing <span class="pulse-highlight">sunny weather at 22°C</span> today, which is <span class="pulse-highlight">3 degrees warmer</span> than yesterday's high of <span class="pulse-highlight">19°C</span>. Perfect conditions for the weekend markets downtown.
+                                Adelaide is experiencing <span class="static-highlight">sunny weather at 22°C</span> today, which is <span class="static-highlight">3 degrees warmer</span> than yesterday's high of <span class="static-highlight">19°C</span>. Perfect conditions for the weekend markets downtown.
                             </div>
                         </div>
                         
                         <div class="demo-panel after">
                             <div class="demo-label">
                                 ✨ LivePulse Dynamic Content
-                                <span class="update-indicator">LIVE</span>
+                                <span class="demo-indicator live">LIVE</span>
                             </div>
-                            <div class="demo-text">
-                                Adelaide is experiencing <span class="updated-highlight" id="weather-current">sunny weather at 22°C</span> today, which is <span class="updated-highlight" id="weather-comparison">3 degrees warmer</span> than yesterday's high of <span class="updated-highlight" id="weather-yesterday">19°C</span>. Perfect conditions for the weekend markets downtown.
+                            <div class="demo-text" id="weather-demo">
+                                <!-- Content will be populated server-side -->
+                                Loading current data...
                             </div>
                         </div>
                     </div>
                     <div class="demo-meta">
                         🔗 <strong>Semantic Cluster:</strong> Current temperature, comparison text, and yesterday's temperature maintain logical relationships
-                        <br><span id="weather-last-update">Fetching real data...</span>
                     </div>
                 </div>
 
@@ -766,26 +218,26 @@
                         <div class="demo-panel before">
                             <div class="demo-label">
                                 📝 Static Content
-                                <span class="last-updated">Fixed: July 27, 2025</span>
+                                <span class="demo-date">Fixed: July 27, 2025</span>
                             </div>
                             <div class="demo-text">
-                                Bitcoin is trading at <span class="pulse-highlight">$67,420</span> as of this morning, showing <span class="pulse-highlight">strong upward momentum</span> with a <span class="pulse-highlight">5.8% gain</span> over the past 24 hours. Institutional adoption continues to drive market sentiment.
+                                Bitcoin is trading at <span class="static-highlight">$67,420</span> as of this morning, showing <span class="static-highlight">strong upward momentum</span> with a <span class="static-highlight">5.8% gain</span> over the past 24 hours. Institutional adoption continues to drive market sentiment.
                             </div>
                         </div>
                         
                         <div class="demo-panel after">
                             <div class="demo-label">
                                 ✨ LivePulse Dynamic Content
-                                <span class="update-indicator">LIVE</span>
+                                <span class="demo-indicator live">LIVE</span>
                             </div>
-                            <div class="demo-text">
-                                Bitcoin is trading at <span class="updated-highlight" id="btc-price">$67,420</span> as of this morning, showing <span class="updated-highlight" id="btc-trend">strong upward momentum</span> with a <span class="updated-highlight" id="btc-change">5.8% gain</span> over the past 24 hours. Institutional adoption continues to drive market sentiment.
+                            <div class="demo-text" id="bitcoin-demo">
+                                <!-- Content will be populated server-side -->
+                                Loading current data...
                             </div>
                         </div>
                     </div>
                     <div class="demo-meta">
                         🔗 <strong>Semantic Cluster:</strong> Price, trend direction, and percentage change maintain consistency daily each morning
-                        <br><span id="btc-last-update">Fetching real data...</span>
                     </div>
                 </div>
             </div>
@@ -824,222 +276,195 @@
         </div>
     </footer>
 
+    <!-- Lightweight JavaScript for REAL API demo data loading -->
     <script>
-        // Demo data generators and update functions
-        class LiveDemo {
-            constructor() {
-                this.initializeData();
-                this.startUpdates();
+        // Load demo data on page load (one-time server fetch with REAL APIs)
+        document.addEventListener('DOMContentLoaded', async function() {
+            showLoadingStates();
+            
+            try {
+                await loadRealDemoData();
+            } catch (error) {
+                console.warn('Demo data loading failed, using fallback');
+                loadFallbackData();
             }
+            
+            // Smooth scrolling for navigation
+            initSmoothScrolling();
+            
+            // Header scroll effect
+            initHeaderScrollEffect();
+        });
 
-            initializeData() {
-                // Tesla stock data
-                this.tesla = {
-                    basePrice: 248.50,
-                    previousPrice: 257.75,
-                    lastUpdate: new Date()
-                };
+        /**
+         * Show loading states while fetching real data
+         */
+        function showLoadingStates() {
+            const loadingText = '<span style="opacity: 0.7;">Loading real data...</span>';
+            
+            const teslaEl = document.getElementById('tesla-demo');
+            const weatherEl = document.getElementById('weather-demo');
+            const bitcoinEl = document.getElementById('bitcoin-demo');
+            
+            if (teslaEl) teslaEl.innerHTML = loadingText;
+            if (weatherEl) weatherEl.innerHTML = loadingText;
+            if (bitcoinEl) bitcoinEl.innerHTML = loadingText;
+        }
 
-                // Weather data
-                this.weather = {
-                    currentTemp: 22,
-                    yesterdayTemp: 19,
-                    conditions: ['sunny weather', 'partly cloudy', 'clear skies', 'mild conditions'],
-                    lastUpdate: new Date()
-                };
-
-                // Bitcoin data
-                this.bitcoin = {
-                    basePrice: 67420,
-                    change24h: 5.8,
-                    lastUpdate: new Date()
-                };
-            }
-
-            generateTeslaData() {
-                // Simulate realistic stock price movement
-                const variation = (Math.random() - 0.5) * 0.06; // ±3% variation
-                const newPrice = this.tesla.basePrice * (1 + variation);
-                const priceChange = newPrice - this.tesla.previousPrice;
-                const percentChange = ((priceChange / this.tesla.previousPrice) * 100);
+        /**
+         * Load REAL demo data from server endpoint (connects to real APIs)
+         */
+        async function loadRealDemoData() {
+            try {
+                console.log('🌐 Fetching real API data...');
+                const response = await fetch('/.netlify/functions/demo-data');
+                const data = await response.json();
                 
-                const direction = priceChange >= 0 ? 'up' : 'down';
-                const changeText = `${direction} ${Math.abs(percentChange).toFixed(1)}%`;
-                
-                return {
-                    price: `${newPrice.toFixed(2)}`,
-                    change: changeText,
-                    previous: `${this.tesla.previousPrice.toFixed(2)}`,
-                    timestamp: new Date().toLocaleString()
-                };
-            }
-
-            generateWeatherData() {
-                // Simulate realistic weather changes
-                const tempVariation = Math.floor(Math.random() * 7) - 3; // ±3°C variation
-                const currentTemp = Math.max(15, Math.min(35, this.weather.currentTemp + tempVariation));
-                const yesterdayTemp = this.weather.yesterdayTemp;
-                const difference = currentTemp - yesterdayTemp;
-                
-                const comparison = difference > 0 
-                    ? `${Math.abs(difference)} degrees warmer`
-                    : difference < 0 
-                    ? `${Math.abs(difference)} degrees cooler`
-                    : 'the same temperature';
-                
-                const condition = this.weather.conditions[Math.floor(Math.random() * this.weather.conditions.length)];
-                
-                return {
-                    current: `${condition} at ${currentTemp}°C`,
-                    comparison: comparison,
-                    yesterday: `${yesterdayTemp}°C`,
-                    timestamp: new Date().toLocaleString()
-                };
-            }
-
-            generateBitcoinData() {
-                // Simulate crypto volatility
-                const variation = (Math.random() - 0.5) * 0.15; // ±7.5% variation
-                const newPrice = this.bitcoin.basePrice * (1 + variation);
-                const change24h = (Math.random() - 0.3) * 20; // -6% to +14% range
-                
-                let trend;
-                if (change24h > 7) trend = 'strong upward momentum';
-                else if (change24h > 2) trend = 'positive momentum';
-                else if (change24h > -2) trend = 'sideways movement';
-                else if (change24h > -5) trend = 'downward pressure';
-                else trend = 'significant decline';
-                
-                const changeSign = change24h >= 0 ? '' : '';
-                const changeText = `${changeSign}${Math.abs(change24h).toFixed(1)}% ${change24h >= 0 ? 'gain' : 'loss'}`;
-                
-                return {
-                    price: `${Math.round(newPrice).toLocaleString()}`,
-                    trend: trend,
-                    change: changeText,
-                    timestamp: new Date().toLocaleString()
-                };
-            }
-
-            updateTeslaDemo() {
-                const data = this.generateTeslaData();
-                
-                document.getElementById('tesla-price').textContent = data.price;
-                document.getElementById('tesla-change').textContent = data.change;
-                document.getElementById('tesla-prev').textContent = data.previous;
-                document.getElementById('tesla-last-update').textContent = `Last updated: ${data.timestamp}`;
-                
-                this.tesla.lastUpdate = new Date();
-            }
-
-            updateWeatherDemo() {
-                const data = this.generateWeatherData();
-                
-                document.getElementById('weather-current').textContent = data.current;
-                document.getElementById('weather-comparison').textContent = data.comparison;
-                document.getElementById('weather-yesterday').textContent = data.yesterday;
-                document.getElementById('weather-last-update').textContent = `Last updated: ${data.timestamp}`;
-                
-                this.weather.lastUpdate = new Date();
-            }
-
-            updateBitcoinDemo() {
-                const data = this.generateBitcoinData();
-                
-                document.getElementById('btc-price').textContent = data.price;
-                document.getElementById('btc-trend').textContent = data.trend;
-                document.getElementById('btc-change').textContent = data.change;
-                document.getElementById('btc-last-update').textContent = `Last updated: ${data.timestamp}`;
-                
-                this.bitcoin.lastUpdate = new Date();
-            }
-
-            startUpdates() {
-                // Initial updates
-                this.updateTeslaDemo();
-                this.updateWeatherDemo();
-                this.updateBitcoinDemo();
-                
-                // Set up intervals with realistic frequencies
-                // Tesla: Daily at market close (6:30 PM Adelaide time = 4:00 PM EST)
-                // For demo: every 24 hours, but we'll simulate with shorter intervals for demo purposes
-                const now = new Date();
-                
-                // Tesla updates: Daily at 6:30 PM Adelaide time
-                const teslaUpdateTime = new Date();
-                teslaUpdateTime.setHours(18, 30, 0, 0); // 6:30 PM
-                if (now > teslaUpdateTime) {
-                    teslaUpdateTime.setDate(teslaUpdateTime.getDate() + 1); // Next day
+                if (data.success) {
+                    updateDemoContent(data.demos, data);
+                    showDataSourceInfo(data);
+                } else {
+                    throw new Error('Server returned error');
                 }
-                
-                // Bitcoin updates: Daily at 9:00 AM Adelaide time  
-                const btcUpdateTime = new Date();
-                btcUpdateTime.setHours(9, 0, 0, 0); // 9:00 AM
-                if (now > btcUpdateTime) {
-                    btcUpdateTime.setDate(btcUpdateTime.getDate() + 1); // Next day
-                }
-                
-                // Weather updates: Every hour on the hour
-                const weatherUpdateTime = new Date();
-                weatherUpdateTime.setMinutes(0, 0, 0); // Next hour
-                weatherUpdateTime.setHours(weatherUpdateTime.getHours() + 1);
-                
-                // For demo purposes, we'll use shorter intervals but show realistic update times
-                // In production, these would be the actual scheduled times
-                
-                // Demo intervals (much shorter for demonstration)
-                setInterval(() => {
-                    this.updateTeslaDemo();
-                    // Show it updated "today at market close"
-                    const today = new Date();
-                    today.setHours(18, 30, 0, 0);
-                    document.getElementById('tesla-last-update').textContent = 
-                        `Last updated: ${today.toLocaleDateString()} at 6:30 PM (market close)`;
-                }, 30000); // 30 seconds for demo
-                
-                setInterval(() => {
-                    this.updateWeatherDemo();
-                    // Show it updated this hour
-                    const thisHour = new Date();
-                    thisHour.setMinutes(0, 0, 0);
-                    document.getElementById('weather-last-update').textContent = 
-                        `Last updated: ${thisHour.toLocaleString()} (hourly update)`;
-                }, 20000); // 20 seconds for demo
-                
-                setInterval(() => {
-                    this.updateBitcoinDemo();
-                    // Show it updated this morning
-                    const thisMorning = new Date();
-                    thisMorning.setHours(9, 0, 0, 0);
-                    document.getElementById('btc-last-update').textContent = 
-                        `Last updated: ${thisMorning.toLocaleDateString()} at 9:00 AM (daily morning update)`;
-                }, 25000); // 25 seconds for demo
-                
-                // Set initial realistic timestamps
-                setTimeout(() => {
-                    const today = new Date();
-                    today.setHours(18, 30, 0, 0);
-                    document.getElementById('tesla-last-update').textContent = 
-                        `Last updated: ${today.toLocaleDateString()} at 6:30 PM (market close)`;
-                        
-                    const thisHour = new Date();
-                    thisHour.setMinutes(0, 0, 0);
-                    document.getElementById('weather-last-update').textContent = 
-                        `Last updated: ${thisHour.toLocaleString()} (hourly update)`;
-                        
-                    const thisMorning = new Date();
-                    thisMorning.setHours(9, 0, 0, 0);
-                    document.getElementById('btc-last-update').textContent = 
-                        `Last updated: ${thisMorning.toLocaleDateString()} at 9:00 AM (daily morning update)`;
-                }, 1000);
+            } catch (error) {
+                console.warn('Failed to load demo data from server:', error);
+                throw error;
             }
         }
 
-        // Initialize the live demo when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            new LiveDemo();
+        /**
+         * Update demo content with real API data
+         */
+        function updateDemoContent(demos, responseData) {
+            // Tesla demo
+            if (demos.tesla) {
+                const teslaEl = document.getElementById('tesla-demo');
+                if (teslaEl) {
+                    teslaEl.innerHTML = demos.tesla.content;
+                    addDataSourceBadge(teslaEl, demos.tesla.metadata.source);
+                }
+            }
+
+            // Weather demo
+            if (demos.weather) {
+                const weatherEl = document.getElementById('weather-demo');
+                if (weatherEl) {
+                    weatherEl.innerHTML = demos.weather.content;
+                    addDataSourceBadge(weatherEl, demos.weather.metadata.source);
+                }
+            }
+
+            // Bitcoin demo
+            if (demos.bitcoin) {
+                const bitcoinEl = document.getElementById('bitcoin-demo');
+                if (bitcoinEl) {
+                    bitcoinEl.innerHTML = demos.bitcoin.content;
+                    addDataSourceBadge(bitcoinEl, demos.bitcoin.metadata.source);
+                }
+            }
+
+            // Show last updated time
+            updateLastUpdatedInfo(demos.lastUpdated, responseData);
+        }
+
+        /**
+         * Add data source badge to show where data came from
+         */
+        function addDataSourceBadge(element, source) {
+            const isRealAPI = !source.includes('Fallback');
+            const badgeColor = isRealAPI ? '#10b981' : '#f59e0b';
+            const badgeText = isRealAPI ? '🌐 LIVE' : '⚠️ DEMO';
             
-            // Add smooth scrolling for navigation links
+            const badge = document.createElement('div');
+            badge.style.cssText = `
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: ${badgeColor};
+                color: white;
+                padding: 0.25rem 0.5rem;
+                border-radius: 12px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                z-index: 1;
+            `;
+            badge.textContent = badgeText;
+            badge.title = source;
+            
+            const parentPanel = element.closest('.demo-panel');
+            if (parentPanel) {
+                parentPanel.style.position = 'relative';
+                parentPanel.appendChild(badge);
+            }
+        }
+
+        /**
+         * Show data source information
+         */
+        function showDataSourceInfo(responseData) {
+            const realCount = responseData.realDataSources || 0;
+            const totalCount = 3;
+            
+            console.log(`✅ Real API data: ${realCount}/${totalCount} sources`);
+            
+            // You could also show this info in the UI if desired
+            if (responseData.fallbackUsed) {
+                console.log('⚠️ Some data sources using fallback due to API unavailability');
+            }
+        }
+
+        /**
+         * Update last updated information
+         */
+        function updateLastUpdatedInfo(lastUpdated, responseData) {
+            // Find all demo meta sections and update them
+            const demoMetas = document.querySelectorAll('.demo-meta');
+            demoMetas.forEach(meta => {
+                const existingTime = meta.querySelector('.last-update-time');
+                if (existingTime) {
+                    existingTime.remove();
+                }
+                
+                const timeInfo = document.createElement('div');
+                timeInfo.className = 'last-update-time';
+                timeInfo.style.cssText = 'margin-top: 0.5rem; font-size: 0.8rem; color: #6b7280;';
+                
+                const updateTime = new Date(lastUpdated).toLocaleString();
+                const sourceType = responseData.fallbackUsed ? 'Mixed APIs + Demo data' : 'Real-time APIs';
+                
+                timeInfo.innerHTML = `
+                    <strong>Data Source:</strong> ${sourceType}<br>
+                    <strong>Last Updated:</strong> ${updateTime}
+                `;
+                
+                meta.appendChild(timeInfo);
+            });
+        }
+
+        /**
+         * Fallback static data if server is unavailable
+         */
+        function loadFallbackData() {
+            const teslaEl = document.getElementById('tesla-demo');
+            if (teslaEl) {
+                teslaEl.innerHTML = `Tesla shares closed at <span class="live-highlight">$267.45</span> on Friday, <span class="live-highlight">up 7.4%</span> from Thursday's close of <span class="live-highlight">$248.50</span>. The electric vehicle manufacturer continues to navigate market volatility amid earnings expectations.`;
+            }
+
+            const weatherEl = document.getElementById('weather-demo');
+            if (weatherEl) {
+                weatherEl.innerHTML = `Adelaide is experiencing <span class="live-highlight">partly cloudy at 18°C</span> today, which is <span class="live-highlight">4 degrees cooler</span> than yesterday's high of <span class="live-highlight">22°C</span>. Perfect conditions for the weekend markets downtown.`;
+            }
+
+            const bitcoinEl = document.getElementById('bitcoin-demo');
+            if (bitcoinEl) {
+                bitcoinEl.innerHTML = `Bitcoin is trading at <span class="live-highlight">$72,340</span> as of this morning, showing <span class="live-highlight">strong bullish momentum</span> with a <span class="live-highlight">7.3% gain</span> over the past 24 hours. Institutional adoption continues to drive market sentiment.`;
+            }
+        }
+
+        /**
+         * Initialize smooth scrolling for navigation links
+         */
+        function initSmoothScrolling() {
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -1052,17 +477,21 @@
                     }
                 });
             });
-        });
+        }
 
-        // Add scroll effect to header
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('.header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(255, 255, 255, 0.98)';
-            } else {
-                header.style.background = 'rgba(255, 255, 255, 0.95)';
-            }
-        });
+        /**
+         * Initialize header scroll effect
+         */
+        function initHeaderScrollEffect() {
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('.header');
+                if (window.scrollY > 100) {
+                    header.style.background = 'rgba(255, 255, 255, 0.98)';
+                } else {
+                    header.style.background = 'rgba(255, 255, 255, 0.95)';
+                }
+            });
+        }
     </script>
 </body>
 </html>
