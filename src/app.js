@@ -63,12 +63,14 @@ function initializeEditorApp() {
     // Initialize mobile menu
     initializeMobileMenu();
     
+    // ADD THIS LINE HERE:
+    initializeEnhancedControls();
+    
     // Update initial preview and stats
     updatePreview();
     updateStatsDisplay();
     
     console.log('✅ Editor mode fully loaded!');
-}
 
 /**
  * Initialize landing page (index.html) 
@@ -200,8 +202,455 @@ function updateSuperscriptsDisplay() {
     });
 }
 
+function updateEnhancedStats() {
+    // Category breakdown
+    const categoryStats = {};
+    pulses.forEach(pulse => {
+        const category = formatCategoryName(pulse.pulseType);
+        categoryStats[category] = (categoryStats[category] || 0) + 1;
+    });
+    
+    // Confidence breakdown
+    const confidenceStats = {
+        high: pulses.filter(p => p.confidence === 'high').length,
+        medium: pulses.filter(p => p.confidence === 'medium').length,
+        low: pulses.filter(p => p.confidence === 'low').length
+    };
+    
+    // Source quality breakdown
+    const sourceStats = {
+        premium: pulses.filter(p => p.sourceQuality === 'premium').length,
+        standard: pulses.filter(p => p.sourceQuality === 'standard').length,
+        basic: pulses.filter(p => p.sourceQuality === 'basic').length,
+        unknown: pulses.filter(p => p.sourceQuality === 'unknown').length
+    };
+    
+    // Update category breakdown display
+    const categoryBreakdown = document.getElementById('category-breakdown');
+    if (categoryBreakdown) {
+        categoryBreakdown.innerHTML = Object.entries(categoryStats)
+            .map(([category, count]) => `<span class="stat-item">${category}: ${count}</span>`)
+            .join('');
+    }
+    
+    // Update confidence breakdown display
+    const confidenceBreakdown = document.getElementById('confidence-breakdown');
+    if (confidenceBreakdown) {
+        confidenceBreakdown.innerHTML = `
+            <span class="stat-item confidence-high">High: ${confidenceStats.high}</span>
+            <span class="stat-item confidence-medium">Medium: ${confidenceStats.medium}</span>
+            <span class="stat-item confidence-low">Low: ${confidenceStats.low}</span>
+        `;
+    }
+    
+    // Update source quality display
+    const sourceBreakdown = document.getElementById('source-breakdown');
+    if (sourceBreakdown) {
+        sourceBreakdown.innerHTML = `
+            <span class="stat-item source-premium">Premium: ${sourceStats.premium}</span>
+            <span class="stat-item source-standard">Standard: ${sourceStats.standard}</span>
+            <span class="stat-item source-basic">Basic: ${sourceStats.basic}</span>
+        `;
+    }
+}
+
 /**
- * Update stats display with editor features
+ * NEW: Filter pulse points by various criteria
+ */
+function filterPulsePoints(criteria) {
+    const filteredPulses = pulses.filter(pulse => {
+        switch (criteria.type) {
+            case 'category':
+                return pulse.pulseType === criteria.value;
+            
+            case 'confidence':
+                return pulse.confidence === criteria.value;
+            
+            case 'source-quality':
+                return pulse.sourceQuality === criteria.value;
+            
+            case 'active-status':
+                return criteria.value === 'active' ? pulse.isActive : !pulse.isActive;
+            
+            case 'overdue':
+                return new Date(pulse.nextUpdate) < new Date();
+            
+            case 'cluster-status':
+                return criteria.value === 'clustered' ? pulse.clusterId : !pulse.clusterId;
+            
+            default:
+                return true;
+        }
+    });
+    
+    // Temporarily store original pulses and display filtered ones
+    window.originalPulses = window.originalPulses || pulses;
+    window.pulses = filteredPulses;
+    
+    updatePulseList();
+    showSuccess(`Filtered to ${filteredPulses.length} pulse points (${criteria.type}: ${criteria.value})`);
+}
+
+/**
+ * NEW: Clear all filters
+ */
+function clearFilters() {
+    if (window.originalPulses) {
+        window.pulses = window.originalPulses;
+        window.originalPulses = null;
+        updatePulseList();
+        showSuccess('All filters cleared');
+    }
+}
+
+/**
+ * NEW: Search pulse points by text content
+ */
+function searchPulsePoints(searchTerm) {
+    if (!searchTerm.trim()) {
+        clearFilters();
+        return;
+    }
+    
+    const term = searchTerm.toLowerCase();
+    const filteredPulses = pulses.filter(pulse => {
+        return pulse.currentValue.toLowerCase().includes(term) ||
+               pulse.originalText.toLowerCase().includes(term) ||
+               pulse.specificType.toLowerCase().includes(term) ||
+               pulse.dataSource.toLowerCase().includes(term) ||
+               pulse.reasoning.toLowerCase().includes(term);
+    });
+    
+    // Temporarily store original pulses and display filtered ones
+    window.originalPulses = window.originalPulses || pulses;
+    window.pulses = filteredPulses;
+    
+    updatePulseList();
+    showSuccess(`Found ${filteredPulses.length} pulse points matching "${searchTerm}"`);
+}
+
+/**
+ * NEW: Bulk operations for pulse management
+ */
+function bulkUpdatePulses(pulseIds = null) {
+    const targetPulses = pulseIds ? 
+        pulses.filter(p => pulseIds.includes(p.id)) : 
+        pulses.filter(p => p.isActive);
+    
+    if (targetPulses.length === 0) {
+        showError('No pulse points to update');
+        return;
+    }
+    
+    let updateCount = 0;
+    const updatePromises = targetPulses.map(async (pulse) => {
+        try {
+            const updateData = generateMockUpdate(pulse);
+            pulse.currentValue = updateData.updatedValue;
+            pulse.lastUpdated = updateData.timestamp;
+            pulse.updateCount++;
+            
+            const nextUpdate = new Date(Date.now() + (pulse.updateFrequency * 60 * 1000));
+            pulse.nextUpdate = nextUpdate.toISOString();
+            
+            updateCount++;
+        } catch (error) {
+            console.error(`Failed to update pulse ${pulse.id}:`, error);
+        }
+    });
+    
+    Promise.all(updatePromises).then(() => {
+        updatePulseList();
+        updatePreview();
+        updateStatsDisplay();
+        showSuccess(`Bulk updated ${updateCount}/${targetPulses.length} pulse points`);
+    });
+}
+
+/**
+ * NEW: Bulk toggle active status
+ */
+function bulkTogglePulses(activate = true) {
+    const targetPulses = activate ? 
+        pulses.filter(p => !p.isActive) : 
+        pulses.filter(p => p.isActive);
+    
+    if (targetPulses.length === 0) {
+        showError(`No pulse points to ${activate ? 'activate' : 'deactivate'}`);
+        return;
+    }
+    
+    targetPulses.forEach(pulse => {
+        pulse.isActive = activate;
+    });
+    
+    // Also update clusters
+    const affectedClusters = new Set(targetPulses.map(p => p.clusterId).filter(Boolean));
+    affectedClusters.forEach(clusterId => {
+        const cluster = semanticClusters.find(c => c.id === clusterId);
+        if (cluster) {
+            const clusterPulses = pulses.filter(p => p.clusterId === clusterId);
+            cluster.isActive = clusterPulses.some(p => p.isActive);
+        }
+    });
+    
+    updatePulseList();
+    updateStatsDisplay();
+    showSuccess(`${activate ? 'Activated' : 'Deactivated'} ${targetPulses.length} pulse points`);
+}
+
+/**
+ * NEW: Export pulse configuration
+ */
+function exportPulseConfig() {
+    const config = {
+        metadata: {
+            exportedAt: new Date().toISOString(),
+            version: '3.0',
+            totalPulses: pulses.length,
+            totalClusters: semanticClusters.length
+        },
+        pulses: pulses.map(pulse => ({
+            id: pulse.id,
+            originalText: pulse.originalText,
+            currentValue: pulse.currentValue,
+            pulseType: pulse.pulseType,
+            specificType: pulse.specificType,
+            updateFrequency: pulse.updateFrequency,
+            dataSource: pulse.dataSource,
+            confidence: pulse.confidence,
+            isActive: pulse.isActive,
+            clusterId: pulse.clusterId,
+            role: pulse.role
+        })),
+        clusters: semanticClusters.map(cluster => ({
+            id: cluster.id,
+            name: cluster.name,
+            type: cluster.type,
+            semanticRule: cluster.semanticRule,
+            isActive: cluster.isActive
+        }))
+    };
+    
+    const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `livepulse-config-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showSuccess('Pulse configuration exported successfully!');
+}
+
+/**
+ * NEW: Import pulse configuration
+ */
+function importPulseConfig(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const config = JSON.parse(e.target.result);
+            
+            // Validate config structure
+            if (!config.pulses || !Array.isArray(config.pulses)) {
+                throw new Error('Invalid configuration file structure');
+            }
+            
+            // Import pulses
+            const importedPulses = config.pulses.map(pulseData => ({
+                ...pulseData,
+                id: pulseCounter++, // Assign new IDs to avoid conflicts
+                lastUpdated: new Date().toISOString(),
+                nextUpdate: new Date(Date.now() + (pulseData.updateFrequency * 60 * 1000)).toISOString(),
+                updateCount: 0,
+                sourceQuality: getSourceQuality(pulseData.dataSource),
+                contextRelevance: 'medium'
+            }));
+            
+            // Import clusters
+            const importedClusters = config.clusters?.map(clusterData => ({
+                ...clusterData,
+                id: `cluster_${clusterCounter++}`,
+                createdAt: new Date().toISOString()
+            })) || [];
+            
+            // Add to existing data
+            pulses.push(...importedPulses);
+            semanticClusters.push(...importedClusters);
+            
+            updatePulseList();
+            updatePreview();
+            updateStatsDisplay();
+            
+            showSuccess(`Imported ${importedPulses.length} pulse points and ${importedClusters.length} clusters`);
+            
+        } catch (error) {
+            showError('Failed to import configuration: ' + error.message);
+        }
+    };
+    
+    reader.readAsText(file);
+}
+
+/**
+ * NEW: Validate all pulse points for issues
+ */
+function validateAllPulses() {
+    const issues = [];
+    
+    pulses.forEach(pulse => {
+        // Check for missing required fields
+        if (!pulse.currentValue || pulse.currentValue.trim() === '') {
+            issues.push(`Pulse #${pulse.id}: Missing current value`);
+        }
+        
+        if (!pulse.dataSource || pulse.dataSource.trim() === '') {
+            issues.push(`Pulse #${pulse.id}: Missing data source`);
+        }
+        
+        // Check for overdue updates
+        if (pulse.isActive && new Date(pulse.nextUpdate) < new Date()) {
+            issues.push(`Pulse #${pulse.id}: Overdue for update`);
+        }
+        
+        // Check for unrealistic update frequencies
+        if (pulse.updateFrequency < 15) {
+            issues.push(`Pulse #${pulse.id}: Update frequency too aggressive (${pulse.updateFrequency} min)`);
+        }
+        
+        // Check for low confidence with high frequency
+        if (pulse.confidence === 'low' && pulse.updateFrequency < 180) {
+            issues.push(`Pulse #${pulse.id}: Low confidence but frequent updates`);
+        }
+        
+        // Check for broken clusters
+        if (pulse.clusterId && !semanticClusters.find(c => c.id === pulse.clusterId)) {
+            issues.push(`Pulse #${pulse.id}: References non-existent cluster ${pulse.clusterId}`);
+        }
+    });
+    
+    // Check cluster integrity
+    semanticClusters.forEach(cluster => {
+        const clusterPulses = pulses.filter(p => p.clusterId === cluster.id);
+        if (clusterPulses.length === 0) {
+            issues.push(`Cluster "${cluster.name}": No associated pulse points`);
+        }
+        
+        const primaryPulses = clusterPulses.filter(p => p.isPrimaryInCluster);
+        if (primaryPulses.length === 0) {
+            issues.push(`Cluster "${cluster.name}": No primary pulse designated`);
+        } else if (primaryPulses.length > 1) {
+            issues.push(`Cluster "${cluster.name}": Multiple primary pulses (${primaryPulses.length})`);
+        }
+    });
+    
+    // Display results
+    if (issues.length === 0) {
+        showSuccess('✅ All pulse points validated successfully - no issues found!');
+    } else {
+        const issueList = issues.slice(0, 10).join('\n• '); // Show first 10 issues
+        const moreText = issues.length > 10 ? `\n... and ${issues.length - 10} more issues` : '';
+        showError(`Found ${issues.length} validation issues:\n• ${issueList}${moreText}`);
+    }
+    
+    return issues;
+}
+
+// Global functions for enhanced controls
+window.filterPulsePoints = filterPulsePoints;
+window.clearFilters = clearFilters;
+window.searchPulsePoints = searchPulsePoints;
+window.bulkUpdatePulses = bulkUpdatePulses;
+window.bulkTogglePulses = bulkTogglePulses;
+window.exportPulseConfig = exportPulseConfig;
+window.importPulseConfig = importPulseConfig;
+window.validateAllPulses = validateAllPulses;
+
+/**
+ * Initialize enhanced control panel (call this in initializeEditorApp)
+ */
+function initializeEnhancedControls() {
+    if (!isEditorMode) return;
+    
+    console.log('🎛️ Initializing enhanced control panel...');
+    
+    // Setup filter controls
+    const categoryFilter = document.getElementById('category-filter');
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', function() {
+            if (this.value === 'all') {
+                clearFilters();
+            } else {
+                filterPulsePoints({ type: 'category', value: this.value });
+            }
+        });
+    }
+    
+    const confidenceFilter = document.getElementById('confidence-filter');
+    if (confidenceFilter) {
+        confidenceFilter.addEventListener('change', function() {
+            if (this.value === 'all') {
+                clearFilters();
+            } else {
+                filterPulsePoints({ type: 'confidence', value: this.value });
+            }
+        });
+    }
+    
+    // Setup search
+    const searchInput = document.getElementById('pulse-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function() {
+            searchPulsePoints(this.value);
+        }, 300));
+    }
+    
+    // Setup bulk operations
+    const bulkUpdateBtn = document.getElementById('bulk-update-btn');
+    if (bulkUpdateBtn) {
+        bulkUpdateBtn.addEventListener('click', () => bulkUpdatePulses());
+    }
+    
+    const bulkPauseBtn = document.getElementById('bulk-pause-btn');
+    if (bulkPauseBtn) {
+        bulkPauseBtn.addEventListener('click', () => bulkTogglePulses(false));
+    }
+    
+    const bulkResumeBtn = document.getElementById('bulk-resume-btn');
+    if (bulkResumeBtn) {
+        bulkResumeBtn.addEventListener('click', () => bulkTogglePulses(true));
+    }
+    
+    // Setup export/import
+    const exportBtn = document.getElementById('export-config-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportPulseConfig);
+    }
+    
+    const importInput = document.getElementById('import-config-input');
+    if (importInput) {
+        importInput.addEventListener('change', importPulseConfig);
+    }
+    
+    // Setup validation
+    const validateBtn = document.getElementById('validate-btn');
+    if (validateBtn) {
+        validateBtn.addEventListener('click', validateAllPulses);
+    }
+    
+    console.log('✅ Enhanced control panel initialized');
+}
+
+
+
+/**
+ * Enhanced stats display with filtering and search capabilities
  */
 function updateStatsDisplay() {
     // Update basic stats
@@ -210,17 +659,19 @@ function updateStatsDisplay() {
     const nextUpdateTime = document.getElementById('next-update-time');
     const successRate = document.getElementById('success-rate');
     
+    const activePulses = pulses.filter(p => p.isActive);
+    const totalUpdates = pulses.reduce((sum, p) => sum + p.updateCount, 0);
+    
     if (activePulseCount) {
-        activePulseCount.textContent = pulses.filter(p => p.isActive).length;
+        activePulseCount.textContent = activePulses.length;
     }
     
     if (clusterCount) {
         clusterCount.textContent = semanticClusters.length;
     }
     
-    if (nextUpdateTime && pulses.length > 0) {
-        const nextUpdate = pulses
-            .filter(p => p.isActive)
+    if (nextUpdateTime && activePulses.length > 0) {
+        const nextUpdate = activePulses
             .map(p => new Date(p.nextUpdate))
             .sort((a, b) => a - b)[0];
         
@@ -230,9 +681,14 @@ function updateStatsDisplay() {
     }
     
     if (successRate) {
-        const totalUpdates = pulses.reduce((sum, p) => sum + p.updateCount, 0);
-        successRate.textContent = totalUpdates > 0 ? '95%' : '--';
+        // Calculate success rate based on updates without errors
+        const successfulUpdates = pulses.filter(p => p.confidence !== 'error').length;
+        const rate = pulses.length > 0 ? Math.round((successfulUpdates / pulses.length) * 100) : 100;
+        successRate.textContent = `${rate}%`;
     }
+    
+    // Update enhanced stats
+    updateEnhancedStats();
     
     // Update editor-specific stats (only in editor mode)
     if (isEditorMode) {
@@ -1600,7 +2056,7 @@ function updatePreview() {
     
     if (!content.trim()) {
         const placeholderText = isEditorMode 
-            ? '<div class="preview-placeholder"><div style="font-size: 3rem; margin-bottom: 1rem;">📄</div><h3>Editor Article Preview</h3><p>Articles with pulse points will appear here with highlighted dynamic content, confidence scores, categories, and automatic footnotes for editorial review.</p></div>'
+            ? '<div class="preview-placeholder"><div style="font-size: 3rem; margin-bottom: 1rem;">📄</div><h3>Live Preview</h3><p>Articles with pulse points will appear here with highlighted dynamic content, confidence scores, categories, and automatic footnotes for editorial review.</p></div>'
             : '<div class="preview-placeholder"><div style="font-size: 3rem; margin-bottom: 1rem;">📄</div><h3>Your Live Article Preview</h3><p>Articles with pulse points will appear here with highlighted dynamic content and automatic footnotes.</p></div>';
         
         articlePreview.innerHTML = placeholderText;

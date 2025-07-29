@@ -190,7 +190,7 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
             <div id="preview-section" class="glass-card section-anchor">
                 <h2>
                     <span>👁️</span>
-                    Editor Preview with Footnotes
+                    Live Preview with Footnotes
                 </h2>
                 <div class="preview-controls">
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
@@ -211,7 +211,7 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                 <div id="article-preview" class="preview-area">
                     <div class="preview-placeholder">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
-                        <h3>Editor Article Preview</h3>
+                        <h3>Live Preview</h3>
                         <p>Articles with pulse points will appear here with highlighted dynamic content, superscripts, and automatic footnotes for editorial review.</p>
                     </div>
                 </div>
@@ -272,8 +272,222 @@ Bitcoin continues its volatile trading pattern, currently at $67,500 and showing
                     </div>
                 </div>
             </div>
+
+            <!-- Enhanced Controls Section - MOVED INSIDE SIDEBAR -->
+            <div class="control-section enhanced-controls">
+                <h3>🎛️ Advanced Controls</h3>
+                
+                <!-- Search and Filter Section -->
+                <div class="control-group">
+                    <h4>🔍 Search & Filter</h4>
+                    
+                    <div class="search-container">
+                        <input type="text" 
+                               id="pulse-search" 
+                               placeholder="Search pulse points..." 
+                               class="control-input">
+                        <button onclick="clearFilters()" class="btn btn-small btn-secondary">Clear</button>
+                    </div>
+                    
+                    <div class="filter-row">
+                        <label for="category-filter">Category:</label>
+                        <select id="category-filter" class="control-select">
+                            <option value="all">All Categories</option>
+                            <option value="crypto">Crypto</option>
+                            <option value="stock">Finance</option>
+                            <option value="weather">Weather</option>
+                            <option value="date">Temporal</option>
+                            <option value="population">Demographics</option>
+                            <option value="technology">Technology</option>
+                            <option value="sports">Sports</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-row">
+                        <label for="confidence-filter">Confidence:</label>
+                        <select id="confidence-filter" class="control-select">
+                            <option value="all">All Levels</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    
+                    <div class="quick-filters">
+                        <button onclick="filterPulsePoints({type: 'active-status', value: 'active'})" 
+                                class="btn btn-small btn-info">Active Only</button>
+                        <button onclick="filterPulsePoints({type: 'overdue', value: true})" 
+                                class="btn btn-small btn-warning">Overdue</button>
+                        <button onclick="filterPulsePoints({type: 'cluster-status', value: 'clustered'})" 
+                                class="btn btn-small btn-primary">Clustered</button>
+                    </div>
+                </div>
+                
+                <!-- Bulk Operations Section -->
+                <div class="control-group">
+                    <h4>⚡ Bulk Operations</h4>
+                    
+                    <div class="bulk-actions">
+                        <button id="bulk-update-btn" class="btn btn-small btn-success">
+                            📊 Update All Active
+                        </button>
+                        <button id="bulk-pause-btn" class="btn btn-small btn-warning">
+                            ⏸️ Pause All
+                        </button>
+                        <button id="bulk-resume-btn" class="btn btn-small btn-success">
+                            ▶️ Resume All
+                        </button>
+                    </div>
+                    
+                    <div class="bulk-actions">
+                        <button onclick="clearAllPulses()" class="btn btn-small btn-danger">
+                            🗑️ Clear All
+                        </button>
+                        <button id="validate-btn" class="btn btn-small btn-info">
+                            ✅ Validate All
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Statistics Section -->
+                <div class="control-group">
+                    <h4>📊 Enhanced Statistics</h4>
+                    
+                    <div class="stats-breakdown">
+                        <div class="stat-category">
+                            <label>By Category:</label>
+                            <div id="category-breakdown" class="stat-items">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="stat-category">
+                            <label>By Confidence:</label>
+                            <div id="confidence-breakdown" class="stat-items">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="stat-category">
+                            <label>Source Quality:</label>
+                            <div id="source-breakdown" class="stat-items">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Import/Export Section -->
+                <div class="control-group">
+                    <h4>💾 Configuration Management</h4>
+                    
+                    <div class="config-actions">
+                        <button id="export-config-btn" class="btn btn-small btn-primary">
+                            📤 Export Config
+                        </button>
+                        
+                        <div class="import-wrapper">
+                            <input type="file" 
+                                   id="import-config-input" 
+                                   accept=".json" 
+                                   style="display: none;">
+                            <button onclick="document.getElementById('import-config-input').click()" 
+                                    class="btn btn-small btn-secondary">
+                                📥 Import Config
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="config-info">
+                        <small>Export your pulse configuration for backup or sharing. Import configurations from JSON files.</small>
+                    </div>
+                </div>
+                
+                <!-- Source Management Section -->
+                <div class="control-group">
+                    <h4>🔌 Data Source Settings</h4>
+                    
+                    <div class="source-settings">
+                        <div class="source-item">
+                            <label>Crypto Data:</label>
+                            <span class="source-status active">CoinGecko API</span>
+                        </div>
+                        
+                        <div class="source-item">
+                            <label>Stock Data:</label>
+                            <span class="source-status active">Yahoo Finance</span>
+                        </div>
+                        
+                        <div class="source-item">
+                            <label>Weather Data:</label>
+                            <span class="source-status active">OpenWeatherMap</span>
+                        </div>
+                        
+                        <div class="source-item">
+                            <label>Fallback:</label>
+                            <span class="source-status active">AI Research</span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="showSuccess('Source management coming in next update!')" 
+                            class="btn btn-small btn-info">
+                        ⚙️ Configure Sources
+                    </button>
+                </div>
+                
+                <!-- Performance Monitoring -->
+                <div class="control-group">
+                    <h4>📈 Performance Monitor</h4>
+                    
+                    <div class="performance-stats">
+                        <div class="perf-item">
+                            <label>Update Success Rate:</label>
+                            <span id="success-rate-2" class="perf-value">--</span>
+                        </div>
+                        
+                        <div class="perf-item">
+                            <label>Avg Response Time:</label>
+                            <span class="perf-value">1.2s</span>
+                        </div>
+                        
+                        <div class="perf-item">
+                            <label>API Calls Today:</label>
+                            <span class="perf-value">47</span>
+                        </div>
+                        
+                        <div class="perf-item">
+                            <label>Cache Hit Rate:</label>
+                            <span class="perf-value">73%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Quick Actions Floating Panel (Optional) -->
+    <div class="floating-quick-actions" style="display: none;">
+        <button onclick="updateAllPulses()" class="quick-action-btn" title="Update All">
+            🔄
+        </button>
+        <button onclick="validateAllPulses()" class="quick-action-btn" title="Validate">
+            ✅
+        </button>
+        <button onclick="exportPulseConfig()" class="quick-action-btn" title="Export">
+            📤
+        </button>
+        <button onclick="this.parentElement.style.display='none'" class="quick-action-btn close" title="Close">
+            ✕
+        </button>
+    </div>
+
+    <!-- Toggle button for floating panel -->
+    <button onclick="document.querySelector('.floating-quick-actions').style.display='flex'" 
+            class="floating-toggle-btn" 
+            title="Show Quick Actions">
+        ⚡
+    </button>
 
     <!-- Include the main JavaScript file -->
     <script src="app.js"></script>
