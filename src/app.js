@@ -63,7 +63,7 @@ function initializeEditorApp() {
     // Initialize mobile menu
     initializeMobileMenu();
     
-    // ADD THIS LINE HERE:
+    // CRITICAL: Add this missing line
     initializeEnhancedControls();
     
     // Update initial preview and stats
@@ -71,6 +71,9 @@ function initializeEditorApp() {
     updateStatsDisplay();
     
     console.log('✅ Editor mode fully loaded!');
+}
+
+
 
 /**
  * Initialize landing page (index.html) 
@@ -2778,3 +2781,37 @@ function createNotificationsContainer() {
     document.body.appendChild(container);
     return container;
 }
+
+window.debugLivePulse = function() {
+    console.log('🐛 LivePulse Debug Info:');
+    console.log('- Editor Mode:', isEditorMode);
+    console.log('- Current Analysis:', currentAnalysis);
+    console.log('- Pulses:', pulses?.length || 0);
+    console.log('- Clusters:', semanticClusters?.length || 0);
+    
+    // Test button accessibility
+    const buttons = [
+        'analyze-btn',
+        'scan-full-article', 
+        'create-pulse-btn'
+    ];
+    
+    buttons.forEach(id => {
+        const btn = document.getElementById(id);
+        console.log(`- Button ${id}:`, btn ? 'Found ✅' : 'Missing ❌');
+        if (btn) {
+            console.log(`  - Disabled: ${btn.disabled}`);
+            console.log(`  - Event listeners: ${btn.onclick ? 'onclick' : 'addEventListener'}`);
+        }
+    });
+    
+    return {
+        editorMode: isEditorMode,
+        currentAnalysis,
+        pulses: pulses?.length || 0,
+        clusters: semanticClusters?.length || 0,
+        buttonsFound: buttons.filter(id => document.getElementById(id)).length
+    };
+};
+
+console.log('🐛 Debug function added. Type debugLivePulse() in console to check status.');
