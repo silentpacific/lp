@@ -813,72 +813,121 @@ function generateMockFullScan(articleContent) {
     const pulsePoints = [];
     const clusters = [];
     
-    // Look for common patterns in the article
-    const priceMatches = articleContent.match(/\$[\d,]+\.?\d*/g) || [];
-    const tempMatches = articleContent.match(/\d+°[CF]/g) || [];
-    const percentMatches = articleContent.match(/[\d.]+%/g) || [];
-    const cryptoMatches = articleContent.match(/\$\d+,?\d+(?:\.\d{2})?/g) || [];
+    // Enhanced pattern detection following framework rules
     
-    let pulseIndex = 0;
-    
-    // Add stock-related pulses
-    priceMatches.forEach((price, i) => {
-        if (i < 3) { // Limit to first 3 matches
-            pulsePoints.push({
-                text: `${price}`,
-                dynamicPart: price,
-                staticContext: `Trading at ${price} per share`,
-                pulseType: 'stock',
-                specificType: 'stock:price',
-                updateFrequency: 240,
-                priority: 'high',
-                reasoning: 'Stock prices change during market hours',
-                confidence: 'high'
-            });
-            pulseIndex++;
+    // 1. Financial data patterns (prices + percentages + directions)
+    const financialMatches = articleContent.match(/\$[\d,]+\.?\d*[^.]*?(?:up|down|rose|fell|gained|lost|increased|decreased)[^.]*?[\d.]+%/gi) || [];
+    financialMatches.forEach((match, i) => {
+        if (i < 2) { // Limit for demo
+            const priceMatch = match.match(/\$[\d,]+\.?\d*/);
+            const percentMatch = match.match(/[\d.]+%/);
+            const directionMatch = match.match(/\b(up|down|rose|fell|gained|lost|increased|decreased)\b/i);
+            
+            if (priceMatch) {
+                pulsePoints.push({
+                    text: priceMatch[0],
+                    dynamicPart: priceMatch[0],
+                    staticContext: match.substring(0, 50) + '...',
+                    pulseType: 'stock',
+                    specificType: 'stock:price',
+                    updateFrequency: 240,
+                    priority: 'high',
+                    reasoning: 'Financial data changes during market hours',
+                    confidence: 'high',
+                    location: { position: 'early' }
+                });
+            }
         }
     });
     
-    // Add weather pulses
-    tempMatches.forEach((temp, i) => {
+    // 2. Cryptocurrency patterns
+    const cryptoMatches = articleContent.match(/\b(?:bitcoin|btc|ethereum|eth).*?\$[\d,]+/gi) || [];
+    cryptoMatches.forEach((match, i) => {
+        if (i < 2) {
+            const priceMatch = match.match(/\$[\d,]+/);
+            if (priceMatch) {
+                pulsePoints.push({
+                    text: priceMatch[0],
+                    dynamicPart: priceMatch[0],
+                    staticContext: match,
+                    pulseType: 'crypto',
+                    specificType: match.toLowerCase().includes('bitcoin') ? 'crypto:btc:price' : 'crypto:eth:price',
+                    updateFrequency: 60,
+                    priority: 'critical',
+                    reasoning: 'Cryptocurrency prices are highly volatile',
+                    confidence: 'high',
+                    location: { position: 'middle' }
+                });
+            }
+        }
+    });
+    
+    // 3. Weather patterns
+    const weatherMatches = articleContent.match(/\d+°[CF](?:[^.]*?(?:warmer|cooler|than|yesterday|today))?/gi) || [];
+    weatherMatches.forEach((match, i) => {
+        if (i < 2) {
+            const tempMatch = match.match(/\d+°[CF]/);
+            if (tempMatch) {
+                pulsePoints.push({
+                    text: tempMatch[0],
+                    dynamicPart: tempMatch[0],
+                    staticContext: match,
+                    pulseType: 'weather',
+                    specificType: 'weather:temperature',
+                    updateFrequency: 180,
+                    priority: 'medium',
+                    reasoning: 'Weather conditions change throughout the day',
+                    confidence: 'high',
+                    location: { position: 'middle' }
+                });
+            }
+        }
+    });
+    
+    // 4. Date patterns
+    const dateMatches = articleContent.match(/\b(?:in\s+)?(?:202[0-9]|january|february|march|april|may|june|july|august|september|october|november|december)\b/gi) || [];
+    dateMatches.forEach((match, i) => {
         if (i < 2) {
             pulsePoints.push({
-                text: `${temp}`,
-                dynamicPart: temp,
-                staticContext: `Temperature of ${temp}`,
-                pulseType: 'weather',
-                specificType: 'weather:temperature',
-                updateFrequency: 180,
-                priority: 'medium',
-                reasoning: 'Weather conditions change throughout the day',
-                confidence: 'high'
+                text: match,
+                dynamicPart: match,
+                staticContext: `Reference to ${match}`,
+                pulseType: 'date',
+                specificType: 'date:reference',
+                updateFrequency: 1440,
+                priority: 'low',
+                reasoning: 'Date references may need updating for currency',
+                confidence: 'medium',
+                location: { position: 'early' }
             });
-            pulseIndex++;
         }
     });
     
-    // Add crypto pulses  
-    if (articleContent.toLowerCase().includes('bitcoin') && cryptoMatches.length > 0) {
-        pulsePoints.push({
-            text: cryptoMatches[0],
-            dynamicPart: cryptoMatches[0],
-            staticContext: `Bitcoin trading at ${cryptoMatches[0]}`,
-            pulseType: 'crypto',
-            specificType: 'crypto:btc:price',
-            updateFrequency: 60,
-            priority: 'high',
-            reasoning: 'Cryptocurrency prices are highly volatile',
-            confidence: 'high'
-        });
-        pulseIndex++;
-    }
+    // 5. Percentage patterns (standalone)
+    const percentMatches = articleContent.match(/\b\d+\.?\d*%(?!\s*(?:up|down|change))/gi) || [];
+    percentMatches.forEach((match, i) => {
+        if (i < 2 && !pulsePoints.some(p => p.text === match)) {
+            pulsePoints.push({
+                text: match,
+                dynamicPart: match,
+                staticContext: `Statistical reference: ${match}`,
+                pulseType: 'other',
+                specificType: 'data:percentage',
+                updateFrequency: 720,
+                priority: 'medium',
+                reasoning: 'Statistical percentages may update with new data',
+                confidence: 'medium',
+                location: { position: 'middle' }
+            });
+        }
+    });
     
-    // Create a cluster if we have related financial data
-    if (priceMatches.length > 0 && percentMatches.length > 0) {
+    // Create clusters for related financial data
+    if (pulsePoints.filter(p => p.pulseType === 'stock').length >= 2) {
         clusters.push({
             clusterName: 'Financial Performance Cluster',
             clusterType: 'mathematical',
-            pulseIndices: [0, 1], // First two pulses
+            pulseIndices: pulsePoints.map((p, i) => p.pulseType === 'stock' ? i : -1).filter(i => i >= 0).slice(0, 3),
             relationships: [
                 {
                     sourceIndex: 0,
@@ -897,16 +946,16 @@ function generateMockFullScan(articleContent) {
             contentLength: articleContent.length,
             mainTopics: ['financial markets', 'technology', 'current events'],
             contentType: 'news',
-            updatePotential: 'high'
+            updatePotential: pulsePoints.length > 3 ? 'high' : pulsePoints.length > 1 ? 'medium' : 'low'
         },
         pulsePoints: pulsePoints,
         semanticClusters: clusters,
         recommendations: {
             totalPulsePoints: pulsePoints.length,
-            highPriority: pulsePoints.filter(p => p.priority === 'high').length,
+            highPriority: pulsePoints.filter(p => p.priority === 'high' || p.priority === 'critical').length,
             clustersIdentified: clusters.length,
-            updateStrategy: 'moderate',
-            estimatedImpact: 'medium'
+            updateStrategy: pulsePoints.length > 5 ? 'aggressive' : pulsePoints.length > 2 ? 'moderate' : 'conservative',
+            estimatedImpact: pulsePoints.length > 4 ? 'high' : pulsePoints.length > 2 ? 'medium' : 'low'
         }
     };
 }
@@ -1186,6 +1235,15 @@ function createPulseFromData(pulseData) {
     const cleanStaticPrefix = String(pulseData.staticPrefix || '').trim();
     const cleanStaticSuffix = String(pulseData.staticSuffix || '').trim();
     
+    // Enhanced confidence scoring based on framework rules
+    const enhancedConfidence = calculateEnhancedConfidence(pulseData);
+    
+    // Improved data source assignment
+    const enhancedDataSource = assignOptimalDataSource(pulseData);
+    
+    // Better update frequency based on content type
+    const optimizedFrequency = optimizeUpdateFrequency(pulseData);
+    
     return {
         id: pulseCounter++,
         originalText: cleanOriginalText,
@@ -1195,10 +1253,10 @@ function createPulseFromData(pulseData) {
         currentValue: cleanDynamicPart,
         pulseType: pulseData.pulseType || 'unknown',
         specificType: pulseData.specificType || 'unknown',
-        updateFrequency: pulseData.updateFrequency || 180,
-        dataSource: pulseData.dataSource || 'Unknown',
+        updateFrequency: optimizedFrequency,
+        dataSource: enhancedDataSource,
         reasoning: pulseData.reasoning || 'No reasoning provided',
-        confidence: pulseData.confidence || 'medium',
+        confidence: enhancedConfidence,
         action: pulseData.action || 'update',
         subject: pulseData.subject || 'content',
         entity: pulseData.entity || 'unknown',
@@ -1209,8 +1267,190 @@ function createPulseFromData(pulseData) {
         isActive: true,
         clusterId: null,
         role: 'single',
-        isPrimaryInCluster: false
+        isPrimaryInCluster: false,
+        // Enhanced metadata
+        changeHistory: [],
+        sourceQuality: getSourceQuality(enhancedDataSource),
+        contextRelevance: calculateContextRelevance(pulseData)
     };
+}
+
+function calculateEnhancedConfidence(pulseData) {
+    let score = 0.5; // Start with medium confidence
+    
+    // Rule 1: Specific numeric patterns get higher confidence
+    if (pulseData.dynamicPart) {
+        const text = pulseData.dynamicPart.toLowerCase();
+        
+        // Financial data with currency symbols
+        if (text.includes('$') && text.match(/\d/)) {
+            score += 0.3;
+        }
+        
+        // Percentage values
+        if (text.includes('%')) {
+            score += 0.2;
+        }
+        
+        // Temperature data
+        if (text.match(/\d+°[cf]/)) {
+            score += 0.2;
+        }
+        
+        // Well-formatted numbers
+        if (text.match(/\d{1,3}(,\d{3})*/)) {
+            score += 0.1;
+        }
+    }
+    
+    // Rule 2: Data source quality affects confidence
+    if (pulseData.dataSource) {
+        const source = pulseData.dataSource.toLowerCase();
+        if (source.includes('api') || source.includes('official')) {
+            score += 0.2;
+        }
+        if (source.includes('coingecko') || source.includes('yahoo') || source.includes('openweather')) {
+            score += 0.2;
+        }
+    }
+    
+    // Rule 3: Pulse type reliability
+    const reliableTypes = ['crypto', 'weather', 'stock', 'date'];
+    if (reliableTypes.includes(pulseData.pulseType)) {
+        score += 0.1;
+    }
+    
+    // Rule 4: Context quality
+    if (pulseData.reasoning && pulseData.reasoning.length > 20) {
+        score += 0.1;
+    }
+    
+    // Convert to categorical confidence
+    if (score >= 0.8) return 'high';
+    if (score >= 0.6) return 'medium';
+    return 'low';
+}
+
+
+function assignOptimalDataSource(pulseData) {
+    const type = pulseData.pulseType?.toLowerCase();
+    const specificType = pulseData.specificType?.toLowerCase();
+    
+    // Framework Rule: Assign trusted APIs per category
+    switch (type) {
+        case 'crypto':
+            if (specificType?.includes('bitcoin') || specificType?.includes('btc')) {
+                return 'CoinGecko API (Bitcoin)';
+            }
+            if (specificType?.includes('ethereum') || specificType?.includes('eth')) {
+                return 'CoinGecko API (Ethereum)';
+            }
+            return 'CoinGecko API';
+            
+        case 'weather':
+            return 'OpenWeatherMap API';
+            
+        case 'stock':
+            if (specificType?.includes('tesla')) {
+                return 'Yahoo Finance (TSLA)';
+            }
+            if (specificType?.includes('apple')) {
+                return 'Yahoo Finance (AAPL)';
+            }
+            return 'Yahoo Finance API';
+            
+        case 'date':
+            return 'System Date/Time';
+            
+        case 'population':
+            return 'Australian Bureau of Statistics';
+            
+        case 'technology':
+            return 'Tech Industry APIs';
+            
+        case 'sports':
+            return 'Sports Data API';
+            
+        default:
+            return pulseData.dataSource || 'AI Research Fallback';
+    }
+}
+
+function optimizeUpdateFrequency(pulseData) {
+    const type = pulseData.pulseType?.toLowerCase();
+    const originalFreq = pulseData.updateFrequency || 180;
+    
+    // Framework frequency guidelines
+    switch (type) {
+        case 'crypto':
+            return 60; // 1 hour - crypto is highly volatile
+            
+        case 'stock':
+            return 240; // 4 hours - stock market hours consideration
+            
+        case 'weather':
+            return 180; // 3 hours - weather changes moderately
+            
+        case 'date':
+            return 1440; // 24 hours - dates change daily
+            
+        case 'population':
+            return 43200; // 1 month - demographics change slowly
+            
+        case 'sports':
+            // Sports scores during active season vs off-season
+            return 120; // 2 hours - active updates during games
+            
+        case 'technology':
+            return 720; // 12 hours - tech specs change moderately
+            
+        default:
+            // Use original frequency but ensure it's within reasonable bounds
+            return Math.max(60, Math.min(43200, originalFreq)); // 1 hour to 1 month
+    }
+}
+
+function getSourceQuality(dataSource) {
+    const source = dataSource?.toLowerCase() || '';
+    
+    if (source.includes('api')) {
+        if (source.includes('coingecko') || source.includes('yahoo') || source.includes('openweather')) {
+            return 'premium'; // High-quality, trusted APIs
+        }
+        return 'standard'; // Generic APIs
+    }
+    
+    if (source.includes('official') || source.includes('government') || source.includes('bureau')) {
+        return 'premium'; // Official government sources
+    }
+    
+    if (source.includes('ai') || source.includes('research')) {
+        return 'basic'; // AI-generated or research-based
+    }
+    
+    return 'unknown';
+}
+
+function calculateContextRelevance(pulseData) {
+    let relevance = 0.5; // Start with medium relevance
+    
+    // Check if the pulse type matches common article themes
+    if (pulseData.subject && pulseData.entity) {
+        relevance += 0.2; // Has clear subject and entity
+    }
+    
+    if (pulseData.action && pulseData.action !== 'update') {
+        relevance += 0.1; // Has meaningful action context
+    }
+    
+    if (pulseData.emotion && pulseData.emotion !== 'neutral') {
+        relevance += 0.1; // Has emotional context
+    }
+    
+    // Convert to categorical relevance
+    if (relevance >= 0.8) return 'high';
+    if (relevance >= 0.6) return 'medium';
+    return 'low';
 }
 
 /**
@@ -1236,25 +1476,32 @@ function updatePulseList() {
         const overdueWarning = isOverdue ? ' ⚠️ OVERDUE' : '';
 
         listHTML += `
-            <div class="cluster-item">
-                <h4>${statusIcon} Cluster: ${cluster.name}</h4>
+            <div class="cluster-item enhanced">
+                <div class="cluster-header">
+                    <h4>${statusIcon} ${cluster.name}</h4>
+                    <div class="cluster-badges">
+                        <span class="cluster-type-badge ${cluster.type}">${cluster.type}</span>
+                        <span class="pulse-count-badge">${clusterPulses.length} pulses</span>
+                    </div>
+                </div>
                 <p class="cluster-description">${cluster.semanticRule}</p>
                 <div class="cluster-pulses">
                     ${clusterPulses.map(pulse => `
                         <div class="cluster-pulse-item ${pulse.role}">
                             <span class="pulse-role">${pulse.role}</span>
                             <span class="pulse-value">"${pulse.currentValue}"</span>
-                            <span class="pulse-type">${pulse.specificType}</span>
+                            <span class="pulse-confidence ${pulse.confidence}">${getConfidenceIcon(pulse.confidence)}</span>
+                            <span class="pulse-source">${pulse.dataSource}</span>
                         </div>
                     `).join('')}
                 </div>
-                <div class="cluster-meta">
-                    <span>Updates: Every ${formatFrequency(primaryPulse?.updateFrequency || 60)} min</span>
-                    <span>Next update: ${primaryPulse ? new Date(primaryPulse.nextUpdate).toLocaleString() : 'N/A'}${overdueWarning}</span>
-                    <span>Pulse count: ${clusterPulses.length}</span>
+                <div class="cluster-meta enhanced">
+                    <span>Updates: Every ${formatFrequency(primaryPulse?.updateFrequency || 60)}</span>
+                    <span>Next: ${primaryPulse ? new Date(primaryPulse.nextUpdate).toLocaleTimeString() : 'N/A'}${overdueWarning}</span>
+                    <span>Source Quality: ${primaryPulse?.sourceQuality || 'unknown'}</span>
                 </div>
                 <div class="cluster-actions">
-                    <button onclick="testClusterUpdate('${cluster.id}')" class="btn btn-small">Update</button>
+                    <button onclick="testClusterUpdate('${cluster.id}')" class="btn btn-small btn-primary">Update Cluster</button>
                     <button onclick="toggleCluster('${cluster.id}')" class="btn btn-small ${cluster.isActive ? 'btn-warning' : 'btn-success'}">${cluster.isActive ? 'Pause' : 'Resume'}</button>
                     <button onclick="removeCluster('${cluster.id}')" class="btn btn-small btn-danger">Remove</button>
                 </div>
@@ -1262,7 +1509,7 @@ function updatePulseList() {
         `;
     });
 
-    // Display individual pulse points
+    // Display individual pulse points with enhanced metadata
     const individualPulses = pulses.filter(p => !p.clusterId);
     individualPulses.forEach(pulse => {
         const nextUpdate = new Date(pulse.nextUpdate);
@@ -1271,22 +1518,52 @@ function updatePulseList() {
         const overdueWarning = isOverdue ? ' ⚠️ OVERDUE' : '';
         
         listHTML += `
-            <div class="pulse-item">
-                <h4>${statusIcon} Pulse #${pulse.id}: ${pulse.specificType}</h4>
-                <div class="pulse-text-preview">
-                    <span class="static-text">${pulse.staticPrefix}</span><span class="dynamic-text">${pulse.currentValue}</span><span class="static-text">${pulse.staticSuffix}</span>
+            <div class="pulse-item enhanced">
+                <div class="pulse-header">
+                    <h4>${statusIcon} Pulse #${pulse.id}: ${formatCategoryName(pulse.pulseType)}</h4>
+                    <div class="pulse-badges">
+                        <span class="confidence-badge-list ${pulse.confidence}">${getConfidenceIcon(pulse.confidence)} ${pulse.confidence}</span>
+                        <span class="source-quality-badge ${pulse.sourceQuality || 'unknown'}">${pulse.sourceQuality || 'unknown'}</span>
+                    </div>
                 </div>
-                <div class="pulse-meta">
-                    <span>Updates: Every ${formatFrequency(pulse.updateFrequency)} min</span>
-                    <span>Source: ${pulse.dataSource}</span>
-                    <span>Confidence: ${pulse.confidence}</span>
-                    <span>Last updated: ${new Date(pulse.lastUpdated).toLocaleString()}</span>
-                    <span>Next update: ${nextUpdate.toLocaleString()}${overdueWarning}</span>
-                    <span>Count: ${pulse.updateCount} updates</span>
+                <div class="pulse-text-preview enhanced">
+                    <span class="static-text">${pulse.staticPrefix}</span>
+                    <span class="dynamic-text highlighted">${pulse.currentValue}</span>
+                    <span class="static-text">${pulse.staticSuffix}</span>
+                </div>
+                <div class="pulse-meta enhanced">
+                    <div class="meta-row">
+                        <span class="meta-label">Type:</span>
+                        <span class="meta-value">${pulse.specificType}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Source:</span>
+                        <span class="meta-value">${pulse.dataSource}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Frequency:</span>
+                        <span class="meta-value">${formatFrequency(pulse.updateFrequency)}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Last Updated:</span>
+                        <span class="meta-value">${new Date(pulse.lastUpdated).toLocaleString()}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Next Update:</span>
+                        <span class="meta-value ${isOverdue ? 'overdue' : ''}">${nextUpdate.toLocaleString()}${overdueWarning}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Updates:</span>
+                        <span class="meta-value">${pulse.updateCount} completed</span>
+                    </div>
+                </div>
+                <div class="pulse-reasoning">
+                    <strong>Reasoning:</strong> ${pulse.reasoning}
                 </div>
                 <div class="pulse-actions">
-                    <button onclick="testPulseUpdate(${pulse.id})" class="btn btn-small">Update</button>
+                    <button onclick="testPulseUpdate(${pulse.id})" class="btn btn-small btn-primary">Update Now</button>
                     <button onclick="togglePulse(${pulse.id})" class="btn btn-small ${pulse.isActive ? 'btn-warning' : 'btn-success'}">${pulse.isActive ? 'Pause' : 'Resume'}</button>
+                    <button onclick="editPulseSource(${pulse.id})" class="btn btn-small btn-info">Edit Source</button>
                     <button onclick="removePulse(${pulse.id})" class="btn btn-small btn-danger">Remove</button>
                 </div>
             </div>
@@ -1295,6 +1572,20 @@ function updatePulseList() {
 
     pulseList.innerHTML = listHTML;
 }
+
+window.editPulseSource = function(pulseId) {
+    const pulse = pulses.find(p => p.id === pulseId);
+    if (!pulse) return;
+
+    const newSource = prompt('Enter new data source:', pulse.dataSource);
+    if (newSource && newSource.trim()) {
+        pulse.dataSource = newSource.trim();
+        pulse.sourceQuality = getSourceQuality(newSource);
+        updatePulseList();
+        updatePreview();
+        showSuccess(`Updated data source for pulse #${pulseId} to: ${newSource}`);
+    }
+};
 
 /**
  * Update article preview with pulse points highlighted
