@@ -1672,3 +1672,320 @@ body.app-body {
         padding: 1rem;
     }
 }
+
+
+
+/* Enhanced pulse point styling */
+.pulse-point.enhanced {
+    position: relative;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+    transition: all 0.3s ease;
+    margin: 0 2px;
+}
+
+.pulse-point.enhanced:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Confidence badges */
+.confidence-badge {
+    background: rgba(255, 255, 255, 0.95);
+    color: #374151;
+    border-radius: 4px;
+    padding: 1px 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 2px;
+    display: inline-flex;
+    align-items: center;
+    min-width: 20px;
+    justify-content: center;
+}
+
+.confidence-badge.high {
+    background: rgba(16, 185, 129, 0.95);
+    color: white;
+}
+
+.confidence-badge.medium {
+    background: rgba(245, 158, 11, 0.95);
+    color: white;
+}
+
+.confidence-badge.low {
+    background: rgba(239, 68, 68, 0.95);
+    color: white;
+}
+
+/* Category tags */
+.category-tag {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1f2937;
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-left: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.category-tag.crypto {
+    background: rgba(251, 191, 36, 0.9);
+    color: #92400e;
+}
+
+.category-tag.stock, .category-tag.financial {
+    background: rgba(34, 197, 94, 0.9);
+    color: #166534;
+}
+
+.category-tag.weather {
+    background: rgba(59, 130, 246, 0.9);
+    color: #1e40af;
+}
+
+.category-tag.date {
+    background: rgba(168, 85, 247, 0.9);
+    color: #6b21a8;
+}
+
+.category-tag.technology {
+    background: rgba(236, 72, 153, 0.9);
+    color: #be185d;
+}
+
+.category-tag.sports {
+    background: rgba(249, 115, 22, 0.9);
+    color: #c2410c;
+}
+
+/* Enhanced footnote reference */
+.pulse-footnote-ref {
+    background: rgba(255, 255, 255, 0.95);
+    color: #dc2626;
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: 0.7rem;
+    margin-left: 4px;
+    font-weight: 600;
+}
+
+.pulse-footnote-ref a {
+    color: #dc2626;
+    text-decoration: none;
+}
+
+.pulse-footnote-ref:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+}
+
+/* Enhanced footnotes section */
+.footnotes-section.enhanced {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.footnotes-section.enhanced h4 {
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+/* Enhanced footnote clusters */
+.footnote-cluster.enhanced {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #3b82f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cluster-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.cluster-type {
+    background: #3b82f6;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.cluster-rule {
+    font-style: italic;
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+/* Enhanced footnote items */
+.footnote-item.enhanced {
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #e2e8f0;
+}
+
+.footnote-item.enhanced.individual {
+    background: white;
+    border-left: 3px solid #10b981;
+}
+
+.footnote-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.pulse-role {
+    background: #6366f1;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.pulse-role.primary {
+    background: #dc2626;
+}
+
+.pulse-role.dependent {
+    background: #f59e0b;
+}
+
+.pulse-role.single {
+    background: #10b981;
+}
+
+.confidence-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.confidence-indicator.high {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.confidence-indicator.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.confidence-indicator.low {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.category-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.footnote-content {
+    margin-bottom: 0.5rem;
+}
+
+.current-value {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.data-source {
+    color: #3b82f6;
+    font-weight: 500;
+}
+
+.footnote-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.footnote-meta span {
+    background: #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.footnote-reasoning {
+    font-size: 0.85rem;
+    color: #4b5563;
+    font-style: italic;
+    background: #f9fafb;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+
+/* Enhanced article content */
+.article-content.enhanced {
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .pulse-point.enhanced {
+        padding: 2px 6px;
+        font-size: 0.9rem;
+        gap: 2px;
+    }
+    
+    .confidence-badge,
+    .category-tag {
+        font-size: 0.6rem;
+        padding: 1px 3px;
+    }
+    
+    .footnote-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .footnote-meta {
+        flex-direction: column;
+        gap: 4px;
+    }
+}

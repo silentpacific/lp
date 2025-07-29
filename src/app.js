@@ -1309,14 +1309,14 @@ function updatePreview() {
     
     if (!content.trim()) {
         const placeholderText = isEditorMode 
-            ? '<div class="preview-placeholder"><div style="font-size: 3rem; margin-bottom: 1rem;">📄</div><h3>Editor Article Preview</h3><p>Articles with pulse points will appear here with highlighted dynamic content, superscripts, and automatic footnotes for editorial review.</p></div>'
+            ? '<div class="preview-placeholder"><div style="font-size: 3rem; margin-bottom: 1rem;">📄</div><h3>Editor Article Preview</h3><p>Articles with pulse points will appear here with highlighted dynamic content, confidence scores, categories, and automatic footnotes for editorial review.</p></div>'
             : '<div class="preview-placeholder"><div style="font-size: 3rem; margin-bottom: 1rem;">📄</div><h3>Your Live Article Preview</h3><p>Articles with pulse points will appear here with highlighted dynamic content and automatic footnotes.</p></div>';
         
         articlePreview.innerHTML = placeholderText;
         return;
     }
 
-    // Replace pulse text with highlighted versions - use a simpler approach
+    // Replace pulse text with enhanced highlighted versions
     pulses.forEach(pulse => {
         try {
             const originalText = String(pulse.originalText || '').trim();
@@ -1326,11 +1326,18 @@ function updatePreview() {
             if (originalText && originalText.length > 0 && !originalText.includes('if (analysis.semanticClusters')) {
                 // Use simple string replacement instead of regex for safety
                 if (content.includes(originalText)) {
-                    let replacement = `<span class="pulse-point" data-pulse-id="${pulse.id}" title="${pulse.specificType}">${currentValue}`;
+                    let replacement = `<span class="pulse-point enhanced" data-pulse-id="${pulse.id}" title="${pulse.specificType}: ${pulse.reasoning}">`;
+                    replacement += `${currentValue}`;
+                    
+                    // Add confidence badge
+                    replacement += `<span class="confidence-badge ${pulse.confidence || 'medium'}" title="Confidence: ${pulse.confidence || 'medium'}">${getConfidenceIcon(pulse.confidence)}</span>`;
+                    
+                    // Add category tag
+                    replacement += `<span class="category-tag ${pulse.pulseType || 'unknown'}" title="Category: ${formatCategoryName(pulse.pulseType)}">${formatCategoryName(pulse.pulseType)}</span>`;
                     
                     // Add superscript only in editor mode and if enabled
                     if (isEditorMode && showSuperscripts) {
-                        replacement += `<sup><a href="#footnote-${pulse.id}">${pulse.id}</a></sup>`;
+                        replacement += `<sup class="pulse-footnote-ref"><a href="#footnote-${pulse.id}">${pulse.id}</a></sup>`;
                     }
                     
                     replacement += '</span>';
@@ -1338,14 +1345,14 @@ function updatePreview() {
                 }
             }
         } catch (error) {
-            console.warn('Error processing pulse for preview:', pulse.id, error);
+            console.warn('Error processing pulse for enhanced preview:', pulse.id, error);
         }
     });
 
-    // Add footnotes only in editor mode and if enabled
+    // Add enhanced footnotes only in editor mode and if enabled
     let footnotes = '';
     if (isEditorMode && showFootnotes && pulses.length > 0) {
-        footnotes = '<div class="footnotes-section"><h4>📝 Footnotes & Sources:</h4>';
+        footnotes = '<div class="footnotes-section enhanced"><h4>📝 Pulse Point Sources & Metadata:</h4>';
         
         // Group by clusters
         const clusteredFootnotes = new Map();
@@ -1362,30 +1369,58 @@ function updatePreview() {
             }
         });
         
-        // Display cluster footnotes
+        // Display enhanced cluster footnotes
         clusteredFootnotes.forEach((clusterPulses, clusterId) => {
             const cluster = semanticClusters.find(c => c.id === clusterId);
             footnotes += `
-                <div class="footnote-cluster">
-                    <strong>🔗 ${cluster?.name || 'Cluster'}:</strong>
+                <div class="footnote-cluster enhanced">
+                    <div class="cluster-header">
+                        <strong>🔗 ${cluster?.name || 'Cluster'}</strong>
+                        <span class="cluster-type">${cluster?.type || 'mathematical'}</span>
+                    </div>
+                    <div class="cluster-rule">${cluster?.semanticRule || 'Related pulse points that update together'}</div>
                     ${clusterPulses.map(pulse => `
-                        <div id="footnote-${pulse.id}" class="footnote-item">
-                            <strong>${pulse.id}.</strong> ${pulse.role}: "${pulse.currentValue}" updated from ${pulse.dataSource} 
-                            on ${new Date(pulse.lastUpdated).toLocaleString()}
-                            (${pulse.updateCount} updates total)
+                        <div id="footnote-${pulse.id}" class="footnote-item enhanced">
+                            <div class="footnote-header">
+                                <strong>${pulse.id}.</strong> 
+                                <span class="pulse-role ${pulse.role || 'single'}">${(pulse.role || 'single').toUpperCase()}</span>
+                                <span class="confidence-indicator ${pulse.confidence || 'medium'}">${getConfidenceIcon(pulse.confidence)} ${pulse.confidence || 'medium'}</span>
+                            </div>
+                            <div class="footnote-content">
+                                <span class="current-value">"${pulse.currentValue}"</span> from 
+                                <span class="data-source">${pulse.dataSource}</span>
+                            </div>
+                            <div class="footnote-meta">
+                                <span>Category: ${formatCategoryName(pulse.pulseType)}</span>
+                                <span>Frequency: ${formatFrequency(pulse.updateFrequency)}</span>
+                                <span>Updated: ${new Date(pulse.lastUpdated).toLocaleString()}</span>
+                                <span>Count: ${pulse.updateCount} updates</span>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
             `;
         });
         
-        // Display individual footnotes
+        // Display enhanced individual footnotes
         individualFootnotes.forEach(pulse => {
             footnotes += `
-                <div id="footnote-${pulse.id}" class="footnote-item">
-                    <strong>${pulse.id}.</strong> Updated from ${pulse.dataSource} 
-                    on ${new Date(pulse.lastUpdated).toLocaleString()}
-                    (${pulse.updateCount} updates total)
+                <div id="footnote-${pulse.id}" class="footnote-item enhanced individual">
+                    <div class="footnote-header">
+                        <strong>${pulse.id}.</strong> 
+                        <span class="confidence-indicator ${pulse.confidence || 'medium'}">${getConfidenceIcon(pulse.confidence)} ${pulse.confidence || 'medium'}</span>
+                        <span class="category-badge ${pulse.pulseType || 'unknown'}">${formatCategoryName(pulse.pulseType)}</span>
+                    </div>
+                    <div class="footnote-content">
+                        <span class="current-value">"${pulse.currentValue}"</span> from 
+                        <span class="data-source">${pulse.dataSource}</span>
+                    </div>
+                    <div class="footnote-meta">
+                        <span>Frequency: ${formatFrequency(pulse.updateFrequency)}</span>
+                        <span>Updated: ${new Date(pulse.lastUpdated).toLocaleString()}</span>
+                        <span>Count: ${pulse.updateCount} updates</span>
+                    </div>
+                    <div class="footnote-reasoning">${pulse.reasoning}</div>
                 </div>
             `;
         });
@@ -1394,7 +1429,7 @@ function updatePreview() {
     }
 
     articlePreview.innerHTML = `
-        <div class="article-content">
+        <div class="article-content enhanced">
             ${content.replace(/\n/g, '<br>')}
             ${footnotes}
         </div>
@@ -1408,6 +1443,38 @@ function updatePreview() {
         }, 50);
     }
 }
+
+// Helper function to get confidence icon
+function getConfidenceIcon(confidence) {
+    switch (confidence) {
+        case 'high': return '🔥';
+        case 'medium': return '⚡';
+        case 'low': return '⚠️';
+        default: return '❓';
+    }
+}
+
+// Helper function to format category names
+function formatCategoryName(pulseType) {
+    if (!pulseType) return 'Unknown';
+    
+    const categoryMap = {
+        'crypto': 'Crypto',
+        'stock': 'Finance',
+        'weather': 'Weather',
+        'date': 'Temporal',
+        'population': 'Demographics',
+        'sports': 'Sports',
+        'news': 'News',
+        'technology': 'Tech',
+        'financial': 'Finance',
+        'social': 'Social',
+        'other': 'General'
+    };
+    
+    return categoryMap[pulseType.toLowerCase()] || pulseType.charAt(0).toUpperCase() + pulseType.slice(1);
+}
+
 
 /**
  * Clear scan results when article content changes
