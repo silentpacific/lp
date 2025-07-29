@@ -2814,4 +2814,415 @@ window.debugLivePulse = function() {
     };
 };
 
+class LivePreviewManager {
+  constructor() {
+    this.currentArticleId = null;
+    this.stagingResult = null;
+    this.processingSteps = ['applying', 'quality', 'corrections', 'validation'];
+    this.currentStep = 0;
+  }
+
+  /**
+   * Initialize live preview system
+   */
+  init() {
+    this.bindEventListeners();
+    this.updateStagingStatus('ready');
+  }
+
+  /**
+   * Bind event listeners for live preview functionality
+   */
+  bindEventListeners() {
+    const generateBtn = document.getElementById('generate-preview-btn');
+    const refreshBtn = document.getElementById('refresh-preview-btn');
+    const approveBtn = document.getElementById('approve-preview-btn');
+
+    if (generateBtn) {
+      generateBtn.addEventListener('click', () => this.generatePreview());
+    }
+
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => this.refreshPreview());
+    }
+
+    if (approveBtn) {
+      approveBtn.addEventListener('click', () => this.approvePreview());
+    }
+  }
+
+  /**
+   * Generate live preview with staging validation
+   */
+  async generatePreview() {
+    try {
+      this.updateStagingStatus('processing');
+      this.showProcessingStatus(true);
+      
+      // Get current article content and updates
+      const articleData = this.getCurrentArticleData();
+      if (!articleData) {
+        throw new Error('No article data available');
+      }
+
+      // Start processing animation
+      this.animateProcessingSteps();
+
+      // Call live preview staging endpoint
+      const response = await fetch('/.netlify/functions/live-preview-staging', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          articleId: articleData.id,
+          pulseUpdates: this.getPendingPulseUpdates(),
+          clusterUpdates: this.getPendingClusterUpdates(),
+          originalContent: articleData.content,
+          articleContext: articleData.context
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Preview generation failed');
+      }
+
+      this.stagingResult = result.stagingResult;
+      this.displayStagingResults();
+      
+    } catch (error) {
+      console.error('Preview generation error:', error);
+      this.displayError(error.message);
+    } finally {
+      this.showProcessingStatus(false);
+    }
+  }
+
+  /**
+   * Refresh existing preview
+   */
+  async refreshPreview() {
+    await this.generatePreview();
+  }
+
+  /**
+   * Approve preview for publishing
+   */
+  async approvePreview() {
+    if (!this.stagingResult || !this.stagingResult.readyForPreview) {
+      alert('Preview is not ready for approval. Please address quality issues first.');
+      return;
+    }
+
+    try {
+      // Call publish endpoint with approved content
+      const response = await fetch('/.netlify/functions/publish-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          articleId: this.currentArticleId,
+          approvedContent: this.stagingResult.finalContent,
+          stagingMetadata: this.stagingResult.stagingMetadata
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        this.updateStagingStatus('approved');
+        alert('Content approved and published successfully!');
+      } else {
+        throw new Error(result.error || 'Publishing failed');
+      }
+      
+    } catch (error) {
+      console.error('Approval error:', error);
+      alert('Failed to approve content: ' + error.message);
+    }
+  }
+
+  /**
+   * Display staging results in the UI
+   */
+  displayStagingResults() {
+    if (!this.stagingResult) return;
+
+    const { qualityAssessment, corrections, finalValidation, previewStatus } = this.stagingResult;
+
+    // Update staging status
+    this.updateStagingStatus(previewStatus.status);
+
+    // Display quality metrics
+    this.displayQualityMetrics(qualityAssessment.qualityScores);
+
+    // Display corrections if any
+    if (corrections && corrections.length > 0) {
+      this.displayCorrections(corrections);
+    }
+
+    // Display final content
+    this.displayPreviewContent(this.stagingResult.finalContent);
+
+    // Update button states
+    this.updateButtonStates();
+  }
+
+  /**
+   * Display quality metrics with visual scores
+   */
+  displayQualityMetrics(scores) {
+    const metricsContainer = document.getElementById('quality-metrics');
+    if (!metricsContainer) return;
+
+    metricsContainer.style.display = 'block';
+
+    const scoreTypes = ['grammar', 'semantic', 'tone', 'meaning', 'overall'];
+    
+    scoreTypes.forEach(type => {
+      const score = scores[type] || 0;
+      const percentage = Math.round(score * 100);
+      
+      const fillElement = document.getElementById(`${type}-score`);
+      const textElement = document.getElementById(`${type}-text`);
+      
+      if (fillElement && textElement) {
+        fillElement.style.width = `${percentage}%`;
+        fillElement.className = `score-fill ${this.getScoreClass(score)}`;
+        textElement.textContent = `${percentage}%`;
+      }
+    });
+  }
+
+  /**
+   * Get CSS class based on score value
+   */
+  getScoreClass(score) {
+    if (score >= 0.9) return 'excellent';
+    if (score >= 0.8) return 'good';
+    if (score >= 0.6) return 'fair';
+    return 'poor';
+  }
+
+  /**
+   * Display corrections that were applied
+   */
+  displayCorrections(corrections) {
+    const correctionsList = document.getElementById('corrections-list');
+    const correctionsContainer = document.getElementById('corrections-summary');
+    
+    if (!correctionsList || !correctionsContainer) return;
+
+    correctionsContainer.style.display = 'block';
+    correctionsList.innerHTML = '';
+
+    corrections.forEach(correction => {
+      const correctionItem = this.createCorrectionItem(correction);
+      correctionsList.appendChild(correctionItem);
+    });
+  }
+
+  /**
+   * Create a correction item element
+   */
+  createCorrectionItem(correction) {
+    const item = document.createElement('div');
+    item.className = `correction-item ${correction.issueType}`;
+    
+    item.innerHTML = `
+      <div class="correction-header">
+        <span class="correction-type">${correction.issueType.replace('_', ' ')}</span>
+        <span class="correction-severity ${correction.severity}">${correction.severity}</span>
+      </div>
+      <div class="correction-details">${correction.reasoning}</div>
+      <div class="correction-changes">
+        <div class="change-item">
+          <div class="change-label">Original:</div>
+          <div class="change-text original">${correction.originalText}</div>
+        </div>
+        <div class="change-item">
+          <div class="change-label">Corrected:</div>
+          <div class="change-text corrected">${correction.correctedText}</div>
+        </div>
+      </div>
+    `;
+    
+    return item;
+  }
+
+  /**
+   * Display preview content
+   */
+  displayPreviewContent(content) {
+    const container = document.getElementById('preview-container');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="preview-content-display">
+        ${content}
+      </div>
+    `;
+  }
+
+  /**
+   * Update staging status badge
+   */
+  updateStagingStatus(status) {
+    const badge = document.getElementById('staging-status-badge');
+    if (!badge) return;
+
+    badge.className = `status-badge ${status}`;
+    badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  /**
+   * Show/hide processing status
+   */
+  showProcessingStatus(show) {
+    const statusContainer = document.getElementById('processing-status');
+    const previewContainer = document.getElementById('preview-container');
+    
+    if (statusContainer) {
+      statusContainer.style.display = show ? 'block' : 'none';
+    }
+    
+    if (previewContainer && show) {
+      previewContainer.innerHTML = '';
+    }
+  }
+
+  /**
+   * Animate processing steps
+   */
+  animateProcessingSteps() {
+    this.currentStep = 0;
+    
+    const interval = setInterval(() => {
+      // Mark current step as active
+      const currentStepElement = document.getElementById(`step-${this.processingSteps[this.currentStep]}`);
+      if (currentStepElement) {
+        currentStepElement.classList.add('active');
+      }
+
+      // Mark previous step as completed
+      if (this.currentStep > 0) {
+        const prevStepElement = document.getElementById(`step-${this.processingSteps[this.currentStep - 1]}`);
+        if (prevStepElement) {
+          prevStepElement.classList.remove('active');
+          prevStepElement.classList.add('completed');
+        }
+      }
+
+      this.currentStep++;
+      
+      if (this.currentStep >= this.processingSteps.length) {
+        clearInterval(interval);
+        // Mark final step as completed
+        const finalStepElement = document.getElementById(`step-${this.processingSteps[this.processingSteps.length - 1]}`);
+        if (finalStepElement) {
+          finalStepElement.classList.remove('active');
+          finalStepElement.classList.add('completed');
+        }
+      }
+    }, 1500); // 1.5 seconds per step
+  }
+
+  /**
+   * Update button states based on staging results
+   */
+  updateButtonStates() {
+    const generateBtn = document.getElementById('generate-preview-btn');
+    const refreshBtn = document.getElementById('refresh-preview-btn');
+    const approveBtn = document.getElementById('approve-preview-btn');
+
+    if (generateBtn) generateBtn.style.display = 'none';
+    if (refreshBtn) refreshBtn.style.display = 'inline-block';
+    
+    if (approveBtn) {
+      approveBtn.style.display = 'inline-block';
+      approveBtn.disabled = !this.stagingResult?.readyForPreview;
+    }
+  }
+
+  /**
+   * Get current article data
+   */
+  getCurrentArticleData() {
+    // This should integrate with your existing article management system
+    // Return current article ID, content, and context
+    return {
+      id: this.currentArticleId || 'default-article',
+      content: document.getElementById('article-content')?.value || '',
+      context: document.getElementById('article-context')?.value || ''
+    };
+  }
+
+  /**
+   * Get pending pulse updates
+   */
+  getPendingPulseUpdates() {
+    // This should integrate with your pulse management system
+    // Return array of pending pulse updates
+    return window.pendingPulseUpdates || [];
+  }
+
+  /**
+   * Get pending cluster updates
+   */
+  getPendingClusterUpdates() {
+    // This should integrate with your cluster management system
+    // Return array of pending cluster updates
+    return window.pendingClusterUpdates || [];
+  }
+
+  /**
+   * Display error message
+   */
+  displayError(message) {
+    const container = document.getElementById('preview-container');
+    if (container) {
+      container.innerHTML = `
+        <div class="alert alert-danger">
+          <strong>Error:</strong> ${message}
+          <br><small>Please check your content and try again.</small>
+        </div>
+      `;
+    }
+    this.updateStagingStatus('blocked');
+  }
+
+  /**
+   * Set current article ID
+   */
+  setCurrentArticle(articleId) {
+    this.currentArticleId = articleId;
+  }
+}
+
+// Initialize Live Preview Manager
+const livePreviewManager = new LivePreviewManager();
+
+// Integration with existing app initialization
+document.addEventListener('DOMContentLoaded', function() {
+  // Your existing initialization code...
+  
+  // Initialize live preview system
+  livePreviewManager.init();
+  
+  // Set up integration hooks with existing pulse/cluster systems
+  window.livePreviewManager = livePreviewManager;
+});
+
+// Integration hooks for existing systems
+window.updateLivePreview = function() {
+  if (window.livePreviewManager) {
+    window.livePreviewManager.refreshPreview();
+  }
+};
+
+window.setCurrentArticle = function(articleId) {
+  if (window.livePreviewManager) {
+    window.livePreviewManager.setCurrentArticle(articleId);
+  }
+};
+
 console.log('🐛 Debug function added. Type debugLivePulse() in console to check status.');

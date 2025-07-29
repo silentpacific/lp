@@ -493,5 +493,96 @@
             });
         }
     </script>
+	
+	<!-- Live Preview Staging Panel (add after existing panels) -->
+<div class="panel" id="live-preview-panel">
+  <div class="panel-header">
+    <h2>🎬 Live Preview Staging</h2>
+    <div class="staging-status" id="staging-status">
+      <span class="status-badge" id="staging-status-badge">Ready</span>
+    </div>
+  </div>
+  
+  <div class="panel-content">
+    <!-- Quality Assessment Display -->
+    <div class="quality-metrics" id="quality-metrics" style="display: none;">
+      <h3>Quality Assessment</h3>
+      <div class="quality-scores">
+        <div class="score-item">
+          <label>Grammar:</label>
+          <div class="score-bar">
+            <div class="score-fill" id="grammar-score"></div>
+            <span class="score-text" id="grammar-text">--</span>
+          </div>
+        </div>
+        <div class="score-item">
+          <label>Semantic:</label>
+          <div class="score-bar">
+            <div class="score-fill" id="semantic-score"></div>
+            <span class="score-text" id="semantic-text">--</span>
+          </div>
+        </div>
+        <div class="score-item">
+          <label>Tone:</label>
+          <div class="score-bar">
+            <div class="score-fill" id="tone-score"></div>
+            <span class="score-text" id="tone-text">--</span>
+          </div>
+        </div>
+        <div class="score-item">
+          <label>Meaning:</label>
+          <div class="score-bar">
+            <div class="score-fill" id="meaning-score"></div>
+            <span class="score-text" id="meaning-text">--</span>
+          </div>
+        </div>
+        <div class="score-item overall">
+          <label>Overall:</label>
+          <div class="score-bar">
+            <div class="score-fill" id="overall-score"></div>
+            <span class="score-text" id="overall-text">--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Corrections Summary -->
+    <div class="corrections-summary" id="corrections-summary" style="display: none;">
+      <h3>Applied Corrections</h3>
+      <div class="corrections-list" id="corrections-list">
+        <!-- Corrections will be populated here -->
+      </div>
+    </div>
+
+    <!-- Live Preview Content -->
+    <div class="preview-content">
+      <h3>Live Preview</h3>
+      <div class="preview-controls">
+        <button id="generate-preview-btn" class="btn btn-primary">Generate Preview</button>
+        <button id="refresh-preview-btn" class="btn btn-secondary" style="display: none;">Refresh Preview</button>
+        <button id="approve-preview-btn" class="btn btn-success" style="display: none;">Approve for Publishing</button>
+      </div>
+      
+      <div class="preview-container" id="preview-container">
+        <div class="preview-placeholder">
+          Click "Generate Preview" to see your updated content with quality validation
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing Status -->
+    <div class="processing-status" id="processing-status" style="display: none;">
+      <div class="processing-spinner"></div>
+      <div class="processing-steps">
+        <div class="step" id="step-applying">Applying updates...</div>
+        <div class="step" id="step-quality">Quality assessment...</div>
+        <div class="step" id="step-corrections">Applying corrections...</div>
+        <div class="step" id="step-validation">Final validation...</div>
+      </div>
+    </div>
+  </div>
+</div>
+	
+	
 </body>
 </html>

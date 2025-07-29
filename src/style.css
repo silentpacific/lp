@@ -2790,3 +2790,316 @@ body.app-body {
         justify-content: center;
     }
 }
+
+
+
+#live-preview-panel {
+  margin-top: 20px;
+  border: 2px solid #e1e8ed;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+}
+
+.staging-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.ready { background: #e8f5e8; color: #2d5a2d; }
+.status-badge.processing { background: #fff3cd; color: #8a6d00; }
+.status-badge.approved { background: #d4edda; color: #155724; }
+.status-badge.blocked { background: #f8d7da; color: #721c24; }
+.status-badge.conditional { background: #d1ecf1; color: #0c5460; }
+
+/* Quality Metrics */
+.quality-metrics {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.quality-scores {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.score-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.score-item label {
+  min-width: 80px;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.score-bar {
+  flex: 1;
+  height: 24px;
+  background: #e9ecef;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.8s ease, background-color 0.3s ease;
+  position: relative;
+}
+
+.score-fill.excellent { background: linear-gradient(90deg, #28a745, #20c997); }
+.score-fill.good { background: linear-gradient(90deg, #17a2b8, #6bb6ff); }
+.score-fill.fair { background: linear-gradient(90deg, #ffc107, #ffb300); }
+.score-fill.poor { background: linear-gradient(90deg, #dc3545, #c82333); }
+
+.score-text {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8em;
+  font-weight: 600;
+  color: #495057;
+}
+
+.score-item.overall {
+  border-top: 1px solid #dee2e6;
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+.score-item.overall label {
+  font-size: 1em;
+  color: #2c3e50;
+}
+
+/* Corrections Summary */
+.corrections-summary {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.corrections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.correction-item {
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid;
+  background: #f8f9fa;
+}
+
+.correction-item.grammar_error { border-left-color: #17a2b8; }
+.correction-item.semantic_break { border-left-color: #6f42c1; }
+.correction-item.tone_mismatch { border-left-color: #e83e8c; }
+.correction-item.meaning_drift { border-left-color: #fd7e14; }
+.correction-item.coherence_issue { border-left-color: #20c997; }
+.correction-item.flow_disruption { border-left-color: #6c757d; }
+
+.correction-header {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.correction-type {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  letter-spacing: 0.5px;
+}
+
+.correction-severity {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+}
+
+.correction-severity.critical { background: #dc3545; color: white; }
+.correction-severity.high { background: #fd7e14; color: white; }
+.correction-severity.medium { background: #ffc107; color: #212529; }
+.correction-severity.low { background: #6c757d; color: white; }
+
+.correction-details {
+  font-size: 0.9em;
+  color: #495057;
+}
+
+.correction-changes {
+  margin-top: 8px;
+  padding: 8px;
+  background: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.change-item {
+  margin-bottom: 6px;
+}
+
+.change-label {
+  font-weight: 600;
+  font-size: 0.8em;
+  color: #6c757d;
+  text-transform: uppercase;
+}
+
+.change-text {
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 0.85em;
+  padding: 4px 8px;
+  border-radius: 3px;
+  margin-top: 2px;
+}
+
+.change-text.original { background: #f8d7da; color: #721c24; }
+.change-text.corrected { background: #d4edda; color: #155724; }
+
+/* Preview Content */
+.preview-content {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.preview-controls {
+  padding: 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.preview-container {
+  min-height: 400px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.preview-placeholder {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 60px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.preview-content-display {
+  line-height: 1.6;
+  font-size: 1em;
+  color: #212529;
+}
+
+.preview-content-display h1,
+.preview-content-display h2,
+.preview-content-display h3 {
+  color: #2c3e50;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.preview-content-display p {
+  margin-bottom: 1em;
+}
+
+/* Processing Status */
+.processing-status {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.processing-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e9ecef;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.processing-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.step {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: #f8f9fa;
+  color: #6c757d;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  background: #007bff;
+  color: white;
+  transform: scale(1.05);
+}
+
+.step.completed {
+  background: #28a745;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .quality-scores {
+    gap: 16px;
+  }
+  
+  .score-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .score-item label {
+    min-width: auto;
+  }
+  
+  .preview-controls {
+    flex-direction: column;
+  }
+  
+  .preview-controls .btn {
+    width: 100%;
+  }
+}
