@@ -4,585 +4,426 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LivePulse - Intelligent Content Analysis & Automatic Updates</title>
-    <meta name="description" content="LivePulse automatically identifies and updates dynamic facts in your content while preserving semantic meaning and relationships.">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Transform your blog posts with AI-powered pulse points that automatically update facts and keep your content fresh.">
+    <meta name="keywords" content="content analysis, automatic updates, AI blogging, dynamic content, pulse points">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="LivePulse - Intelligent Content Analysis">
+    <meta property="og:description" content="AI-powered system that automatically updates facts in your blog posts">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://livepulse.netlify.app">
     
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- External Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
-        <nav class="nav">
-            <a href="#" class="logo">
-                <span class="logo-text">LivePulse</span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#demo">Demo</a></li>
-            </ul>
-            <a href="/app.html" class="cta-button">Try LivePulse</a>
-        </nav>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🫀 LivePulse</h1>
+                    <span class="tagline">Intelligent Content Analysis</span>
+                </div>
+                <nav class="nav">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#how-it-works" class="nav-link">How It Works</a>
+                    <a href="#demo" class="nav-link">Demo</a>
+                    <a href="app.html" class="btn btn-primary">Try Editor</a>
+                </nav>
+                <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+        </div>
     </header>
 
+    <!-- Mobile Menu -->
+    <nav id="mobile-menu" class="mobile-menu">
+        <div class="mobile-menu-content">
+            <a href="#features" class="mobile-menu-item">✨ Features</a>
+            <a href="#how-it-works" class="mobile-menu-item">⚙️ How It Works</a>
+            <a href="#demo" class="mobile-menu-item">🎮 Demo</a>
+            <a href="#use-cases" class="mobile-menu-item">💼 Use Cases</a>
+            <a href="app.html" class="mobile-menu-item">🚀 Try Editor</a>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay"></div>
+
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Intelligent Content That Stays Current</h1>
-            <p class="hero-subtitle">Automatically detect and update dynamic facts while preserving meaning</p>
-            <p class="hero-description">
-                <strong>LivePulse</strong> is an intelligent content analysis and update system that automatically identifies, tracks, and refreshes dynamic facts in blog posts while preserving semantic meaning and contextual relationships. The system uses AI-powered analysis to detect "Pulse Points" - specific facts that are likely to change over time - and enables controlled, scheduled updates with full semantic cluster preservation.
-            </p>
-            <div class="hero-actions">
-                <a href="/app.html" class="btn-primary">Start Analyzing Content</a>
-                <a href="#demo" class="btn-secondary">See How It Works</a>
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Keep Your Content <span class="highlight">Always Fresh</span> with AI-Powered Updates
+                    </h1>
+                    <p class="hero-description">
+                        LivePulse automatically identifies and updates dynamic facts in your blog posts. 
+                        Never let outdated prices, statistics, or data hurt your credibility again.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="app.html" class="btn btn-primary btn-large">
+                            🚀 Try the Editor
+                        </a>
+                        <a href="#demo" class="btn btn-secondary btn-large">
+                            🎮 See Demo
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <div class="stat-number">95%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Monitoring</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">∞</div>
+                            <div class="stat-label">Pulse Points</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="pulse-demo">
+                        <div class="demo-content">
+                            <h3>Live Example:</h3>
+                            <p>Bitcoin is currently at <span class="pulse-point demo">$67,500<sup>1</sup></span>, 
+                            up <span class="pulse-point demo">3.2%<sup>2</sup></span> from yesterday.</p>
+                            <div class="demo-footnotes">
+                                <small><sup>1</sup> CoinGecko API - Updates every hour</small><br>
+                                <small><sup>2</sup> Calculated from price change</small>
+                            </div>
+                        </div>
+                        <div class="pulse-indicator">
+                            <div class="pulse-ring"></div>
+                            <div class="pulse-dot"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features">
+    <section class="features section-anchor" id="features">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Powerful Features</h2>
-                <p class="section-subtitle">
-                    Advanced AI technology that understands your content and keeps it fresh automatically
-                </p>
+                <h2>✨ Powerful Features</h2>
+                <p>Everything you need to keep your content accurate and up-to-date</p>
             </div>
-            
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
-                    <h3 class="feature-title">Universal Data Engine</h3>
-                    <p class="feature-description">
-                        One intelligent system handles all data types (crypto, weather, stocks, etc.) with seamless integration and automatic source detection.
-                    </p>
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Detection</h3>
+                    <p>Automatically identifies facts that change over time - prices, statistics, dates, and more.</p>
                 </div>
-                
                 <div class="feature-card">
                     <div class="feature-icon">🔗</div>
-                    <h3 class="feature-title">Semantic Cluster Awareness</h3>
-                    <p class="feature-description">
-                        Detects and maintains relationships between related data points, ensuring mathematical and logical consistency across updates.
-                    </p>
+                    <h3>Semantic Clusters</h3>
+                    <p>Groups related data points that update together, maintaining logical consistency.</p>
                 </div>
-                
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
-                    <h3 class="feature-title">Relationship-Driven Updates</h3>
-                    <p class="feature-description">
-                        Mathematical and logical consistency across dependent values. When price changes, percentages and trends update automatically.
-                    </p>
+                    <h3>Real-Time Updates</h3>
+                    <p>Connects to trusted APIs for live data - crypto prices, weather, stocks, and more.</p>
                 </div>
-                
                 <div class="feature-card">
-                    <div class="feature-icon">🏗️</div>
-                    <h3 class="feature-title">Headless Design</h3>
-                    <p class="feature-description">
-                        Plugs into any CMS or platform as a service layer. WordPress, Ghost, custom sites - LivePulse works everywhere.
-                    </p>
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart Scheduling</h3>
+                    <p>Updates content at optimal intervals based on data volatility and importance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Track update success rates, pulse performance, and content freshness metrics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Full Control</h3>
+                    <p>Approve all changes, set custom rules, and maintain editorial oversight.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- How It Works Section -->
-    <section id="how-it-works" class="how-it-works">
+    <section class="how-it-works section-anchor" id="how-it-works">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">How LivePulse Works</h2>
-                <p class="section-subtitle">
-                    Simple process, powerful results
-                </p>
+                <h2>⚙️ How LivePulse Works</h2>
+                <p>Simple process, powerful results</p>
             </div>
-            
-            <div class="steps-grid">
+            <div class="process-steps">
                 <div class="step">
                     <div class="step-number">1</div>
-                    <h3 class="step-title">Analyze Content</h3>
-                    <p class="step-description">
-                        AI scans your content to identify dynamic facts and their relationships to other data points.
-                    </p>
+                    <div class="step-content">
+                        <h3>📝 Paste Your Content</h3>
+                        <p>Add your blog post or article content to the LivePulse editor.</p>
+                    </div>
                 </div>
-                
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3 class="step-title">Detect Clusters</h3>
-                    <p class="step-description">
-                        Semantic analysis finds related data points that must update together for consistency.
-                    </p>
+                    <div class="step-content">
+                        <h3>🔍 AI Analysis</h3>
+                        <p>Our AI identifies facts that might become outdated and suggests pulse points.</p>
+                    </div>
                 </div>
-                
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h3 class="step-title">Schedule Updates</h3>
-                    <p class="step-description">
-                        Set update frequencies based on data volatility. From minutes to months, fully customizable.
-                    </p>
+                    <div class="step-content">
+                        <h3>⚙️ Configure Updates</h3>
+                        <p>Set data sources, update frequencies, and approval settings for each pulse point.</p>
+                    </div>
                 </div>
-                
                 <div class="step">
                     <div class="step-number">4</div>
-                    <h3 class="step-title">Stay Current</h3>
-                    <p class="step-description">
-                        Content updates automatically while preserving your writing style and semantic meaning.
-                    </p>
+                    <div class="step-content">
+                        <h3>🚀 Publish & Monitor</h3>
+                        <p>Your content stays fresh automatically while you maintain full editorial control.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Demo Section -->
-    <section id="demo" class="demo">
+    <section class="demo section-anchor" id="demo">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">See LivePulse in Action</h2>
-                <p class="section-subtitle">
-                    Live examples showing semantic cluster updates with real data
-                </p>
+                <h2>🎮 Interactive Demo</h2>
+                <p>See LivePulse in action with real examples</p>
             </div>
-            
-            <div class="demo-examples">
-                <!-- Demo 1: Stock Market Cluster -->
-                <div class="demo-container">
-                    <h3 class="demo-title">📈 Stock Market Semantic Cluster</h3>
-                    <div class="demo-before-after">
-                        <div class="demo-panel before">
-                            <div class="demo-label">
-                                📝 Static Content
-                                <span class="demo-date">Fixed: July 27, 2025</span>
-                            </div>
-                            <div class="demo-text">
-                                Tesla shares closed at <span class="static-highlight">$248.50</span> on Friday, <span class="static-highlight">down 3.2%</span> from Thursday's close of <span class="static-highlight">$257.75</span>. The electric vehicle manufacturer continues to navigate market volatility amid earnings expectations.
-                            </div>
-                        </div>
-                        
-                        <div class="demo-panel after">
-                            <div class="demo-label">
-                                ✨ LivePulse Dynamic Content
-                                <span class="demo-indicator live">LIVE</span>
-                            </div>
-                            <div class="demo-text" id="tesla-demo">
-                                <!-- Content will be populated server-side -->
-                                Loading current data...
-                            </div>
-                        </div>
+            <div class="demo-container">
+                <div class="demo-content">
+                    <h3>Sample Article with Pulse Points</h3>
+                    <div class="demo-article">
+                        <h4>Cryptocurrency Market Update</h4>
+                        <p>
+                            The cryptocurrency market continues to show volatility today. 
+                            <span class="pulse-point" title="Crypto Price - Updates every hour">Bitcoin is trading at $67,500</span>, 
+                            representing a <span class="pulse-point" title="Price Change - Calculated from current price">3.2% increase</span> 
+                            from yesterday's close.
+                        </p>
+                        <p>
+                            Meanwhile, the weather in <span class="pulse-point" title="Weather - Updates every 3 hours">Adelaide is 25°C</span>, 
+                            which is <span class="pulse-point" title="Temperature Comparison - Calculated from current vs previous">5 degrees warmer</span> 
+                            than yesterday's temperature.
+                        </p>
+                        <p>
+                            <em>Last updated: <span class="pulse-point" title="Timestamp - Updates automatically">December 15, 2024 at 2:30 PM</span></em>
+                        </p>
                     </div>
-                    <div class="demo-meta">
-                        🔗 <strong>Semantic Cluster:</strong> Price, percentage change, and direction update together automatically daily at market close
+                    <div class="demo-controls">
+                        <button class="btn btn-primary" onclick="window.simulateUpdate?.()">
+                            🔄 Simulate Update
+                        </button>
+                        <div class="demo-status">
+                            <span class="status-indicator active">🟢 3 pulse points active</span>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Demo 2: Weather Comparison -->
-                <div class="demo-container">
-                    <h3 class="demo-title">🌤️ Weather Comparison Cluster</h3>
-                    <div class="demo-before-after">
-                        <div class="demo-panel before">
-                            <div class="demo-label">
-                                📝 Static Content
-                                <span class="demo-date">Fixed: July 27, 2025</span>
+                <div class="demo-sidebar">
+                    <h4>📊 Pulse Points Detected</h4>
+                    <div class="pulse-list-demo">
+                        <div class="pulse-item-demo">
+                            <div class="pulse-header">
+                                <span class="pulse-type">💰 Crypto</span>
+                                <span class="pulse-confidence high">🔥 High</span>
                             </div>
-                            <div class="demo-text">
-                                Adelaide is experiencing <span class="static-highlight">sunny weather at 22°C</span> today, which is <span class="static-highlight">3 degrees warmer</span> than yesterday's high of <span class="static-highlight">19°C</span>. Perfect conditions for the weekend markets downtown.
-                            </div>
+                            <div class="pulse-text">"$67,500"</div>
+                            <div class="pulse-source">CoinGecko API</div>
                         </div>
-                        
-                        <div class="demo-panel after">
-                            <div class="demo-label">
-                                ✨ LivePulse Dynamic Content
-                                <span class="demo-indicator live">LIVE</span>
+                        <div class="pulse-item-demo">
+                            <div class="pulse-header">
+                                <span class="pulse-type">🌡️ Weather</span>
+                                <span class="pulse-confidence high">🔥 High</span>
                             </div>
-                            <div class="demo-text" id="weather-demo">
-                                <!-- Content will be populated server-side -->
-                                Loading current data...
-                            </div>
+                            <div class="pulse-text">"25°C"</div>
+                            <div class="pulse-source">OpenWeather API</div>
                         </div>
-                    </div>
-                    <div class="demo-meta">
-                        🔗 <strong>Semantic Cluster:</strong> Current temperature, comparison text, and yesterday's temperature maintain logical relationships
+                        <div class="pulse-item-demo">
+                            <div class="pulse-header">
+                                <span class="pulse-type">📅 Date</span>
+                                <span class="pulse-confidence medium">⚡ Medium</span>
+                            </div>
+                            <div class="pulse-text">"December 15, 2024"</div>
+                            <div class="pulse-source">System Date</div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
 
-                <!-- Demo 3: Cryptocurrency Volatility -->
-                <div class="demo-container">
-                    <h3 class="demo-title">₿ Cryptocurrency Market Pulse</h3>
-                    <div class="demo-before-after">
-                        <div class="demo-panel before">
-                            <div class="demo-label">
-                                📝 Static Content
-                                <span class="demo-date">Fixed: July 27, 2025</span>
-                            </div>
-                            <div class="demo-text">
-                                Bitcoin is trading at <span class="static-highlight">$67,420</span> as of this morning, showing <span class="static-highlight">strong upward momentum</span> with a <span class="static-highlight">5.8% gain</span> over the past 24 hours. Institutional adoption continues to drive market sentiment.
-                            </div>
-                        </div>
-                        
-                        <div class="demo-panel after">
-                            <div class="demo-label">
-                                ✨ LivePulse Dynamic Content
-                                <span class="demo-indicator live">LIVE</span>
-                            </div>
-                            <div class="demo-text" id="bitcoin-demo">
-                                <!-- Content will be populated server-side -->
-                                Loading current data...
-                            </div>
-                        </div>
-                    </div>
-                    <div class="demo-meta">
-                        🔗 <strong>Semantic Cluster:</strong> Price, trend direction, and percentage change maintain consistency daily each morning
-                    </div>
+    <!-- Use Cases Section -->
+    <section class="use-cases section-anchor" id="use-cases">
+        <div class="container">
+            <div class="section-header">
+                <h2>💼 Perfect For</h2>
+                <p>Content that benefits from staying current</p>
+            </div>
+            <div class="use-cases-grid">
+                <div class="use-case">
+                    <div class="use-case-icon">📈</div>
+                    <h3>Financial Blogs</h3>
+                    <p>Keep stock prices, crypto values, and market data current automatically.</p>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-icon">🌦️</div>
+                    <h3>News & Reporting</h3>
+                    <p>Maintain accuracy in breaking news and developing story coverage.</p>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-icon">🏢</div>
+                    <h3>Corporate Content</h3>
+                    <p>Update company metrics, employee counts, and business statistics.</p>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-icon">📚</div>
+                    <h3>Educational Content</h3>
+                    <p>Keep research data, population figures, and study results current.</p>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-icon">🛒</div>
+                    <h3>E-commerce</h3>
+                    <p>Dynamic pricing, inventory levels, and product specifications.</p>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-icon">⚽</div>
+                    <h3>Sports Coverage</h3>
+                    <p>Live scores, player stats, and league standings updates.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section">
+    <section class="cta">
         <div class="container">
-            <h2 class="cta-title">Ready to Keep Your Content Current?</h2>
-            <p class="cta-description">
-                Start analyzing your content with LivePulse's intelligent semantic engine
-            </p>
-            <a href="/app.html" class="btn-primary">Try LivePulse Now</a>
+            <div class="cta-content">
+                <h2>Ready to Keep Your Content Fresh?</h2>
+                <p>Join the future of content management with AI-powered automatic updates.</p>
+                <div class="cta-actions">
+                    <a href="app.html" class="btn btn-primary btn-large">
+                        🚀 Start Using LivePulse
+                    </a>
+                    <div class="cta-note">
+                        <small>✨ Free to try • No credit card required • Works with any CMS</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <span class="footer-logo-text">LivePulse</span>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>🫀 LivePulse</h3>
+                    <p>Intelligent content analysis and automatic updates for the modern web.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Features</h4>
+                    <ul>
+                        <li><a href="#features">AI Detection</a></li>
+                        <li><a href="#features">Semantic Clusters</a></li>
+                        <li><a href="#features">Real-time Updates</a></li>
+                        <li><a href="#features">Analytics</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#demo">Demo</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#use-cases">Use Cases</a></li>
+                        <li><a href="app.html">Editor</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <ul>
+                        <li><a href="https://github.com/yourusername/livepulse">GitHub</a></li>
+                        <li><a href="mailto:hello@livepulse.app">Contact</a></li>
+                        <li><a href="#demo">Support</a></li>
+                    </ul>
+                </div>
             </div>
-            
-            <div class="footer-links">
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="/app.html">Try LivePulse</a>
-                <a href="https://github.com/silentpacific/lp">GitHub</a>
-            </div>
-            
             <div class="footer-bottom">
-                <p>Copyright © LoFi Simplify. All Rights Reserved.</p>
-                <p>Contact: <a href="mailto:rahulrrao@gmail.com" style="color: rgba(255, 255, 255, 0.8);">rahulrrao@gmail.com</a></p>
+                <p>&copy; 2024 LivePulse. Built with ❤️ for content creators.</p>
+                <div class="footer-tech">
+                    <span>Powered by AI • Real-time APIs • Semantic Analysis</span>
+                </div>
             </div>
         </div>
     </footer>
 
-    <!-- Lightweight JavaScript for REAL API demo data loading -->
+    <!-- Load the modular JavaScript application -->
+    <script type="module" src="js/core/app.js"></script>
+
+    <!-- Demo functionality -->
     <script>
-        // Load demo data on page load (one-time server fetch with REAL APIs)
-        document.addEventListener('DOMContentLoaded', async function() {
-            showLoadingStates();
-            
-            try {
-                await loadRealDemoData();
-            } catch (error) {
-                console.warn('Demo data loading failed, using fallback');
-                loadFallbackData();
-            }
-            
-            // Smooth scrolling for navigation
-            initSmoothScrolling();
-            
-            // Header scroll effect
-            initHeaderScrollEffect();
-        });
+        // Simple demo functionality for the landing page
+        window.simulateUpdate = function() {
+            const pulsePoints = document.querySelectorAll('.pulse-point');
+            const demoValues = {
+                0: ['$67,500', '$69,200', '$68,750', '$71,300'],
+                1: ['3.2%', '5.8%', '4.1%', '7.2%'],
+                2: ['25°C', '27°C', '23°C', '26°C'],
+                3: ['5 degrees warmer', '7 degrees warmer', '3 degrees cooler', '6 degrees warmer'],
+                4: [
+                    'December 15, 2024 at 2:30 PM',
+                    'December 15, 2024 at 2:35 PM', 
+                    'December 15, 2024 at 2:40 PM',
+                    'December 15, 2024 at 2:45 PM'
+                ]
+            };
 
-        /**
-         * Show loading states while fetching real data
-         */
-        function showLoadingStates() {
-            const loadingText = '<span style="opacity: 0.7;">Loading real data...</span>';
-            
-            const teslaEl = document.getElementById('tesla-demo');
-            const weatherEl = document.getElementById('weather-demo');
-            const bitcoinEl = document.getElementById('bitcoin-demo');
-            
-            if (teslaEl) teslaEl.innerHTML = loadingText;
-            if (weatherEl) weatherEl.innerHTML = loadingText;
-            if (bitcoinEl) bitcoinEl.innerHTML = loadingText;
-        }
-
-        /**
-         * Load REAL demo data from server endpoint (connects to real APIs)
-         */
-        async function loadRealDemoData() {
-            try {
-                console.log('🌐 Fetching real API data...');
-                const response = await fetch('/.netlify/functions/demo-data');
-                const data = await response.json();
-                
-                if (data.success) {
-                    updateDemoContent(data.demos, data);
-                    showDataSourceInfo(data);
-                } else {
-                    throw new Error('Server returned error');
-                }
-            } catch (error) {
-                console.warn('Failed to load demo data from server:', error);
-                throw error;
-            }
-        }
-
-        /**
-         * Update demo content with real API data
-         */
-        function updateDemoContent(demos, responseData) {
-            // Tesla demo
-            if (demos.tesla) {
-                const teslaEl = document.getElementById('tesla-demo');
-                if (teslaEl) {
-                    teslaEl.innerHTML = demos.tesla.content;
-                    addDataSourceBadge(teslaEl, demos.tesla.metadata.source);
-                }
-            }
-
-            // Weather demo
-            if (demos.weather) {
-                const weatherEl = document.getElementById('weather-demo');
-                if (weatherEl) {
-                    weatherEl.innerHTML = demos.weather.content;
-                    addDataSourceBadge(weatherEl, demos.weather.metadata.source);
-                }
-            }
-
-            // Bitcoin demo
-            if (demos.bitcoin) {
-                const bitcoinEl = document.getElementById('bitcoin-demo');
-                if (bitcoinEl) {
-                    bitcoinEl.innerHTML = demos.bitcoin.content;
-                    addDataSourceBadge(bitcoinEl, demos.bitcoin.metadata.source);
-                }
-            }
-
-            // Show last updated time
-            updateLastUpdatedInfo(demos.lastUpdated, responseData);
-        }
-
-        /**
-         * Add data source badge to show where data came from
-         */
-        function addDataSourceBadge(element, source) {
-            const isRealAPI = !source.includes('Fallback');
-            const badgeColor = isRealAPI ? '#10b981' : '#f59e0b';
-            const badgeText = isRealAPI ? '🌐 LIVE' : '⚠️ DEMO';
-            
-            const badge = document.createElement('div');
-            badge.style.cssText = `
-                position: absolute;
-                top: 0.5rem;
-                right: 0.5rem;
-                background: ${badgeColor};
-                color: white;
-                padding: 0.25rem 0.5rem;
-                border-radius: 12px;
-                font-size: 0.7rem;
-                font-weight: 600;
-                z-index: 1;
-            `;
-            badge.textContent = badgeText;
-            badge.title = source;
-            
-            const parentPanel = element.closest('.demo-panel');
-            if (parentPanel) {
-                parentPanel.style.position = 'relative';
-                parentPanel.appendChild(badge);
-            }
-        }
-
-        /**
-         * Show data source information
-         */
-        function showDataSourceInfo(responseData) {
-            const realCount = responseData.realDataSources || 0;
-            const totalCount = 3;
-            
-            console.log(`✅ Real API data: ${realCount}/${totalCount} sources`);
-            
-            // You could also show this info in the UI if desired
-            if (responseData.fallbackUsed) {
-                console.log('⚠️ Some data sources using fallback due to API unavailability');
-            }
-        }
-
-        /**
-         * Update last updated information
-         */
-        function updateLastUpdatedInfo(lastUpdated, responseData) {
-            // Find all demo meta sections and update them
-            const demoMetas = document.querySelectorAll('.demo-meta');
-            demoMetas.forEach(meta => {
-                const existingTime = meta.querySelector('.last-update-time');
-                if (existingTime) {
-                    existingTime.remove();
-                }
-                
-                const timeInfo = document.createElement('div');
-                timeInfo.className = 'last-update-time';
-                timeInfo.style.cssText = 'margin-top: 0.5rem; font-size: 0.8rem; color: #6b7280;';
-                
-                const updateTime = new Date(lastUpdated).toLocaleString();
-                const sourceType = responseData.fallbackUsed ? 'Mixed APIs + Demo data' : 'Real-time APIs';
-                
-                timeInfo.innerHTML = `
-                    <strong>Data Source:</strong> ${sourceType}<br>
-                    <strong>Last Updated:</strong> ${updateTime}
-                `;
-                
-                meta.appendChild(timeInfo);
-            });
-        }
-
-        /**
-         * Fallback static data if server is unavailable
-         */
-        function loadFallbackData() {
-            const teslaEl = document.getElementById('tesla-demo');
-            if (teslaEl) {
-                teslaEl.innerHTML = `Tesla shares closed at <span class="live-highlight">$267.45</span> on Friday, <span class="live-highlight">up 7.4%</span> from Thursday's close of <span class="live-highlight">$248.50</span>. The electric vehicle manufacturer continues to navigate market volatility amid earnings expectations.`;
-            }
-
-            const weatherEl = document.getElementById('weather-demo');
-            if (weatherEl) {
-                weatherEl.innerHTML = `Adelaide is experiencing <span class="live-highlight">partly cloudy at 18°C</span> today, which is <span class="live-highlight">4 degrees cooler</span> than yesterday's high of <span class="live-highlight">22°C</span>. Perfect conditions for the weekend markets downtown.`;
-            }
-
-            const bitcoinEl = document.getElementById('bitcoin-demo');
-            if (bitcoinEl) {
-                bitcoinEl.innerHTML = `Bitcoin is trading at <span class="live-highlight">$72,340</span> as of this morning, showing <span class="live-highlight">strong bullish momentum</span> with a <span class="live-highlight">7.3% gain</span> over the past 24 hours. Institutional adoption continues to drive market sentiment.`;
-            }
-        }
-
-        /**
-         * Initialize smooth scrolling for navigation links
-         */
-        function initSmoothScrolling() {
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        }
-
-        /**
-         * Initialize header scroll effect
-         */
-        function initHeaderScrollEffect() {
-            window.addEventListener('scroll', function() {
-                const header = document.querySelector('.header');
-                if (window.scrollY > 100) {
-                    header.style.background = 'rgba(255, 255, 255, 0.98)';
-                } else {
-                    header.style.background = 'rgba(255, 255, 255, 0.95)';
+            pulsePoints.forEach((point, index) => {
+                if (demoValues[index]) {
+                    const values = demoValues[index];
+                    const randomValue = values[Math.floor(Math.random() * values.length)];
+                    
+                    // Add update animation
+                    point.style.transform = 'scale(1.1)';
+                    point.style.backgroundColor = '#10b981';
+                    
+                    setTimeout(() => {
+                        point.textContent = randomValue;
+                        point.style.transform = 'scale(1)';
+                        point.style.backgroundColor = '';
+                    }, 300);
                 }
             });
-        }
+
+            // Show success message
+            const statusIndicator = document.querySelector('.demo-status .status-indicator');
+            if (statusIndicator) {
+                const originalText = statusIndicator.textContent;
+                statusIndicator.textContent = '🔄 Updated 5 pulse points';
+                statusIndicator.style.color = '#10b981';
+                
+                setTimeout(() => {
+                    statusIndicator.textContent = originalText;
+                    statusIndicator.style.color = '';
+                }, 2000);
+            }
+        };
+
+        // Auto-simulate updates every 10 seconds for demo effect
+        setInterval(() => {
+            if (Math.random() > 0.7) { // 30% chance every 10 seconds
+                window.simulateUpdate();
+            }
+        }, 10000);
     </script>
-	
-	<!-- Live Preview Staging Panel (add after existing panels) -->
-<div class="panel" id="live-preview-panel">
-  <div class="panel-header">
-    <h2>🎬 Live Preview Staging</h2>
-    <div class="staging-status" id="staging-status">
-      <span class="status-badge" id="staging-status-badge">Ready</span>
-    </div>
-  </div>
-  
-  <div class="panel-content">
-    <!-- Quality Assessment Display -->
-    <div class="quality-metrics" id="quality-metrics" style="display: none;">
-      <h3>Quality Assessment</h3>
-      <div class="quality-scores">
-        <div class="score-item">
-          <label>Grammar:</label>
-          <div class="score-bar">
-            <div class="score-fill" id="grammar-score"></div>
-            <span class="score-text" id="grammar-text">--</span>
-          </div>
-        </div>
-        <div class="score-item">
-          <label>Semantic:</label>
-          <div class="score-bar">
-            <div class="score-fill" id="semantic-score"></div>
-            <span class="score-text" id="semantic-text">--</span>
-          </div>
-        </div>
-        <div class="score-item">
-          <label>Tone:</label>
-          <div class="score-bar">
-            <div class="score-fill" id="tone-score"></div>
-            <span class="score-text" id="tone-text">--</span>
-          </div>
-        </div>
-        <div class="score-item">
-          <label>Meaning:</label>
-          <div class="score-bar">
-            <div class="score-fill" id="meaning-score"></div>
-            <span class="score-text" id="meaning-text">--</span>
-          </div>
-        </div>
-        <div class="score-item overall">
-          <label>Overall:</label>
-          <div class="score-bar">
-            <div class="score-fill" id="overall-score"></div>
-            <span class="score-text" id="overall-text">--</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Corrections Summary -->
-    <div class="corrections-summary" id="corrections-summary" style="display: none;">
-      <h3>Applied Corrections</h3>
-      <div class="corrections-list" id="corrections-list">
-        <!-- Corrections will be populated here -->
-      </div>
-    </div>
-
-    <!-- Live Preview Content -->
-    <div class="preview-content">
-      <h3>Live Preview</h3>
-      <div class="preview-controls">
-        <button id="generate-preview-btn" class="btn btn-primary">Generate Preview</button>
-        <button id="refresh-preview-btn" class="btn btn-secondary" style="display: none;">Refresh Preview</button>
-        <button id="approve-preview-btn" class="btn btn-success" style="display: none;">Approve for Publishing</button>
-      </div>
-      
-      <div class="preview-container" id="preview-container">
-        <div class="preview-placeholder">
-          Click "Generate Preview" to see your updated content with quality validation
-        </div>
-      </div>
-    </div>
-
-    <!-- Processing Status -->
-    <div class="processing-status" id="processing-status" style="display: none;">
-      <div class="processing-spinner"></div>
-      <div class="processing-steps">
-        <div class="step" id="step-applying">Applying updates...</div>
-        <div class="step" id="step-quality">Quality assessment...</div>
-        <div class="step" id="step-corrections">Applying corrections...</div>
-        <div class="step" id="step-validation">Final validation...</div>
-      </div>
-    </div>
-  </div>
-</div>
-	
-	
 </body>
 </html>

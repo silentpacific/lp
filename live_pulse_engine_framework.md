@@ -1,163 +1,222 @@
-# 🢀 LivePulse Engine Framework (v1.2)
-> A headless, AI-powered content updater that detects, clusters, and refreshes live facts across blog posts — embedded inside any CMS.
+# 🫀 LivePulse Engine Framework (v3.0)
+> Business rules and product specification for the AI-powered content updater that detects, clusters, and refreshes live facts across blog posts.
 
 ---
 
-## 🔍 1. Identifying Pulse Points
+## 🎯 Product Vision
 
-When a user enters or pastes text:
-- The engine **scans for facts** that are likely to change over time.
-- Each Pulse Point is:
-  - Highlighted **directly in the WYSIWYG editor**
-  - Given a **confidence score** (based on change likelihood and source trustworthiness)
-  - Assigned a **type** (e.g. numeric, date-based, entity-based, relational)
-  - Evaluated for **context and dependencies** (to determine if it forms a cluster)
+**LivePulse is a SaaS content intelligence platform** that automatically keeps blog posts and articles current by identifying and updating facts that change over time, while maintaining editorial control and semantic coherence.
 
-If a fact has:
-- **No dependencies**, it's a standalone Pulse Point
-- **Dependencies**, it forms part of a **Cluster** for unified updates
-
-Each Pulse Point is tagged with:
-- A proposed **data source** (OpenAI API or fallback Gemini API)
-- A suggested **update frequency**
-- A **Pulse Category** (e.g. Economic, Tech, Health, Climate, etc.)
+### Core Value Proposition
+- **For Content Creators**: Never publish outdated information again
+- **For Businesses**: Maintain credibility with always-current data
+- **For SEO**: Fresh content gets better search rankings
+- **For AI/LLM**: Reliable, cited information increases model references
 
 ---
 
-## 📌 2. Pulse Point Rules
+## 🔍 Pulse Point Detection Rules
 
-1. Match dates, quantities, percentages (e.g. "23%", "in 2022", "15 million users")
-2. Detect relative time references: *last week*, *this quarter*, *five years ago*
-3. Identify standalone **factual statements**
-4. If the article is time-bound (e.g. “in 2020”), freeze the facts. Else, auto-update.
-5. If a **specific source** is cited, fetch updates from it. Else, flag for manual source selection.
-6. All Pulse Points appear as inline highlights in the editor with:
-   - Confidence Score
-   - Pulse Category
-   - Editable source assignment
+### What Qualifies as a Pulse Point?
+1. **Quantitative Data**: Prices, percentages, statistics, counts
+2. **Temporal References**: Dates, "last quarter", "this year", relative time
+3. **Dynamic Facts**: Stock prices, weather, population figures, market data
+4. **Comparative Statements**: "higher than", "increased by", "compared to"
 
----
+### What Should NOT Be Pulse Points?
+- ❌ Historical events with fixed dates ("World War II ended in 1945")
+- ❌ Permanent facts ("Paris is the capital of France")
+- ❌ Subjective opinions or editorial content
+- ❌ Branded content or marketing copy
 
-## 🔗 3. Cluster Identification Rules
-
-Clusters = groups of interrelated Pulse Points.
-
-1. Semantic analysis checks for:
-   - Subject references: *it*, *this*, *they*
-   - Contextual glue: *like*, *towards*, *representing*, *compared to*
-   - Topic matching with title/headings
-2. Named Entity Recognition links mentions across paragraphs (e.g., “Apple,” “iPhone,” “the company”)
-3. A **Confidence Score** is calculated for each cluster suggestion
-4. Editors can:
-   - Merge Pulse Points into a cluster
-   - Break clusters apart
-   - Override or confirm clustering suggestions
+### Confidence Scoring Rules
+- **High (🔥)**: Well-formatted numbers with clear data types ($67,500, 25°C, 15%)
+- **Medium (⚡)**: Recognizable patterns but some ambiguity
+- **Low (⚠️)**: Potential pulse points requiring manual review
 
 ---
 
-## ♻️ 4. Pulse Point Update Rules
+## 🔗 Semantic Clustering Logic
 
-1. Ask: **Will this fact change over time?**
-   - Historical events: ❌ no updates
-   - Dynamic data: ✅ set refresh rate
-2. Suggested refresh rates (minimum = 1 hour):
-   - Weather → Hourly (via OpenWeather API)
-   - Stock data → Daily (via Yahoo Finance)
-   - National data → Quarterly (e.g. ABS for Australia)
-3. Updates are:
-   - **Server-side only**
-   - SEO-readable and crawlable
-   - Stored in version history
+### When to Create Clusters
+Pulse points should be clustered when they have:
+1. **Mathematical Relationships**: Price → Percentage change → Direction
+2. **Temporal Dependencies**: Current value → Historical comparison
+3. **Contextual Links**: Subject references, entity relationships
+4. **Logical Consistency**: Related facts that must update together
 
-4. **Conflict resolution:**
-   - If fact update breaks sentence/paragraph logic → Engine auto-rewrites
-   - If rewrite results are uncertain → Flag for editor
+### Cluster Types
+- **Mathematical**: Price, percentage, direction (e.g., "Tesla at $248, up 3.2%")
+- **Comparative**: Current vs historical values (e.g., "25°C, 5 degrees warmer")
+- **Temporal**: Time-based relationships (e.g., "Q3 2024 vs Q3 2023")
+- **Descriptive**: Related facts about same entity
 
 ---
 
-## 👀 5. Live Preview Rules
+## ⚡ Update Frequency Guidelines
 
-The **Live Preview pane is the staging environment.**
+### Business Rules for Update Timing
+- **High Volatility Data** (Crypto, Stocks): 1-4 hours
+- **Moderate Change Data** (Weather, News): 3-12 hours  
+- **Stable Data** (Demographics, Research): Daily to Monthly
+- **Seasonal Data** (Reports, Statistics): Quarterly/Annually
 
-Before publishing:
-1. Run AI grammar check
-2. Ensure semantic coherence across sentence, paragraph, and article
-3. Check if the rewrite preserves **meaning** while updating facts
-4. If anything is unclear:
-   - Flag for editor review
-   - Highlight suspected logic breaks
-
----
-
-## 🧑‍💻 6. Editor Control Panel
-
-Editors have full visibility and manual control:
-
-### Pulse Control
-- Add / remove Pulse Points
-- Edit values, source, confidence score
-- Approve or reject AI refreshes
-- View full version history and restore past values
-
-### Cluster Control
-- Merge or split Pulse Points
-- Review cluster confidence suggestions
-- Manually edit sentence groups
-
-### Platform & Article Management
-- Connect CMS platforms (WordPress, Shopify, etc.)
-- View all articles and Pulse summaries
-- Filter articles by:
-  - State: Draft, Archived, Published
-  - Date range
-  - Tags, categories, authors
-  - Pulse category (e.g. Economic, Political)
-- Search by blog title or keyword
-
-### Source & Rule Settings
-- Assign trusted APIs per site/domain
-  - e.g. “Always use ABS for Australian economic data”
-- Add custom APIs per category
-  - Weather, Stocks, Currency, etc.
+### Priority System
+1. **Critical**: Financial data during market hours
+2. **High**: Breaking news, weather alerts, crypto during volatility
+3. **Medium**: General statistics, population data, research findings
+4. **Low**: Historical comparisons, background information
 
 ---
 
-## 🚀 7. Publishing Rules
+## 👀 Editorial Control Requirements
 
-- Manual approval from editors required (editorial control stays with user)
-- One-click **push to CMS** (via:
-  - WordPress plugin/API
-  - Shopify app/API
-  - JSON/Markdown for manual copy-paste)
+### Manual Approval Workflow
+1. **Detection Phase**: AI suggests pulse points with confidence scores
+2. **Review Phase**: Editor approves/rejects suggestions and sets sources
+3. **Update Phase**: System fetches new data and shows preview
+4. **Publishing Phase**: Editor approves changes before going live
 
----
-
-## 🔌 8. Integrations
-
-### Live Today
-- OpenAI (GPT-4) for all updates
-- Gemini API as fallback
-- WordPress integration (via REST API or plugin)
-- Shopify (via custom app or Admin API)
-
-### Coming Soon
-- Optional integrations for:
-  - OpenWeather API
-  - Yahoo Finance
-  - World Bank, IMF, and ABS datasets
-- Built-in AI grammar tools (e.g. JenniAI)
-- Agency/CMS-level API access
-
-> Note: Image updates (e.g. DALL·E) deferred for later phase
+### Editor Override Capabilities
+- Manually edit any pulse point value
+- Change data sources and update frequencies
+- Pause/resume individual pulses or entire clusters
+- Rollback to previous versions
+- Add custom validation rules
 
 ---
 
-## 🔮 Long-Term Vision
+## 🛡️ Quality Assurance Rules
 
-**LivePulse is a SaaS content tool**, not just a plugin or widget.
+### Pre-Publication Validation
+1. **Grammar Check**: Ensure updated content reads naturally
+2. **Semantic Coherence**: Verify meaning is preserved
+3. **Fact Consistency**: Check mathematical relationships are correct
+4. **Source Validation**: Confirm data source is reliable and current
 
-- Headless by design — embeddable in any CMS or system
-- AI-first — always-on content freshness
-- Focused on high-quality editorial support, not just automation
-- Future-ready with pluggable APIs, LLM integrations, and editorial intelligence
+### Conflict Resolution
+- **Logic Breaks**: If update creates grammatical errors → Auto-rewrite with AI
+- **Inconsistencies**: If cluster relationships break → Flag for manual review
+- **Source Failures**: If data unavailable → Use last known value + timestamp
+- **Validation Errors**: If content doesn't pass checks → Hold for editor approval
 
+---
+
+## 🔌 Integration Requirements
+
+### CMS Platform Support
+- **WordPress**: Plugin + REST API integration
+- **Ghost**: Admin API integration
+- **Shopify**: Custom app for product descriptions
+- **Custom CMS**: JSON/API endpoints + webhook support
+
+### Data Source Standards
+- **Primary Sources**: Official APIs (CoinGecko, OpenWeather, Yahoo Finance)
+- **Government Data**: Bureau of Statistics, Fed APIs, Official databases
+- **Fallback Sources**: AI research with citations and confidence scoring
+- **Custom Sources**: User-provided APIs with validation
+
+### Authentication & Security
+- **API Key Management**: Secure storage and rotation
+- **Rate Limiting**: Respect API limits and implement backoff
+- **Data Privacy**: No storage of sensitive user content
+- **Audit Trail**: Log all changes and data sources
+
+---
+
+## 📊 Success Metrics & KPIs
+
+### Technical Performance
+- **Pulse Detection Accuracy**: >90% precision, <5% false positives
+- **Update Success Rate**: >95% successful automated updates
+- **Response Time**: <2 seconds for analysis, <5 seconds for updates
+- **Uptime**: >99.9% availability for critical update functions
+
+### Business Impact  
+- **Content Freshness**: Reduce stale data by 40%+
+- **User Engagement**: Increase time on page by 20%+
+- **SEO Performance**: Improve search rankings by 15-25%
+- **Editorial Efficiency**: Reduce manual fact-checking time by 60%+
+
+---
+
+## 🚀 Deployment & Scaling Strategy
+
+### Launch Phases
+1. **Phase 1**: WordPress plugin for financial and crypto blogs
+2. **Phase 2**: Ghost integration and weather/news pulse points
+3. **Phase 3**: Enterprise features and custom integrations
+4. **Phase 4**: White-label solutions and API marketplace
+
+### Pricing Model
+- **Free Tier**: 5 pulse points, basic sources, manual updates
+- **Creator Tier** ($29/mo): 50 pulse points, auto-updates, premium sources
+- **Business Tier** ($99/mo): Unlimited pulses, custom sources, team features
+- **Enterprise**: Custom pricing, dedicated support, white-label options
+
+---
+
+## 🔮 Future Roadmap
+
+### Short-term (3-6 months)
+- Real-time WebSocket updates for critical data
+- Advanced clustering with ML-based relationship detection
+- Bulk import/export for large content migration
+- Multi-language support for international markets
+
+### Medium-term (6-12 months)
+- Predictive analytics for content performance
+- A/B testing framework for updated vs static content
+- Integration marketplace with third-party data providers
+- Advanced workflow automation and approval chains
+
+### Long-term (12+ months)
+- AI-generated content suggestions based on pulse patterns
+- Real-time collaboration features for editorial teams
+- Custom dashboard and analytics suite
+- Mobile app for on-the-go pulse management
+
+---
+
+## 🎭 User Personas & Use Cases
+
+### Primary Users
+- **Solo Bloggers**: Tech, finance, and news content creators
+- **Content Teams**: Marketing teams, news organizations, corporate blogs
+- **Agency Clients**: Digital agencies managing multiple client sites
+- **E-commerce**: Product descriptions with dynamic pricing/inventory
+
+### Success Stories (Target)
+- *"Our crypto blog's traffic increased 40% after implementing LivePulse"*
+- *"We reduced fact-checking time from hours to minutes while improving accuracy"*  
+- *"Search rankings improved significantly with constantly fresh content"*
+- *"Readers trust our financial content more knowing prices are always current"*
+
+---
+
+## 📋 Technical Requirements Summary
+
+### Must-Have Features
+- ✅ AI-powered pulse point detection
+- ✅ Semantic cluster management
+- ✅ Real-time data source integration
+- ✅ Editorial approval workflow
+- ✅ WordPress plugin compatibility
+
+### Should-Have Features
+- 🔄 Ghost CMS integration
+- 🔄 Advanced analytics dashboard
+- 🔄 Bulk operations and management
+- 🔄 Multi-user collaboration tools
+
+### Nice-to-Have Features
+- 💭 Predictive content insights
+- 💭 Custom ML model training
+- 💭 Advanced workflow automation
+- 💭 White-label solutions
+
+---
+
+**This framework serves as the product specification and business logic guide for LivePulse development and stakeholder communication.**
+
+*Framework Version: 3.0 | Last Updated: December 2024*

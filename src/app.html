@@ -1,748 +1,274 @@
 <!DOCTYPE html>
-<html lang="en" class="app">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LivePulse App - Semantic Content Analysis</title>
-    <meta name="description" content="LivePulse app for analyzing and managing dynamic content with semantic cluster detection">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- External Styles -->
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="app-body">
-    <!-- App Header -->
-    <header class="app-header">
-        <nav class="app-nav">
-            <a href="/" class="app-logo">
-                <span class="app-logo-icon">🫀</span>
-                <span class="app-logo-text">LivePulse</span>
-            </a>
-            <div class="app-nav-links">
-                <a href="/">← Back to Home</a>
-                <a href="#help">Help</a>
-            </div>
-            
-            <!-- Mobile Hamburger Menu Button -->
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                ☰
-            </button>
-        </nav>
-    </header>
-
-    <!-- Mobile Menu Overlay -->
-    <div class="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
-    
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobile-menu">
-        <div class="mobile-menu-header">
-            <span class="mobile-menu-title">Navigation</span>
-            <button class="mobile-menu-close" onclick="closeMobileMenu()">×</button>
-        </div>
-        
-        <div class="mobile-menu-content">
-            <div class="mobile-menu-section">
-                <h3>Sections</h3>
-                <a href="#article-section" class="mobile-menu-item" onclick="closeMobileMenu()">
-                    <span class="mobile-menu-icon">📝</span>
-                    <span>Article Content</span>
-                </a>
-                <a href="#pulse-section" class="mobile-menu-item" onclick="closeMobileMenu()">
-                    <span class="mobile-menu-icon">⚡</span>
-                    <span>Pulse Management</span>
-                </a>
-                <a href="#preview-section" class="mobile-menu-item" onclick="closeMobileMenu()">
-                    <span class="mobile-menu-icon">👁️</span>
-                    <span>Live Preview</span>
-                </a>
-                <a href="#stats-section" class="mobile-menu-item" onclick="closeMobileMenu()">
-                    <span class="mobile-menu-icon">📈</span>
-                    <span>Quick Stats</span>
-                </a>
-            </div>
-            
-            <div class="mobile-menu-section">
-                <h3>Quick Actions</h3>
-                <button class="mobile-menu-action-btn success" onclick="window.updateAllPulses(); closeMobileMenu();">
-                    Update All Pulses
-                </button>
-                <button class="mobile-menu-action-btn warning" onclick="window.pauseAllPulses(); closeMobileMenu();">
-                    Pause All Pulses
-                </button>
-                <button class="mobile-menu-action-btn danger" onclick="window.clearAllPulses(); closeMobileMenu();">
-                    Clear All Pulses
-                </button>
-            </div>
-            
-            <div class="mobile-menu-section">
-                <h3>Links</h3>
-                <a href="/" class="mobile-menu-item" onclick="closeMobileMenu()">
-                    <span class="mobile-menu-icon">🏠</span>
-                    <span>Back to Home</span>
-                </a>
-                <a href="#help" class="mobile-menu-item" onclick="closeMobileMenu()">
-                    <span class="mobile-menu-icon">❓</span>
-                    <span>Help</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main App Container -->
-    <div class="app-container">
-        <!-- Main Content Area -->
-        <div class="main-content">
-            <!-- Article Editor -->
-            <div id="article-section" class="glass-card section-anchor">
-                <h2>
-                    <span>📝</span>
-                    Article Content
-                </h2>
-                
-                <!-- Article content textarea -->
-                <div class="form-group">
-                    <label class="form-label">Enter your article content for analysis:</label>
-                    <textarea 
-                        id="article-content" 
-                        class="form-input form-textarea"
-                        placeholder="Paste your article content here...
-
-Example with semantic clusters:
-
-Tesla Earnings Impact Market Sentiment
-
-Tesla shares closed at $248.50 on Friday, down 3.2% from Thursday's close of $257.75. The electric vehicle manufacturer has seen increased volatility following Q3 earnings released last week.
-
-Weather conditions in Adelaide are currently sunny with 25°C, a pleasant 5 degrees warmer than yesterday's 20°C high. This represents a significant improvement from last week's cooler pattern.
-
-Bitcoin continues its volatile trading pattern, currently at $67,500 and showing strong momentum. The cryptocurrency market has gained attention from institutional investors in 2025."
-                    ></textarea>
-                </div>
-
-                <!-- Scan full article button -->
-                <div class="form-group">
-                    <button id="scan-full-article" class="btn btn-secondary">
-                        <span>🔍</span>
-                        Scan Full Article for Pulse Points
-                    </button>
-                </div>
-
-                <!-- Scan results display area -->
-                <div id="full-scan-results" class="scan-results-container hidden">
-                    <div class="scan-results-header">
-                        <h3>🔍 Article Scan Results</h3>
-                        <div class="scan-summary-stats">
-                            <span id="scan-pulse-count" class="scan-stat">0 pulse points</span>
-                            <span id="scan-cluster-count" class="scan-stat">0 clusters</span>
-                        </div>
-                    </div>
-                    <div id="scan-results-content">
-                        <!-- Scan results will be populated here -->
-                    </div>
-                </div>
-
-                <!-- Manual pulse analysis section -->
-                <div class="manual-analysis-section">
-                    <div class="form-group">
-                        <label class="form-label">Select specific text to analyze:</label>
-                        <div style="display: flex; gap: 1rem;">
-                            <input 
-                                type="text" 
-                                id="selected-text" 
-                                class="form-input"
-                                placeholder="e.g., 'Tesla shares closed at $248.50, down 3.2% from $257.75'"
-                                style="flex: 1;"
-                            >
-                            <button id="analyze-btn" class="btn btn-primary">
-                                <span>🔬</span>
-                                Analyze
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Analysis Results -->
-            <div id="analysis-result" class="glass-card hidden">
-                <h2>
-                    <span>📊</span>
-                    Analysis Results
-                </h2>
-                <div id="analysis-content">
-                    <!-- Analysis results will be populated here -->
-                </div>
-                <div style="margin-top: 1.5rem;">
-                    <button id="create-pulse-btn" class="btn btn-success hidden">
-                        <span>✨</span>
-                        Create Pulse Point(s)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Live Preview with Editor Features -->
-            <div id="preview-section" class="glass-card section-anchor">
-                <h2>
-                    <span>👁️</span>
-                    Live Preview with Footnotes
-                </h2>
-                <div class="preview-controls">
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                        <button id="toggle-footnotes" class="btn btn-small btn-secondary">
-                            <span>📝</span>
-                            Toggle Footnotes
-                        </button>
-                        <button id="toggle-superscripts" class="btn btn-small btn-secondary">
-                            <span>¹²³</span>
-                            Toggle Superscripts
-                        </button>
-                        <button id="export-html" class="btn btn-small btn-primary">
-                            <span>📤</span>
-                            Export HTML
-                        </button>
-                    </div>
-                </div>
-                <div id="article-preview" class="preview-area">
-                    <div class="preview-placeholder">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
-                        <h3>Live Preview</h3>
-                        <p>Articles with pulse points will appear here with highlighted dynamic content, superscripts, and automatic footnotes for editorial review.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <!-- Quick Stats -->
-            <div id="stats-section" class="glass-card section-anchor">
-                <h3>
-                    <span>📈</span>
-                    Quick Stats
-                </h3>
-                <div class="detail-row">
-                    <label>Active Pulses:</label>
-                    <span id="active-pulse-count">0</span>
-                </div>
-                <div class="detail-row">
-                    <label>Clusters:</label>
-                    <span id="cluster-count">0</span>
-                </div>
-                <div class="detail-row">
-                    <label>Next Update:</label>
-                    <span id="next-update-time">--</span>
-                </div>
-                <div class="detail-row">
-                    <label>Success Rate:</label>
-                    <span id="success-rate">--</span>
-                </div>
-                <div class="detail-row">
-                    <label>Show Footnotes:</label>
-                    <span id="footnotes-status">Enabled</span>
-                </div>
-                <div class="detail-row">
-                    <label>Show Superscripts:</label>
-                    <span id="superscripts-status">Enabled</span>
-                </div>
-            </div>
-
-            <!-- Pulse Management -->
-            <div id="pulse-section" class="glass-card section-anchor">
-                <h3>
-                    <span>⚡</span>
-                    Pulse Management
-                </h3>
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                    <button class="btn btn-small btn-success" onclick="window.updateAllPulses()">Update All</button>
-                    <button class="btn btn-small btn-warning" onclick="window.pauseAllPulses()">Pause All</button>
-                    <button class="btn btn-small btn-danger" onclick="window.clearAllPulses()">Clear All</button>
-                </div>
-                
-                <div id="pulse-list">
-                    <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.5);">
-                        <div style="font-size: 2rem; margin-bottom: 1rem;">🎯</div>
-                        <p>No pulse points created yet.</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Analyze some text to get started!</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Enhanced Controls Section - MOVED INSIDE SIDEBAR -->
-            <div class="control-section enhanced-controls">
-                <h3>🎛️ Advanced Controls</h3>
-                
-                <!-- Search and Filter Section -->
-                <div class="control-group">
-                    <h4>🔍 Search & Filter</h4>
-                    
-                    <div class="search-container">
-                        <input type="text" 
-                               id="pulse-search" 
-                               placeholder="Search pulse points..." 
-                               class="control-input">
-                        <button onclick="clearFilters()" class="btn btn-small btn-secondary">Clear</button>
-                    </div>
-                    
-                    <div class="filter-row">
-                        <label for="category-filter">Category:</label>
-                        <select id="category-filter" class="control-select">
-                            <option value="all">All Categories</option>
-                            <option value="crypto">Crypto</option>
-                            <option value="stock">Finance</option>
-                            <option value="weather">Weather</option>
-                            <option value="date">Temporal</option>
-                            <option value="population">Demographics</option>
-                            <option value="technology">Technology</option>
-                            <option value="sports">Sports</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-row">
-                        <label for="confidence-filter">Confidence:</label>
-                        <select id="confidence-filter" class="control-select">
-                            <option value="all">All Levels</option>
-                            <option value="high">High</option>
-                            <option value="medium">Medium</option>
-                            <option value="low">Low</option>
-                        </select>
-                    </div>
-                    
-                    <div class="quick-filters">
-                        <button onclick="filterPulsePoints({type: 'active-status', value: 'active'})" 
-                                class="btn btn-small btn-info">Active Only</button>
-                        <button onclick="filterPulsePoints({type: 'overdue', value: true})" 
-                                class="btn btn-small btn-warning">Overdue</button>
-                        <button onclick="filterPulsePoints({type: 'cluster-status', value: 'clustered'})" 
-                                class="btn btn-small btn-primary">Clustered</button>
-                    </div>
-                </div>
-                
-                <!-- Bulk Operations Section -->
-                <div class="control-group">
-                    <h4>⚡ Bulk Operations</h4>
-                    
-                    <div class="bulk-actions">
-                        <button id="bulk-update-btn" class="btn btn-small btn-success">
-                            📊 Update All Active
-                        </button>
-                        <button id="bulk-pause-btn" class="btn btn-small btn-warning">
-                            ⏸️ Pause All
-                        </button>
-                        <button id="bulk-resume-btn" class="btn btn-small btn-success">
-                            ▶️ Resume All
-                        </button>
-                    </div>
-                    
-                    <div class="bulk-actions">
-                        <button onclick="clearAllPulses()" class="btn btn-small btn-danger">
-                            🗑️ Clear All
-                        </button>
-                        <button id="validate-btn" class="btn btn-small btn-info">
-                            ✅ Validate All
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Enhanced Statistics Section -->
-                <div class="control-group">
-                    <h4>📊 Enhanced Statistics</h4>
-                    
-                    <div class="stats-breakdown">
-                        <div class="stat-category">
-                            <label>By Category:</label>
-                            <div id="category-breakdown" class="stat-items">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-                        
-                        <div class="stat-category">
-                            <label>By Confidence:</label>
-                            <div id="confidence-breakdown" class="stat-items">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-                        
-                        <div class="stat-category">
-                            <label>Source Quality:</label>
-                            <div id="source-breakdown" class="stat-items">
-                                <!-- Populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Import/Export Section -->
-                <div class="control-group">
-                    <h4>💾 Configuration Management</h4>
-                    
-                    <div class="config-actions">
-                        <button id="export-config-btn" class="btn btn-small btn-primary">
-                            📤 Export Config
-                        </button>
-                        
-                        <div class="import-wrapper">
-                            <input type="file" 
-                                   id="import-config-input" 
-                                   accept=".json" 
-                                   style="display: none;">
-                            <button onclick="document.getElementById('import-config-input').click()" 
-                                    class="btn btn-small btn-secondary">
-                                📥 Import Config
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="config-info">
-                        <small>Export your pulse configuration for backup or sharing. Import configurations from JSON files.</small>
-                    </div>
-                </div>
-                
-                <!-- Source Management Section -->
-                <div class="control-group">
-                    <h4>🔌 Data Source Settings</h4>
-                    
-                    <div class="source-settings">
-                        <div class="source-item">
-                            <label>Crypto Data:</label>
-                            <span class="source-status active">CoinGecko API</span>
-                        </div>
-                        
-                        <div class="source-item">
-                            <label>Stock Data:</label>
-                            <span class="source-status active">Yahoo Finance</span>
-                        </div>
-                        
-                        <div class="source-item">
-                            <label>Weather Data:</label>
-                            <span class="source-status active">OpenWeatherMap</span>
-                        </div>
-                        
-                        <div class="source-item">
-                            <label>Fallback:</label>
-                            <span class="source-status active">AI Research</span>
-                        </div>
-                    </div>
-                    
-                    <button onclick="showSuccess('Source management coming in next update!')" 
-                            class="btn btn-small btn-info">
-                        ⚙️ Configure Sources
-                    </button>
-                </div>
-                
-                <!-- Performance Monitoring -->
-                <div class="control-group">
-                    <h4>📈 Performance Monitor</h4>
-                    
-                    <div class="performance-stats">
-                        <div class="perf-item">
-                            <label>Update Success Rate:</label>
-                            <span id="success-rate-2" class="perf-value">--</span>
-                        </div>
-                        
-                        <div class="perf-item">
-                            <label>Avg Response Time:</label>
-                            <span class="perf-value">1.2s</span>
-                        </div>
-                        
-                        <div class="perf-item">
-                            <label>API Calls Today:</label>
-                            <span class="perf-value">47</span>
-                        </div>
-                        
-                        <div class="perf-item">
-                            <label>Cache Hit Rate:</label>
-                            <span class="perf-value">73%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions Floating Panel (Optional) -->
-    <div class="floating-quick-actions" style="display: none;">
-        <button onclick="updateAllPulses()" class="quick-action-btn" title="Update All">
-            🔄
-        </button>
-        <button onclick="validateAllPulses()" class="quick-action-btn" title="Validate">
-            ✅
-        </button>
-        <button onclick="exportPulseConfig()" class="quick-action-btn" title="Export">
-            📤
-        </button>
-        <button onclick="this.parentElement.style.display='none'" class="quick-action-btn close" title="Close">
-            ✕
-        </button>
-    </div>
-
-    <!-- Toggle button for floating panel -->
-    <button onclick="document.querySelector('.floating-quick-actions').style.display='flex'" 
-            class="floating-toggle-btn" 
-            title="Show Quick Actions">
-        ⚡
-    </button>
-
-    <!-- Include the main JavaScript file -->
-    <script src="app.js"></script>
-    
-    <!-- Editor-specific functionality -->
-    <script>
-        // Editor-specific state
-        let showFootnotes = true;
-        let showSuperscripts = true;
-
-        // Initialize editor features
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeEditorFeatures();
-        });
-
-        /**
-         * Initialize editor-specific features
-         */
-        function initializeEditorFeatures() {
-            const toggleFootnotesBtn = document.getElementById('toggle-footnotes');
-            const toggleSuperscriptsBtn = document.getElementById('toggle-superscripts');
-            const exportHtmlBtn = document.getElementById('export-html');
-
-            // Toggle footnotes
-            if (toggleFootnotesBtn) {
-                toggleFootnotesBtn.addEventListener('click', function() {
-                    showFootnotes = !showFootnotes;
-                    updateFootnotesDisplay();
-                    updatePreviewForEditor();
-                    updateStatsDisplay();
-                });
-            }
-
-            // Toggle superscripts
-            if (toggleSuperscriptsBtn) {
-                toggleSuperscriptsBtn.addEventListener('click', function() {
-                    showSuperscripts = !showSuperscripts;
-                    updateSuperscriptsDisplay();
-                    updatePreviewForEditor();
-                    updateStatsDisplay();
-                });
-            }
-
-            // Export HTML
-            if (exportHtmlBtn) {
-                exportHtmlBtn.addEventListener('click', exportArticleHtml);
-            }
-
-            // Update initial stats
-            updateStatsDisplay();
-        }
-
-        /**
-         * Update footnotes display
-         */
-        function updateFootnotesDisplay() {
-            const footnotesSection = document.querySelector('.footnotes-section');
-            if (footnotesSection) {
-                footnotesSection.style.display = showFootnotes ? 'block' : 'none';
-            }
-        }
-
-        /**
-         * Update superscripts display
-         */
-        function updateSuperscriptsDisplay() {
-            const superscripts = document.querySelectorAll('.pulse-point sup');
-            superscripts.forEach(sup => {
-                sup.style.display = showSuperscripts ? 'inline' : 'none';
-            });
-        }
-
-        /**
-         * Update preview specifically for editor use
-         */
-        function updatePreviewForEditor() {
-            // Call the main updatePreview function
-            if (window.updatePreview) {
-                window.updatePreview();
-            }
-            
-            // Apply editor-specific settings
-            setTimeout(() => {
-                updateFootnotesDisplay();
-                updateSuperscriptsDisplay();
-            }, 100);
-        }
-
-        /**
-         * Update stats display with editor features
-         */
-        function updateStatsDisplay() {
-            const footnotesStatus = document.getElementById('footnotes-status');
-            const superscriptsStatus = document.getElementById('superscripts-status');
-            
-            if (footnotesStatus) {
-                footnotesStatus.textContent = showFootnotes ? 'Enabled' : 'Disabled';
-                footnotesStatus.style.color = showFootnotes ? '#10b981' : '#ef4444';
-            }
-            
-            if (superscriptsStatus) {
-                superscriptsStatus.textContent = showSuperscripts ? 'Enabled' : 'Disabled';
-                superscriptsStatus.style.color = showSuperscripts ? '#10b981' : '#ef4444';
-            }
-        }
-
-        /**
-         * Export article HTML with pulse points
-         */
-        function exportArticleHtml() {
-            const previewContent = document.getElementById('article-preview');
-            if (!previewContent) {
-                alert('No content to export');
-                return;
-            }
-
-            const articleContent = previewContent.querySelector('.article-content');
-            if (!articleContent) {
-                alert('No article content to export');
-                return;
-            }
-
-            // Create a clean HTML version
-            const cleanHtml = createCleanHtmlExport(articleContent);
-            
-            // Create download
-            const blob = new Blob([cleanHtml], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'livepulse-article.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            // Show success message
-            if (window.showSuccess) {
-                window.showSuccess('Article HTML exported successfully!');
-            }
-        }
-
-        /**
-         * Create clean HTML export
-         */
-        function createCleanHtmlExport(articleContent) {
-            const title = document.getElementById('article-content')?.value.split('\n')[0]?.trim() || 'LivePulse Article';
-            
-            const cleanContent = articleContent.innerHTML;
-            
-            return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    <style>
-        body {
-            font-family: 'Georgia', serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            color: #333;
-        }
-        .pulse-point {
-            background: linear-gradient(45deg, #dc2626, #b91c1c);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-        .pulse-point sup {
-            background: rgba(255, 255, 255, 0.95);
-            color: #dc2626;
-            border-radius: 3px;
-            padding: 1px 4px;
-            font-size: 0.7rem;
-            margin-left: 2px;
-        }
-        .pulse-point sup a {
-            color: #dc2626;
-            text-decoration: none;
-        }
-        .footnotes-section {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e5e7eb;
-        }
-        .footnotes-section h4 {
-            color: #1f2937;
-            margin-bottom: 1rem;
-        }
-        .footnote-item {
-            font-size: 0.9rem;
-            color: #4b5563;
-            margin-bottom: 0.5rem;
-        }
-        .footnote-cluster strong {
-            color: #374151;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-        p {
-            margin-bottom: 1rem;
-        }
-    </style>
+    <title>LivePulse Editor - Intelligent Content Analysis</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="LivePulse Editor - Create and manage dynamic pulse points in your content">
 </head>
-<body>
-    <article>
-        ${cleanContent}
-    </article>
-    
-    <footer style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; font-size: 0.9rem; color: #6b7280; text-align: center;">
-        <p>Generated by <strong>LivePulse</strong> - Intelligent Content Analysis & Automatic Updates</p>
-        <p>Export Date: ${new Date().toLocaleString()}</p>
-    </footer>
-</body>
-</html>`;
-        }
+<body class="app-body">
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>🫀 LivePulse Editor</h1>
+                <span class="version">v3.0</span>
+            </div>
+            <div class="header-right">
+                <div class="header-stats">
+                    <span id="active-pulse-count">0</span> active pulses
+                    <span id="cluster-count">0</span> clusters
+                </div>
+                <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+        </div>
+    </header>
 
-        // Override the main updatePreview function to include editor features
-        const originalUpdatePreview = window.updatePreview;
-        window.updatePreview = function() {
-            // Call original function
-            if (originalUpdatePreview) {
-                originalUpdatePreview();
-            }
-            
-            // Apply editor-specific features
-            setTimeout(() => {
-                updateFootnotesDisplay();
-                updateSuperscriptsDisplay();
-                updateStatsDisplay();
-            }, 100);
-        };
+    <!-- Main App Layout -->
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <!-- Article Management Section -->
+            <div class="sidebar-section">
+                <h3>📄 Article Management</h3>
+                <div class="article-controls">
+                    <select id="article-select">
+                        <option value="">Select an article...</option>
+                    </select>
+                    <div class="article-actions">
+                        <button id="new-article-btn" class="btn btn-small btn-success">New</button>
+                        <button id="save-article-btn" class="btn btn-small btn-primary">Save</button>
+                        <button id="delete-article-btn" class="btn btn-small btn-danger">Delete</button>
+                    </div>
+                </div>
+                <div id="current-article-info" class="article-info">
+                    <span class="text-muted">No article selected</span>
+                </div>
+            </div>
 
-        // Global functions for mobile menu
-        window.toggleMobileMenu = function() {
-            const menu = document.getElementById('mobile-menu');
-            const overlay = document.querySelector('.mobile-menu-overlay');
-            
-            menu.classList.toggle('open');
-            overlay.classList.toggle('open');
-        };
+            <!-- Stats Section -->
+            <div class="sidebar-section">
+                <h3>📊 Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="active-pulse-count">0</div>
+                        <div class="stat-label">Active Pulses</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="cluster-count">0</div>
+                        <div class="stat-label">Clusters</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="success-rate">100%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-time" id="next-update-time">--</div>
+                        <div class="stat-label">Next Update</div>
+                    </div>
+                </div>
+            </div>
 
-        window.closeMobileMenu = function() {
-            const menu = document.getElementById('mobile-menu');
-            const overlay = document.querySelector('.mobile-menu-overlay');
-            
-            menu.classList.remove('open');
-            overlay.classList.remove('open');
-        };
-    </script>
+            <!-- Enhanced Stats -->
+            <div class="sidebar-section">
+                <h3>📈 Breakdown</h3>
+                <div class="enhanced-stats">
+                    <div class="stat-category">
+                        <h4>Categories</h4>
+                        <div id="category-breakdown" class="stat-breakdown"></div>
+                    </div>
+                    <div class="stat-category">
+                        <h4>Confidence</h4>
+                        <div id="confidence-breakdown" class="stat-breakdown"></div>
+                    </div>
+                    <div class="stat-category">
+                        <h4>Source Quality</h4>
+                        <div id="source-breakdown" class="stat-breakdown"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="sidebar-section">
+                <h3>⚡ Quick Actions</h3>
+                <div class="quick-actions">
+                    <button onclick="window.livePulseApp?.updateAllPulses?.()" class="btn btn-small btn-primary">Update All</button>
+                    <button onclick="window.livePulseApp?.pauseAllPulses?.()" class="btn btn-small btn-warning">Pause All</button>
+                    <button onclick="window.livePulseApp?.clearAllPulses?.()" class="btn btn-small btn-danger">Clear All</button>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="sidebar-section">
+                <h3>⚙️ Settings</h3>
+                <div class="settings-controls">
+                    <label class="toggle-control">
+                        <input type="checkbox" id="toggle-footnotes" checked>
+                        <span>Show Footnotes</span>
+                        <span id="footnotes-status" class="status-indicator">Enabled</span>
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="toggle-superscripts" checked>
+                        <span>Show Superscripts</span>
+                        <span id="superscripts-status" class="status-indicator">Enabled</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Export -->
+            <div class="sidebar-section">
+                <h3>📤 Export</h3>
+                <div class="export-controls">
+                    <button id="export-html" class="btn btn-small btn-info">Export HTML</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Enhanced Control Panel -->
+            <div class="enhanced-control-panel">
+                <div class="control-section">
+                    <h3>🎛️ Enhanced Controls</h3>
+                    
+                    <!-- Filters -->
+                    <div class="filter-controls">
+                        <select id="category-filter">
+                            <option value="all">All Categories</option>
+                        </select>
+                        <select id="confidence-filter">
+                            <option value="all">All Confidence Levels</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                        <select id="source-quality-filter">
+                            <option value="all">All Source Qualities</option>
+                            <option value="premium">Premium</option>
+                            <option value="standard">Standard</option>
+                            <option value="basic">Basic</option>
+                            <option value="unknown">Unknown</option>
+                        </select>
+                        <button id="clear-filters-btn" class="btn btn-small btn-secondary">Clear Filters</button>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="search-controls">
+                        <input type="text" id="pulse-search" placeholder="Search pulse points..." class="search-input">
+                        <button id="search-clear-btn" class="btn btn-small btn-secondary">Clear</button>
+                    </div>
+
+                    <!-- Bulk Operations -->
+                    <div class="bulk-controls">
+                        <button id="bulk-update-btn" class="btn btn-small btn-primary">Bulk Update</button>
+                        <button id="bulk-pause-btn" class="btn btn-small btn-warning">Bulk Pause</button>
+                        <button id="bulk-resume-btn" class="btn btn-small btn-success">Bulk Resume</button>
+                    </div>
+
+                    <!-- Import/Export -->
+                    <div class="import-export-controls">
+                        <button id="export-config-btn" class="btn btn-small btn-info">Export Config</button>
+                        <button id="import-config-btn" class="btn btn-small btn-info">Import Config</button>
+                        <input type="file" id="import-config-input" accept=".json" style="display: none;">
+                        <button id="validate-btn" class="btn btn-small btn-secondary">Validate</button>
+                    </div>
+
+                    <!-- Filter Status -->
+                    <div id="filter-status" class="filter-status">Showing all pulse points</div>
+                </div>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="article-content">Article Content</label>
+                    <textarea id="article-content" placeholder="Paste your article content here..." rows="8"></textarea>
+                </div>
+
+                <div class="action-row">
+                    <button id="scan-full-article" class="btn btn-primary">🔍 Scan Full Article for Pulse Points</button>
+                </div>
+
+                <!-- Full Article Scan Results -->
+                <div id="full-scan-results" class="scan-results hidden">
+                    <div class="scan-header">
+                        <h3>🔍 Article Scan Results</h3>
+                        <div class="scan-stats">
+                            <span id="scan-pulse-count">0 pulse points</span>
+                            <span id="scan-cluster-count">0 clusters</span>
+                        </div>
+                    </div>
+                    <div id="scan-results-content" class="scan-content"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="selected-text">Selected Text for Analysis</label>
+                    <input type="text" id="selected-text" placeholder="Enter text to make dynamic (e.g., 'Bitcoin is at $67,500')">
+                </div>
+
+                <div class="analysis-controls">
+                    <button id="analyze-btn" class="btn btn-success">🔬 Analyze for Pulse Points</button>
+                    <button id="create-pulse-btn" class="btn btn-primary hidden">✨ Create Pulse Point</button>
+                </div>
+
+                <!-- Analysis Results -->
+                <div id="analysis-result" class="analysis-result hidden">
+                    <div id="analysis-content"></div>
+                </div>
+            </div>
+
+            <!-- Pulse Management -->
+            <div class="pulse-section">
+                <div class="section-header">
+                    <h2>🎯 Pulse Points</h2>
+                    <div class="pulse-controls">
+                        <div class="view-controls">
+                            <button class="btn btn-small" data-view-mode="detailed">Detailed</button>
+                            <button class="btn btn-small" data-view-mode="compact">Compact</button>
+                        </div>
+                        <div class="sort-controls">
+                            <button class="btn btn-small" data-sort-by="id">ID <span class="sort-indicator"></span></button>
+                            <button class="btn btn-small" data-sort-by="type">Type <span class="sort-indicator"></span></button>
+                            <button class="btn btn-small" data-sort-by="confidence">Confidence <span class="sort-indicator"></span></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="pulse-list" class="pulse-list"></div>
+            </div>
+        </main>
+
+        <!-- Preview Panel -->
+        <aside class="preview-panel">
+            <div class="preview-header">
+                <h3>👁️ Live Preview</h3>
+                <div class="preview-controls">
+                    <button class="btn btn-small btn-secondary">Refresh</button>
+                </div>
+            </div>
+            <div id="article-preview" class="preview-content"></div>
+        </aside>
+    </div>
+
+    <!-- Mobile Menu -->
+    <nav id="mobile-menu" class="mobile-menu">
+        <div class="mobile-menu-content">
+            <a href="#input" class="mobile-menu-item">📝 Editor</a>
+            <a href="#pulses" class="mobile-menu-item">🎯 Pulses</a>
+            <a href="#preview" class="mobile-menu-item">👁️ Preview</a>
+            <a href="#stats" class="mobile-menu-item">📊 Stats</a>
+            <a href="#settings" class="mobile-menu-item">⚙️ Settings</a>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay"></div>
+
+    <!-- Load the modular JavaScript application -->
+    <script type="module" src="../js/core/app.js"></script>
 </body>
 </html>
