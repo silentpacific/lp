@@ -6,6 +6,14 @@
     <title>LivePulse Editor - Intelligent Content Analysis</title>
     <link rel="stylesheet" href="styles/app.css">
     <meta name="description" content="LivePulse Editor - Create and manage dynamic pulse points in your content">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="LivePulse Editor - Intelligent Content Analysis">
+    <meta property="og:description" content="AI-powered system that automatically updates facts in your blog posts">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
 </head>
 <body class="app-body">
     <!-- App Header -->
@@ -31,236 +39,451 @@
 
     <!-- Main App Layout -->
     <div class="app-layout">
-        <!-- Sidebar -->
-        <aside class="app-sidebar">
-            <!-- Article Management Section -->
-            <div class="sidebar-section">
-                <h3>📄 Article Management</h3>
-                <div class="article-controls">
-                    <select id="article-select">
-                        <option value="">Select an article...</option>
-                    </select>
-                    <div class="article-actions">
-                        <button id="new-article-btn" class="btn btn-small btn-success">New</button>
-                        <button id="save-article-btn" class="btn btn-small btn-primary">Save</button>
-                        <button id="delete-article-btn" class="btn btn-small btn-danger">Delete</button>
-                    </div>
-                </div>
-                <div id="current-article-info" class="article-info">
-                    <span class="text-muted">No article selected</span>
-                </div>
-            </div>
-
-            <!-- Stats Section -->
-            <div class="sidebar-section">
-                <h3>📊 Statistics</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number" id="active-pulse-count">0</div>
-                        <div class="stat-label">Active Pulses</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="cluster-count">0</div>
-                        <div class="stat-label">Clusters</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="success-rate">100%</div>
-                        <div class="stat-label">Success Rate</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-time" id="next-update-time">--</div>
-                        <div class="stat-label">Next Update</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Enhanced Stats -->
-            <div class="sidebar-section">
-                <h3>📈 Breakdown</h3>
-                <div class="enhanced-stats">
-                    <div class="stat-category">
-                        <h4>Categories</h4>
-                        <div id="category-breakdown" class="stat-breakdown"></div>
-                    </div>
-                    <div class="stat-category">
-                        <h4>Confidence</h4>
-                        <div id="confidence-breakdown" class="stat-breakdown"></div>
-                    </div>
-                    <div class="stat-category">
-                        <h4>Source Quality</h4>
-                        <div id="source-breakdown" class="stat-breakdown"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="sidebar-section">
-                <h3>⚡ Quick Actions</h3>
-                <div class="quick-actions">
-                    <button onclick="window.livePulseApp?.updateAllPulses?.()" class="btn btn-small btn-primary">Update All</button>
-                    <button onclick="window.livePulseApp?.pauseAllPulses?.()" class="btn btn-small btn-warning">Pause All</button>
-                    <button onclick="window.livePulseApp?.clearAllPulses?.()" class="btn btn-small btn-danger">Clear All</button>
-                </div>
-            </div>
-
-            <!-- Settings -->
-            <div class="sidebar-section">
-                <h3>⚙️ Settings</h3>
-                <div class="settings-controls">
-                    <label class="toggle-control">
-                        <input type="checkbox" id="toggle-footnotes" checked>
-                        <span>Show Footnotes</span>
-                        <span id="footnotes-status" class="status-indicator">Enabled</span>
-                    </label>
-                    <label class="toggle-control">
-                        <input type="checkbox" id="toggle-superscripts" checked>
-                        <span>Show Superscripts</span>
-                        <span id="superscripts-status" class="status-indicator">Enabled</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Export -->
-            <div class="sidebar-section">
-                <h3>📤 Export</h3>
-                <div class="export-controls">
-                    <button id="export-html" class="btn btn-small btn-info">Export HTML</button>
-                </div>
-            </div>
+        <!-- Collapsible Sidebar -->
+        <aside class="app-sidebar" id="app-sidebar">
+            <a href="#" class="sidebar-item active" data-view="articles">
+                <span class="sidebar-item-icon">📄</span>
+                <span class="sidebar-item-label">Articles</span>
+            </a>
+            <a href="#" class="sidebar-item" data-view="integrations">
+                <span class="sidebar-item-icon">🔌</span>
+                <span class="sidebar-item-label">Integrations</span>
+            </a>
+            <a href="#" class="sidebar-item" data-view="settings">
+                <span class="sidebar-item-icon">⚙️</span>
+                <span class="sidebar-item-label">Settings</span>
+            </a>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="app-main">
-            <!-- Enhanced Control Panel -->
-            <div class="enhanced-control-panel">
-                <div class="control-section">
-                    <h3>🎛️ Enhanced Controls</h3>
-                    
-                    <!-- Filters -->
-                    <div class="filter-controls">
+        <!-- Main Panel -->
+        <main class="app-main" id="app-main">
+            <!-- Articles View -->
+            <div class="articles-view" id="articles-view">
+                <div class="articles-search">
+                    <input type="text" class="articles-search-input" placeholder="🔍 Search articles..." id="article-search">
+                    <button class="btn btn-secondary btn-small" id="filter-toggle">Filter</button>
+                </div>
+                
+                <div class="articles-filters" id="articles-filters">
+                    <div class="filter-group">
+                        <label>📅 Date Range</label>
+                        <select id="date-filter">
+                            <option value="all">All Time</option>
+                            <option value="week">Last Week</option>
+                            <option value="month">Last Month</option>
+                            <option value="quarter">Last 3 Months</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>📂 Category</label>
                         <select id="category-filter">
                             <option value="all">All Categories</option>
+                            <option value="technology">Technology</option>
+                            <option value="finance">Finance</option>
+                            <option value="health">Health</option>
+                            <option value="science">Science</option>
                         </select>
-                        <select id="confidence-filter">
-                            <option value="all">All Confidence Levels</option>
-                            <option value="high">High</option>
-                            <option value="medium">Medium</option>
-                            <option value="low">Low</option>
+                    </div>
+                    <div class="filter-group">
+                        <label>🏷️ Tags</label>
+                        <select id="tags-filter">
+                            <option value="all">All Tags</option>
+                            <option value="crypto">crypto</option>
+                            <option value="weather">weather</option>
+                            <option value="stocks">stocks</option>
+                            <option value="blockchain">blockchain</option>
                         </select>
-                        <select id="source-quality-filter">
-                            <option value="all">All Source Qualities</option>
-                            <option value="premium">Premium</option>
-                            <option value="standard">Standard</option>
-                            <option value="basic">Basic</option>
-                            <option value="unknown">Unknown</option>
+                    </div>
+                    <div class="filter-group">
+                        <label>🌐 Website</label>
+                        <select id="website-filter">
+                            <option value="all">All Websites</option>
+                            <option value="wordpress">WordPress</option>
+                            <option value="shopify">Shopify</option>
+                            <option value="ghost">Ghost</option>
                         </select>
-                        <button id="clear-filters-btn" class="btn btn-small btn-secondary">Clear Filters</button>
                     </div>
+                </div>
 
-                    <!-- Search -->
-                    <div class="search-controls">
-                        <input type="text" id="pulse-search" placeholder="Search pulse points..." class="search-input">
-                        <button id="search-clear-btn" class="btn btn-small btn-secondary">Clear</button>
+                <div class="articles-list" id="articles-list">
+                    <!-- Sample Articles -->
+                    <div class="article-item" data-article-id="1">
+                        <div class="article-title">
+                            📄 "How Bitcoin Mining Works in 2024"
+                        </div>
+                        <div class="article-meta">
+                            <span>Dec 15, 2024</span>
+                            <div class="article-tags">
+                                <span class="article-tag">crypto</span>
+                                <span class="article-tag">blockchain</span>
+                                <span class="article-tag">technology</span>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- Bulk Operations -->
-                    <div class="bulk-controls">
-                        <button id="bulk-update-btn" class="btn btn-small btn-primary">Bulk Update</button>
-                        <button id="bulk-pause-btn" class="btn btn-small btn-warning">Bulk Pause</button>
-                        <button id="bulk-resume-btn" class="btn btn-small btn-success">Bulk Resume</button>
+                    
+                    <div class="article-item" data-article-id="2">
+                        <div class="article-title">
+                            📄 "Weather Patterns and Climate Change"
+                        </div>
+                        <div class="article-meta">
+                            <span>Dec 14, 2024</span>
+                            <div class="article-tags">
+                                <span class="article-tag">weather</span>
+                                <span class="article-tag">climate</span>
+                                <span class="article-tag">science</span>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- Import/Export -->
-                    <div class="import-export-controls">
-                        <button id="export-config-btn" class="btn btn-small btn-info">Export Config</button>
-                        <button id="import-config-btn" class="btn btn-small btn-info">Import Config</button>
-                        <input type="file" id="import-config-input" accept=".json" style="display: none;">
-                        <button id="validate-btn" class="btn btn-small btn-secondary">Validate</button>
+                    
+                    <div class="article-item" data-article-id="3">
+                        <div class="article-title">
+                            📄 "Stock Market Analysis Q4 2024"
+                        </div>
+                        <div class="article-meta">
+                            <span>Dec 13, 2024</span>
+                            <div class="article-tags">
+                                <span class="article-tag">stocks</span>
+                                <span class="article-tag">finance</span>
+                                <span class="article-tag">analysis</span>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- Filter Status -->
-                    <div id="filter-status" class="filter-status">Showing all pulse points</div>
+                    
+                    <div class="article-item" data-article-id="4">
+                        <div class="article-title">
+                            📄 "AI and Machine Learning Trends"
+                        </div>
+                        <div class="article-meta">
+                            <span>Dec 12, 2024</span>
+                            <div class="article-tags">
+                                <span class="article-tag">ai</span>
+                                <span class="article-tag">technology</span>
+                                <span class="article-tag">trends</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="article-item" data-article-id="5">
+                        <div class="article-title">
+                            📄 "Global Health Statistics 2024"
+                        </div>
+                        <div class="article-meta">
+                            <span>Dec 11, 2024</span>
+                            <div class="article-tags">
+                                <span class="article-tag">health</span>
+                                <span class="article-tag">statistics</span>
+                                <span class="article-tag">global</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Input Section -->
-            <div class="input-section">
-                <div class="input-group">
-                    <label for="article-content">Article Content</label>
-                    <textarea id="article-content" placeholder="Paste your article content here..." rows="8"></textarea>
+            <!-- Article Editor View (Hidden by default) -->
+            <div class="article-editor" id="article-editor" style="display: none;">
+                <!-- Back Button -->
+                <div class="editor-back">
+                    <button class="btn btn-secondary btn-small" id="back-to-articles">← Back to Articles</button>
                 </div>
+                
+                <div class="editor-left">
+                    <!-- WYSIWYG Editor Section -->
+                    <div class="wysiwyg-section">
+                        <div class="wysiwyg-header">
+                            <h3>✏️ Article Editor</h3>
+                            <div class="wysiwyg-actions">
+                                <button class="btn btn-primary btn-small" id="scan-article">✨ Scan Entire Article</button>
+                                <button class="btn btn-secondary btn-small" id="analyze-selected">🔍 Analyse Selected</button>
+                            </div>
+                        </div>
+                        <textarea class="wysiwyg-editor" id="article-content" placeholder="Enter your article content here...">Bitcoin continues to show strong performance this year. Currently trading at $67,500, it has increased by 3.2% from yesterday's close. 
 
-                <div class="action-row">
-                    <button id="scan-full-article" class="btn btn-primary">🔍 Scan Full Article for Pulse Points</button>
-                </div>
+Meanwhile, weather conditions in Adelaide are pleasant today with temperatures reaching 25°C, which is 5 degrees warmer than yesterday's temperature.
 
-                <!-- Full Article Scan Results -->
-                <div id="full-scan-results" class="scan-results hidden">
-                    <div class="scan-header">
-                        <h3>🔍 Article Scan Results</h3>
-                        <div class="scan-stats">
-                            <span id="scan-pulse-count">0 pulse points</span>
-                            <span id="scan-cluster-count">0 clusters</span>
+This analysis was last updated on December 15, 2024 at 2:30 PM.</textarea>
+                    </div>
+
+                    <!-- Pulse Points Section -->
+                    <div class="pulse-points-section">
+                        <div class="pulse-points-header">
+                            <h3>🎯 Pulse Point Suggestions</h3>
+                            <span class="pulse-count" id="pulse-count">3 suggestions</span>
+                        </div>
+                        
+                        <div class="pulse-points-list" id="pulse-points-list">
+                            <!-- Sample Pulse Point Suggestions -->
+                            <div class="pulse-point-suggestion" data-pulse-id="1">
+                                <div class="pulse-point-text">"$67,500"</div>
+                                <div class="pulse-point-meta">
+                                    <div class="pulse-point-source">
+                                        Source: <a href="#" target="_blank">CoinGecko API</a>
+                                    </div>
+                                    <div class="pulse-point-confidence confidence-high">
+                                        🔥 High Confidence
+                                    </div>
+                                </div>
+                                <div class="pulse-point-frequency">
+                                    <select>
+                                        <option value="hourly" selected>Hourly</option>
+                                        <option value="4hours">Every 4 hours</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                    </select>
+                                </div>
+                                <div class="pulse-point-actions">
+                                    <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
+                                    <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
+                                </div>
+                            </div>
+
+                            <div class="pulse-point-suggestion" data-pulse-id="2">
+                                <div class="pulse-point-text">"25°C"</div>
+                                <div class="pulse-point-meta">
+                                    <div class="pulse-point-source">
+                                        Source: <a href="#" target="_blank">OpenWeather API</a>
+                                    </div>
+                                    <div class="pulse-point-confidence confidence-high">
+                                        🔥 High Confidence
+                                    </div>
+                                </div>
+                                <div class="pulse-point-frequency">
+                                    <select>
+                                        <option value="3hours" selected>Every 3 hours</option>
+                                        <option value="6hours">Every 6 hours</option>
+                                        <option value="daily">Daily</option>
+                                    </select>
+                                </div>
+                                <div class="pulse-point-actions">
+                                    <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
+                                    <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
+                                </div>
+                            </div>
+
+                            <div class="pulse-point-suggestion" data-pulse-id="3">
+                                <div class="pulse-point-text">"December 15, 2024"</div>
+                                <div class="pulse-point-meta">
+                                    <div class="pulse-point-source">
+                                        Source: <a href="#" target="_blank">System Date</a>
+                                    </div>
+                                    <div class="pulse-point-confidence confidence-medium">
+                                        ⚡ Medium Confidence
+                                    </div>
+                                </div>
+                                <div class="pulse-point-frequency">
+                                    <select>
+                                        <option value="realtime" selected>Real-time</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="manual">Manual</option>
+                                    </select>
+                                </div>
+                                <div class="pulse-point-actions">
+                                    <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
+                                    <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pulse-bulk-actions">
+                            <button class="btn btn-primary btn-small" id="update-all">🔁 Update All</button>
+                            <button class="btn btn-warning btn-small" id="pause-all">⏸ Pause All</button>
+                            <button class="btn btn-danger btn-small" id="remove-all">❌ Remove All</button>
                         </div>
                     </div>
-                    <div id="scan-results-content" class="scan-content"></div>
+
+                    <!-- Footnotes Section -->
+                    <div class="footnotes-section">
+                        <h3>📝 Footnotes</h3>
+                        <div id="footnotes-content">
+                            <div class="footnote-item">
+                                <span class="footnote-number">¹</span>
+                                CoinGecko API - Updates every hour
+                            </div>
+                            <div class="footnote-item">
+                                <span class="footnote-number">²</span>
+                                OpenWeather API - Updates every 3 hours
+                            </div>
+                            <div class="footnote-item">
+                                <span class="footnote-number">³</span>
+                                System Date - Updates in real-time
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="selected-text">Selected Text for Analysis</label>
-                    <input type="text" id="selected-text" placeholder="Enter text to make dynamic (e.g., 'Bitcoin is at $67,500')">
-                </div>
-
-                <div class="analysis-controls">
-                    <button id="analyze-btn" class="btn btn-success">🔬 Analyze for Pulse Points</button>
-                    <button id="create-pulse-btn" class="btn btn-primary hidden">✨ Create Pulse Point</button>
-                </div>
-
-                <!-- Analysis Results -->
-                <div id="analysis-result" class="analysis-result hidden">
-                    <div id="analysis-content"></div>
+                <div class="editor-right">
+                    <!-- Live Preview Section -->
+                    <div class="live-preview-section">
+                        <div class="preview-header">
+                            <h3>👁️ Live Preview</h3>
+                            <div class="preview-controls">
+                                <select id="platform-select">
+                                    <option value="wordpress">WordPress</option>
+                                    <option value="shopify">Shopify</option>
+                                    <option value="ghost">Ghost</option>
+                                </select>
+                                <button class="btn btn-primary btn-small" id="push-to-cms">🚀 Push to CMS</button>
+                            </div>
+                        </div>
+                        <div class="preview-content" id="preview-content">
+                            <h2>Sample Article Preview</h2>
+                            <p>
+                                Bitcoin continues to show strong performance this year. Currently trading at 
+                                <span class="highlight-fact">$67,500<sup>1</sup></span>, it has 
+                                <span class="highlight-cluster">increased by 3.2%<sup>2</sup></span> from yesterday's close.
+                            </p>
+                            <p>
+                                Meanwhile, weather conditions in Adelaide are pleasant today with temperatures reaching 
+                                <span class="highlight-fact">25°C<sup>3</sup></span>, which is 
+                                <span class="highlight-cluster">5 degrees warmer<sup>4</sup></span> than yesterday's temperature.
+                            </p>
+                            <p>
+                                This analysis was last updated on 
+                                <span class="highlight-fact">December 15, 2024 at 2:30 PM<sup>5</sup></span>.
+                            </p>
+                            
+                            <div class="preview-footnotes">
+                                <h4>References</h4>
+                                <ol>
+                                    <li>CoinGecko API - Updates every hour</li>
+                                    <li>Calculated from price change</li>
+                                    <li>OpenWeather API - Updates every 3 hours</li>
+                                    <li>Calculated from temperature difference</li>
+                                    <li>System Date - Updates in real-time</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Pulse Management -->
-            <div class="pulse-section">
-                <div class="section-header">
-                    <h2>🎯 Pulse Points</h2>
-                    <div class="pulse-controls">
-                        <div class="view-controls">
-                            <button class="btn btn-small" data-view-mode="detailed">Detailed</button>
-                            <button class="btn btn-small" data-view-mode="compact">Compact</button>
+            <!-- Integrations View (Hidden by default) -->
+            <div class="integrations-view" id="integrations-view" style="display: none;">
+                <h2 style="color: white; margin-bottom: var(--space-xl);">🔌 Platform Integrations</h2>
+                <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: var(--space-2xl);">
+                    Connect LivePulse to your content management systems to automatically sync your pulse points.
+                </p>
+                
+                <div class="integrations-grid">
+                    <div class="integration-card" data-integration="wordpress">
+                        <span class="integration-icon">🟦</span>
+                        <div class="integration-name">WordPress</div>
+                        <div class="integration-status">Ready to connect</div>
+                        <button class="btn btn-primary connect-integration">🔗 Connect</button>
+                    </div>
+                    
+                    <div class="integration-card" data-integration="shopify">
+                        <span class="integration-icon">🛒</span>
+                        <div class="integration-name">Shopify</div>
+                        <div class="integration-status">Ready to connect</div>
+                        <button class="btn btn-primary connect-integration">🔗 Connect</button>
+                    </div>
+                    
+                    <div class="integration-card" data-integration="ghost">
+                        <span class="integration-icon">👻</span>
+                        <div class="integration-name">Ghost</div>
+                        <div class="integration-status">Coming Soon</div>
+                        <button class="btn btn-secondary" disabled>Coming Soon</button>
+                    </div>
+                    
+                    <div class="integration-card" data-integration="webflow">
+                        <span class="integration-icon">🌊</span>
+                        <div class="integration-name">Webflow</div>
+                        <div class="integration-status">Coming Soon</div>
+                        <button class="btn btn-secondary" disabled>Coming Soon</button>
+                    </div>
+                    
+                    <div class="integration-card" data-integration="medium">
+                        <span class="integration-icon">📝</span>
+                        <div class="integration-name">Medium</div>
+                        <div class="integration-status">Coming Soon</div>
+                        <button class="btn btn-secondary" disabled>Coming Soon</button>
+                    </div>
+                    
+                    <div class="integration-card" data-integration="request">
+                        <span class="integration-icon">➕</span>
+                        <div class="integration-name">Request Integration</div>
+                        <div class="integration-status">Need something else?</div>
+                        <button class="btn btn-info" id="request-integration">📧 Request</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View (Hidden by default) -->
+            <div class="settings-view" id="settings-view" style="display: none;">
+                <div class="settings-section">
+                    <h3>👤 Profile Information</h3>
+                    <div class="settings-form">
+                        <div class="form-row">
+                            <label>Name:</label>
+                            <input type="text" id="profile-name" value="John Doe">
                         </div>
-                        <div class="sort-controls">
-                            <button class="btn btn-small" data-sort-by="id">ID <span class="sort-indicator"></span></button>
-                            <button class="btn btn-small" data-sort-by="type">Type <span class="sort-indicator"></span></button>
-                            <button class="btn btn-small" data-sort-by="confidence">Confidence <span class="sort-indicator"></span></button>
+                        <div class="form-row">
+                            <label>Email:</label>
+                            <input type="email" id="profile-email" value="john@example.com">
+                        </div>
+                        <div class="form-row">
+                            <label>Plan:</label>
+                            <span style="color: rgba(255, 255, 255, 0.8);">Creator Tier</span>
+                        </div>
+                        <div class="form-row">
+                            <label>Member Since:</label>
+                            <span style="color: rgba(255, 255, 255, 0.8);">December 2024</span>
+                        </div>
+                        <div class="form-row">
+                            <label></label>
+                            <button class="btn btn-primary" id="edit-profile">📝 Edit Profile</button>
                         </div>
                     </div>
                 </div>
-                <div id="pulse-list" class="pulse-list"></div>
+                
+                <div class="settings-section">
+                    <h3>🔒 Change Password</h3>
+                    <div class="settings-form">
+                        <div class="form-row">
+                            <label>Current Password:</label>
+                            <input type="password" id="current-password" placeholder="••••••••••">
+                        </div>
+                        <div class="form-row">
+                            <label>New Password:</label>
+                            <input type="password" id="new-password" placeholder="••••••••••">
+                        </div>
+                        <div class="form-row">
+                            <label>Confirm Password:</label>
+                            <input type="password" id="confirm-password" placeholder="••••••••••">
+                        </div>
+                        <div class="form-row">
+                            <label></label>
+                            <button class="btn btn-warning" id="update-password">🔄 Update Password</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>🔔 Notification Settings</h3>
+                    <div class="settings-form">
+                        <div class="form-row">
+                            <label>Email notifications for pulse updates:</label>
+                            <input type="checkbox" id="email-notifications" checked>
+                        </div>
+                        <div class="form-row">
+                            <label>Browser notifications:</label>
+                            <input type="checkbox" id="browser-notifications">
+                        </div>
+                        <div class="form-row">
+                            <label>Weekly summary reports:</label>
+                            <input type="checkbox" id="weekly-reports" checked>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
-
-        <!-- Preview Panel -->
-        <aside class="preview-panel">
-            <div class="preview-header">
-                <h3>👁️ Live Preview</h3>
-                <div class="preview-controls">
-                    <button class="btn btn-small btn-secondary">Refresh</button>
-                </div>
-            </div>
-            <div id="article-preview" class="preview-content"></div>
-        </aside>
     </div>
 
     <!-- Mobile Menu -->
     <nav id="mobile-menu" class="mobile-menu">
         <div class="mobile-menu-content">
-            <a href="#input" class="mobile-menu-item">📝 Editor</a>
-            <a href="#pulses" class="mobile-menu-item">🎯 Pulses</a>
-            <a href="#preview" class="mobile-menu-item">👁️ Preview</a>
-            <a href="#stats" class="mobile-menu-item">📊 Stats</a>
+            <a href="#articles" class="mobile-menu-item">📝 Articles</a>
+            <a href="#integrations" class="mobile-menu-item">🔌 Integrations</a>
             <a href="#settings" class="mobile-menu-item">⚙️ Settings</a>
         </div>
     </nav>
@@ -268,7 +491,107 @@
     <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay"></div>
 
+    <!-- Notifications Container -->
+    <div class="notifications-container" id="notifications-container"></div>
+
     <!-- Load the modular JavaScript application -->
     <script type="module" src="../js/core/app.js"></script>
+    
+    <!-- New App Layout JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('app-sidebar');
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const views = {
+                'articles': document.getElementById('articles-view'),
+                'integrations': document.getElementById('integrations-view'),
+                'settings': document.getElementById('settings-view')
+            };
+            const articleEditor = document.getElementById('article-editor');
+            
+            // Sidebar hover/click expansion
+            sidebar.addEventListener('mouseenter', function() {
+                sidebar.classList.add('expanded');
+            });
+            
+            sidebar.addEventListener('mouseleave', function() {
+                sidebar.classList.remove('expanded');
+            });
+            
+            // Sidebar navigation
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    Object.values(views).forEach(view => view.style.display = 'none');
+                    articleEditor.style.display = 'none';
+                    
+                    const viewName = this.dataset.view;
+                    if (views[viewName]) {
+                        views[viewName].style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Article item clicks
+            document.querySelectorAll('.article-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    views.articles.style.display = 'none';
+                    articleEditor.style.display = 'grid';
+                    
+                    const articleId = this.dataset.articleId;
+                    console.log('Loading article:', articleId);
+                });
+            });
+            
+            // Back to articles
+            document.getElementById('back-to-articles').addEventListener('click', function() {
+                articleEditor.style.display = 'none';
+                views.articles.style.display = 'flex';
+            });
+            
+            // Pulse point actions
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('accept-pulse')) {
+                    const pulseItem = e.target.closest('.pulse-point-suggestion');
+                    pulseItem.style.opacity = '0.5';
+                    e.target.textContent = '✅ Accepted';
+                    e.target.disabled = true;
+                    e.target.nextElementSibling.style.display = 'none';
+                }
+                
+                if (e.target.classList.contains('ignore-pulse')) {
+                    const pulseItem = e.target.closest('.pulse-point-suggestion');
+                    pulseItem.style.display = 'none';
+                }
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && articleEditor.style.display === 'grid') {
+                    articleEditor.style.display = 'none';
+                    views.articles.style.display = 'flex';
+                }
+            });
+            
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+                mobileMenuOverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+            });
+            
+            mobileMenuOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                this.style.display = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
