@@ -6,8 +6,15 @@
   "type": "commonjs",
   "scripts": {
     "dev": "netlify dev",
-    "build": "npm install",
-    "start": "netlify dev"
+    "build": "npm install && npm run build-css",
+    "start": "netlify dev",
+    "build-css": "postcss src/styles/landing.css -o dist/styles/landing.min.css --use autoprefixer cssnano",
+    "build-css:app": "postcss src/styles/app.css -o dist/styles/app.min.css --use autoprefixer cssnano",
+    "build-css:all": "npm run build-css && npm run build-css:app",
+    "watch-css": "postcss src/styles/landing.css -o dist/styles/landing.min.css --use autoprefixer cssnano --watch",
+    "watch-css:app": "postcss src/styles/app.css -o dist/styles/app.min.css --use autoprefixer cssnano --watch",
+    "clean": "rm -rf dist",
+    "clean:css": "rm -rf dist/styles"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
@@ -15,7 +22,11 @@
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
-    "netlify-cli": "^17.34.2"
+    "netlify-cli": "^17.34.2",
+    "postcss": "^8.4.32",
+    "postcss-cli": "^11.0.0",
+    "autoprefixer": "^10.4.16",
+    "cssnano": "^6.0.3"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -31,8 +42,15 @@
     "dynamic-content",
     "netlify-functions",
     "gemini-ai",
-    "real-time-data"
+    "real-time-data",
+    "css-modular",
+    "responsive-design"
   ],
   "author": "LivePulse Team",
-  "license": "MIT"
+  "license": "MIT",
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }
