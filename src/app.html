@@ -4,20 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LivePulse Editor - Intelligent Content Analysis</title>
+    <link rel="stylesheet" href="styles/app.css">
     <meta name="description" content="LivePulse Editor - Create and manage dynamic pulse points in your content">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
     
     <style>
-        /* Reset */
+        /* Clean Layout Styles - Override existing styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
+        body.app-body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
             color: white;
@@ -340,6 +341,10 @@
             transform: translateY(-1px);
         }
 
+        .pulse-point-card.cluster-card {
+            border-left: 4px solid #6366f1;
+        }
+
         .pulse-card-header {
             padding: 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -512,6 +517,12 @@
             font-size: 0.75rem;
         }
 
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
         /* Pulse Panel Actions */
         .pulse-panel-actions {
             padding: 1rem;
@@ -553,10 +564,72 @@
             line-height: 1.6;
         }
 
-        .btn-large {
-            padding: 1rem 2rem;
-            font-size: 1rem;
+        /* Analysis States */
+        .analysis-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .analysis-empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .analysis-empty h3 {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Pulse highlighting */
+        .pulse-highlight {
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 4px;
+            padding: 2px 4px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Notifications */
+        .notification {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
+            padding: 1rem;
+            color: white;
+            max-width: 350px;
+            animation: slideIn 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .notification.warning {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         /* Scrollbar */
@@ -606,7 +679,7 @@
         }
     </style>
 </head>
-<body>
+<body class="app-body">
     <!-- Fixed Header -->
     <header class="app-header">
         <div class="header-content">
@@ -616,9 +689,14 @@
             </div>
             <div class="header-right">
                 <div class="header-stats">
-                    <span id="active-pulse-count">3</span> active pulses
-                    <span id="cluster-count">1</span> clusters
+                    <span id="active-pulse-count">0</span> active pulses
+                    <span id="cluster-count">0</span> clusters
                 </div>
+                <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
             </div>
         </div>
     </header>
@@ -693,10 +771,10 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
                         <div class="preview-container">
                             <div class="preview-header">
                                 <h3>👁️ Live Preview</h3>
-                                <select>
-                                    <option>WordPress</option>
-                                    <option>Shopify</option>
-                                    <option>Ghost</option>
+                                <select id="platform-select">
+                                    <option value="wordpress">WordPress</option>
+                                    <option value="shopify">Shopify</option>
+                                    <option value="ghost">Ghost</option>
                                 </select>
                             </div>
                             <div class="preview-content" id="preview-content">
@@ -710,274 +788,464 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
                     <div class="pulse-panel">
                         <div class="pulse-panel-header">
                             <h3>🎯 Pulse Points</h3>
-                            <span class="pulse-count">3 pulse points found</span>
+                            <span class="pulse-count" id="pulse-count">Ready to analyse</span>
                         </div>
 
-                        <div class="pulse-points-list">
-                            <!-- Pulse Point 1 -->
-                            <div class="pulse-point-card">
-                                <div class="pulse-card-header">
-                                    <div class="pulse-text">"$67,500"</div>
-                                    <div class="pulse-confidence high">🔥 HIGH</div>
-                                </div>
-                                
-                                <div class="pulse-card-body">
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Type:</span>
-                                        <span class="value">Cryptocurrency</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Entity:</span>
-                                        <span class="value">Bitcoin (BTC)</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Source:</span>
-                                        <a href="#" class="pulse-source">CoinGecko API</a>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Quality:</span>
-                                        <span class="source-quality premium">PREMIUM</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Last Updated:</span>
-                                        <span class="value">2 minutes ago</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Next Update:</span>
-                                        <span class="value">In 58 minutes</span>
-                                    </div>
-
-                                    <div class="pulse-frequency">
-                                        <label>Update Frequency:</label>
-                                        <select>
-                                            <option selected>Hourly</option>
-                                            <option>Daily</option>
-                                            <option>Weekly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="pulse-actions">
-                                    <button class="btn btn-success btn-small">✅ Accept</button>
-                                    <button class="btn btn-danger btn-small">❌ Ignore</button>
-                                    <button class="btn btn-secondary btn-small">⚙️ Details</button>
-                                </div>
-                            </div>
-
-                            <!-- Pulse Point 2 -->
-                            <div class="pulse-point-card">
-                                <div class="pulse-card-header">
-                                    <div class="pulse-text">"22°C"</div>
-                                    <div class="pulse-confidence high">🔥 HIGH</div>
-                                </div>
-                                
-                                <div class="pulse-card-body">
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Type:</span>
-                                        <span class="value">Weather</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Location:</span>
-                                        <span class="value">Adelaide, SA</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Source:</span>
-                                        <a href="#" class="pulse-source">OpenWeather API</a>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Quality:</span>
-                                        <span class="source-quality premium">PREMIUM</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Last Updated:</span>
-                                        <span class="value">15 minutes ago</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Next Update:</span>
-                                        <span class="value">In 3 hours</span>
-                                    </div>
-
-                                    <div class="pulse-frequency">
-                                        <label>Update Frequency:</label>
-                                        <select>
-                                            <option>Hourly</option>
-                                            <option selected>Daily</option>
-                                            <option>Weekly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="pulse-actions">
-                                    <button class="btn btn-success btn-small">✅ Accept</button>
-                                    <button class="btn btn-danger btn-small">❌ Ignore</button>
-                                    <button class="btn btn-secondary btn-small">⚙️ Details</button>
-                                </div>
-                            </div>
-
-                            <!-- Pulse Point 3 -->
-                            <div class="pulse-point-card">
-                                <div class="pulse-card-header">
-                                    <div class="pulse-text">"2025"</div>
-                                    <div class="pulse-confidence medium">⚡ MEDIUM</div>
-                                </div>
-                                
-                                <div class="pulse-card-body">
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Type:</span>
-                                        <span class="value">Date/Year</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Context:</span>
-                                        <span class="value">Current year reference</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Source:</span>
-                                        <span class="pulse-source">System Date</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Quality:</span>
-                                        <span class="source-quality standard">STANDARD</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Last Updated:</span>
-                                        <span class="value">Today</span>
-                                    </div>
-                                    <div class="pulse-meta-item">
-                                        <span class="label">Next Update:</span>
-                                        <span class="value">January 1st</span>
-                                    </div>
-
-                                    <div class="pulse-frequency">
-                                        <label>Update Frequency:</label>
-                                        <select>
-                                            <option>Hourly</option>
-                                            <option>Daily</option>
-                                            <option>Weekly</option>
-                                            <option selected>Yearly</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="pulse-actions">
-                                    <button class="btn btn-success btn-small">✅ Accept</button>
-                                    <button class="btn btn-danger btn-small">❌ Ignore</button>
-                                    <button class="btn btn-secondary btn-small">⚙️ Details</button>
-                                </div>
+                        <div class="pulse-points-list" id="pulse-points-list">
+                            <!-- Empty State -->
+                            <div class="analysis-empty" id="analysis-empty">
+                                <div class="analysis-empty-icon">🔍</div>
+                                <h3>Ready to Analyse</h3>
+                                <p>Write your article content and click "Analyse" to discover pulse points.</p>
                             </div>
                         </div>
 
                         <!-- Panel Actions -->
-                        <div class="pulse-panel-actions">
+                        <div class="pulse-panel-actions" id="pulse-panel-actions" style="display: none;">
                             <button class="btn btn-success btn-small" id="accept-all">✅ Accept All</button>
                             <button class="btn btn-danger btn-small" id="ignore-all">❌ Ignore All</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Other views (Integrations, Settings) would go here -->
         </main>
     </div>
 
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay"></div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" style="
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    "></div>
+
+    <!-- JavaScript - All working functionality -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('app-sidebar');
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            const articlesView = document.getElementById('articles-view');
-            const articleEditorView = document.getElementById('article-editor-view');
-            const articleContent = document.getElementById('article-content');
-            const previewContent = document.getElementById('preview-content');
-            
-            // Sidebar functionality
-            sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
-            sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
-            
-            // Create article
-            document.getElementById('create-article-btn').addEventListener('click', function() {
-                articlesView.style.display = 'none';
-                articleEditorView.classList.remove('hidden');
-                articleContent.focus();
-            });
-            
-            // Back to start
-            document.getElementById('back-to-start').addEventListener('click', function() {
-                articleEditorView.classList.add('hidden');
-                articlesView.style.display = 'flex';
-            });
-            
-            // Live preview update
-            function updatePreview() {
-                const content = articleContent.value.trim();
-                if (content) {
-                    const paragraphs = content.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
-                    previewContent.innerHTML = paragraphs;
-                } else {
-                    previewContent.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 2rem;"><div style="font-size: 2rem; margin-bottom: 1rem;">👁️</div><p>Your article preview will appear here</p></div>';
+        console.log('🔧 Loading LivePulse...');
+        
+        // Initialize global namespace
+        window.LivePulse = window.LivePulse || {};
+        
+        // Store DOM element references
+        window.LivePulse.Elements = {
+            articlesView: document.getElementById('articles-view'),
+            articleEditorView: document.getElementById('article-editor-view'),
+            articleContent: document.getElementById('article-content'),
+            previewContent: document.getElementById('preview-content'),
+            pulsePointsList: document.getElementById('pulse-points-list'),
+            analysisEmpty: document.getElementById('analysis-empty'),
+            createArticleBtn: document.getElementById('create-article-btn'),
+            backToStartBtn: document.getElementById('back-to-start'),
+            analyseBtn: document.getElementById('analyse-btn'),
+            acceptAllBtn: document.getElementById('accept-all'),
+            ignoreAllBtn: document.getElementById('ignore-all'),
+            activePulseCount: document.getElementById('active-pulse-count'),
+            clusterCount: document.getElementById('cluster-count'),
+            pulseCount: document.getElementById('pulse-count'),
+            pulsePanelActions: document.getElementById('pulse-panel-actions')
+        };
+        
+        // Application state
+        window.LivePulse.State = {
+            currentView: 'articles',
+            pulsePoints: [],
+            semanticClusters: [],
+            isAnalyzing: false,
+            analysisResults: null
+        };
+        
+        // Notification system
+        window.LivePulse.notifications = {
+            show: function(options) {
+                console.log(`📢 ${options.type.toUpperCase()}: ${options.title} - ${options.message}`);
+                
+                const notification = document.createElement('div');
+                notification.className = `notification ${options.type}`;
+                notification.innerHTML = `<strong>${options.title}</strong><br>${options.message}`;
+                
+                const container = document.getElementById('notification-container');
+                if (container) {
+                    container.appendChild(notification);
+                    setTimeout(() => notification.remove(), options.duration || 4000);
                 }
             }
-            
-            articleContent.addEventListener('input', updatePreview);
-            
-            // Analyse functionality
-            document.getElementById('analyse-btn').addEventListener('click', function() {
-                const content = articleContent.value.trim();
-                if (!content) {
-                    alert('Please write some content first!');
-                    return;
-                }
+        };
+        
+        // Mock analysis system
+        window.LivePulse.mockAnalysis = {
+            generateMockAnalysis: async function(content) {
+                console.log('📊 Analyzing content with pattern matching...');
                 
-                console.log('Analysing content...');
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 
-                // Update UI to show analysis complete
-                this.textContent = '✅ Analysis Complete';
-                this.style.background = 'linear-gradient(45deg, #10b981, #059669)';
+                const patterns = {
+                    currency: /\$[\d,]+(?:\.\d{2})?/g,
+                    percentage: /\d+\.?\d*%/g,
+                    temperature: /\d+\.?\d*\s*(?:°C|°F|degrees)/gi,
+                    date: /\d{4}|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}|\d{1,2}\/\d{1,2}\/\d{4}/g
+                };
                 
-                setTimeout(() => {
-                    this.textContent = '🔍 Analyse';
-                    this.style.background = '';
-                }, 2000);
-            });
-            
-            // Pulse action handlers
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('btn-success') && e.target.textContent.includes('Accept')) {
-                    const card = e.target.closest('.pulse-point-card');
-                    card.style.borderColor = 'rgba(16, 185, 129, 0.5)';
-                    card.style.background = 'rgba(16, 185, 129, 0.1)';
-                    e.target.textContent = '✅ Accepted';
-                    e.target.disabled = true;
-                    e.target.style.opacity = '0.6';
-                }
+                const pulsePoints = [];
+                let id = 1;
                 
-                if (e.target.classList.contains('btn-danger') && e.target.textContent.includes('Ignore')) {
-                    const card = e.target.closest('.pulse-point-card');
-                    card.style.opacity = '0.3';
-                    card.style.filter = 'grayscale(1)';
-                    e.target.textContent = '❌ Ignored';
-                    e.target.disabled = true;
-                }
-            });
-            
-            // Accept all / Ignore all
-            document.getElementById('accept-all').addEventListener('click', function() {
-                const acceptButtons = document.querySelectorAll('.pulse-actions .btn-success');
-                acceptButtons.forEach(btn => {
-                    if (btn.textContent.includes('Accept')) {
-                        btn.click();
-                    }
+                // Find currency values
+                const currencies = content.match(patterns.currency) || [];
+                currencies.forEach(match => {
+                    pulsePoints.push({
+                        id: `pulse-${id++}`,
+                        selectedText: match,
+                        dynamicPart: match,
+                        pulseType: 'crypto',
+                        confidence: 0.9,
+                        currentValue: match,
+                        dataSource: 'CoinGecko API',
+                        updateFrequency: 60
+                    });
                 });
-            });
-            
-            document.getElementById('ignore-all').addEventListener('click', function() {
-                const ignoreButtons = document.querySelectorAll('.pulse-actions .btn-danger');
-                ignoreButtons.forEach(btn => {
-                    if (btn.textContent.includes('Ignore')) {
-                        btn.click();
-                    }
+                
+                // Find percentages
+                const percentages = content.match(patterns.percentage) || [];
+                percentages.forEach(match => {
+                    pulsePoints.push({
+                        id: `pulse-${id++}`,
+                        selectedText: match,
+                        dynamicPart: match,
+                        pulseType: 'percentage',
+                        confidence: 0.8,
+                        currentValue: match,
+                        dataSource: 'Calculated',
+                        updateFrequency: 60
+                    });
                 });
-            });
+                
+                // Find temperatures
+                const temperatures = content.match(patterns.temperature) || [];
+                temperatures.forEach(match => {
+                    pulsePoints.push({
+                        id: `pulse-${id++}`,
+                        selectedText: match,
+                        dynamicPart: match,
+                        pulseType: 'weather',
+                        confidence: 0.85,
+                        currentValue: match,
+                        dataSource: 'OpenWeatherMap',
+                        updateFrequency: 180
+                    });
+                });
+                
+                // Find dates
+                const dates = content.match(patterns.date) || [];
+                dates.forEach(match => {
+                    pulsePoints.push({
+                        id: `pulse-${id++}`,
+                        selectedText: match,
+                        dynamicPart: match,
+                        pulseType: 'date',
+                        confidence: 0.75,
+                        currentValue: match,
+                        dataSource: 'System Date',
+                        updateFrequency: 1440
+                    });
+                });
+                
+                return {
+                    success: true,
+                    pulsePoints: pulsePoints,
+                    totalFound: pulsePoints.length,
+                    averageConfidence: pulsePoints.reduce((acc, p) => acc + p.confidence, 0) / pulsePoints.length || 0,
+                    explanation: `Found ${pulsePoints.length} potential pulse points using pattern matching.`
+                };
+            }
+        };
+        
+        // Navigation between views
+        window.LivePulse.Elements.createArticleBtn?.addEventListener('click', () => {
+            window.LivePulse.Elements.articlesView.classList.add('hidden');
+            window.LivePulse.Elements.articleEditorView.classList.remove('hidden');
+            window.LivePulse.State.currentView = 'editor';
+        });
+        
+        window.LivePulse.Elements.backToStartBtn?.addEventListener('click', () => {
+            window.LivePulse.Elements.articleEditorView.classList.add('hidden');
+            window.LivePulse.Elements.articlesView.classList.remove('hidden');
+            window.LivePulse.State.currentView = 'articles';
+        });
+        
+        // Analysis functionality
+        window.LivePulse.Elements.analyseBtn?.addEventListener('click', async () => {
+            if (window.LivePulse.State.isAnalyzing) return;
             
-            // Initialize
+            const content = window.LivePulse.Elements.articleContent.value.trim();
+            if (!content) {
+                window.LivePulse.notifications.show({
+                    type: 'warning',
+                    title: 'No Content',
+                    message: 'Please enter some article content to analyze.'
+                });
+                return;
+            }
+            
+            // Start analysis
+            window.LivePulse.State.isAnalyzing = true;
+            
+            // Update UI
+            const originalText = window.LivePulse.Elements.analyseBtn.innerHTML;
+            window.LivePulse.Elements.analyseBtn.innerHTML = '⏳ Analyzing...';
+            window.LivePulse.Elements.analyseBtn.disabled = true;
+            window.LivePulse.Elements.pulseCount.textContent = 'Analyzing...';
+            
+            window.LivePulse.Elements.analysisEmpty.innerHTML = `
+                <div class="analysis-empty-icon">⏳</div>
+                <h3>Analyzing Content</h3>
+                <p>AI is detecting pulse points in your article...</p>
+            `;
+            
+            try {
+                console.log('🔍 Starting analysis...');
+                
+                // Use mock analysis
+                const analysisResults = await window.LivePulse.mockAnalysis.generateMockAnalysis(content);
+                
+                console.log('✅ Analysis complete:', analysisResults);
+                
+                // Process results
+                window.LivePulse.State.analysisResults = analysisResults;
+                window.LivePulse.State.pulsePoints = analysisResults.pulsePoints || [];
+                
+                // Create simple clusters (group by type)
+                const clustersByType = {};
+                window.LivePulse.State.pulsePoints.forEach(pulse => {
+                    if (!clustersByType[pulse.pulseType]) {
+                        clustersByType[pulse.pulseType] = {
+                            id: `cluster-${pulse.pulseType}`,
+                            name: `${pulse.pulseType.charAt(0).toUpperCase() + pulse.pulseType.slice(1)} Cluster`,
+                            pulses: []
+                        };
+                    }
+                    clustersByType[pulse.pulseType].pulses.push(pulse);
+                });
+                
+                // Only keep clusters with multiple pulses
+                window.LivePulse.State.semanticClusters = Object.values(clustersByType).filter(c => c.pulses.length > 1);
+                
+                // Update UI
+                displayPulsePoints(window.LivePulse.State.pulsePoints, window.LivePulse.State.semanticClusters);
+                updateStats();
+                
+                // Success notification
+                window.LivePulse.notifications.show({
+                    type: 'success',
+                    title: 'Analysis Complete!',
+                    message: `Found ${window.LivePulse.State.pulsePoints.length} pulse points in ${window.LivePulse.State.semanticClusters.length} clusters`
+                });
+                
+            } catch (error) {
+                console.error('❌ Analysis failed:', error);
+                
+                window.LivePulse.Elements.analysisEmpty.innerHTML = `
+                    <div class="analysis-empty-icon">❌</div>
+                    <h3>Analysis Failed</h3>
+                    <p>${error.message}</p>
+                    <button class="btn btn-secondary btn-small" onclick="location.reload()">Retry</button>
+                `;
+                
+                window.LivePulse.notifications.show({
+                    type: 'error',
+                    title: 'Analysis Failed',
+                    message: error.message
+                });
+            } finally {
+                // Reset UI
+                window.LivePulse.State.isAnalyzing = false;
+                window.LivePulse.Elements.analyseBtn.innerHTML = originalText;
+                window.LivePulse.Elements.analyseBtn.disabled = false;
+            }
+        });
+        
+        // Accept/Ignore all buttons
+        window.LivePulse.Elements.acceptAllBtn?.addEventListener('click', () => {
+            window.LivePulse.notifications.show({
+                type: 'success',
+                title: 'All Accepted!',
+                message: `${window.LivePulse.State.pulsePoints.length} pulse points activated`
+            });
             updatePreview();
         });
+        
+        window.LivePulse.Elements.ignoreAllBtn?.addEventListener('click', () => {
+            window.LivePulse.State.pulsePoints = [];
+            window.LivePulse.State.semanticClusters = [];
+            displayPulsePoints([]);
+            updateStats();
+            
+            window.LivePulse.notifications.show({
+                type: 'info',
+                title: 'All Ignored',
+                message: 'All pulse points have been removed'
+            });
+        });
+        
+        // Update preview on content changes
+        window.LivePulse.Elements.articleContent?.addEventListener('input', updatePreview);
+        
+        // Display pulse points function
+        function displayPulsePoints(pulsePoints, clusters = []) {
+            const container = window.LivePulse.Elements.pulsePointsList;
+            
+            if (!pulsePoints || pulsePoints.length === 0) {
+                container.innerHTML = `
+                    <div class="analysis-empty">
+                        <div class="analysis-empty-icon">🎯</div>
+                        <h3>No Pulse Points Found</h3>
+                        <p>Try adding some dynamic content like prices, dates, or statistics.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            // Display clusters first
+            clusters.forEach(cluster => {
+                html += createClusterHTML(cluster);
+            });
+            
+            // Display individual pulses (unclustered)
+            const unclusteredPulses = pulsePoints.filter(pulse => {
+                return !clusters.some(cluster => cluster.pulses.some(cp => cp.id === pulse.id));
+            });
+            
+            unclusteredPulses.forEach(pulse => {
+                html += createPulsePointHTML(pulse);
+            });
+            
+            container.innerHTML = html;
+            window.LivePulse.Elements.pulsePanelActions.style.display = 'flex';
+        }
+        
+        // Create HTML for pulse point card
+        function createPulsePointHTML(pulse) {
+            const confidenceClass = pulse.confidence >= 0.8 ? 'high' : 'medium';
+            const confidenceIcon = pulse.confidence >= 0.8 ? '🔥' : '⚡';
+            
+            return `
+                <div class="pulse-point-card" data-pulse-id="${pulse.id}">
+                    <div class="pulse-card-header">
+                        <span class="pulse-text">"${pulse.selectedText}"</span>
+                        <div class="pulse-confidence ${confidenceClass}">
+                            ${confidenceIcon} ${Math.round(pulse.confidence * 100)}%
+                        </div>
+                    </div>
+                    <div class="pulse-card-body">
+                        <div class="pulse-meta-item">
+                            <span class="label">Type:</span>
+                            <span class="value">${pulse.pulseType}</span>
+                        </div>
+                        <div class="pulse-meta-item">
+                            <span class="label">Current Value:</span>
+                            <span class="value">${pulse.currentValue}</span>
+                        </div>
+                        <div class="pulse-meta-item">
+                            <span class="label">Source:</span>
+                            <a href="#" class="pulse-source">${pulse.dataSource}</a>
+                            <span class="source-quality premium">Premium</span>
+                        </div>
+                        <div class="pulse-frequency">
+                            <label>Update Frequency:</label>
+                            <select>
+                                <option value="15">Every 15 minutes</option>
+                                <option value="60" ${pulse.updateFrequency === 60 ? 'selected' : ''}>Every hour</option>
+                                <option value="240" ${pulse.updateFrequency === 240 ? 'selected' : ''}>Every 4 hours</option>
+                                <option value="1440" ${pulse.updateFrequency === 1440 ? 'selected' : ''}>Daily</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pulse-actions">
+                        <button class="btn btn-success btn-small">✅ Accept</button>
+                        <button class="btn btn-secondary btn-small">📝 Edit</button>
+                        <button class="btn btn-danger btn-small">❌ Ignore</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Create HTML for cluster
+        function createClusterHTML(cluster) {
+            return `
+                <div class="pulse-point-card cluster-card" data-cluster-id="${cluster.id}">
+                    <div class="pulse-card-header" style="background: rgba(99, 102, 241, 0.1);">
+                        <span class="pulse-text">🔗 ${cluster.name}</span>
+                        <div class="pulse-confidence high">
+                            🔗 ${cluster.pulses.length} linked
+                        </div>
+                    </div>
+                    <div class="pulse-card-body">
+                        ${cluster.pulses.map(pulse => `
+                            <div class="pulse-meta-item">
+                                <span class="label">📊 Item:</span>
+                                <span class="value">"${pulse.selectedText}"</span>
+                            </div>
+                        `).join('')}
+                        <div class="pulse-meta-item">
+                            <span class="label">Relationship:</span>
+                            <span class="value">Same Type</span>
+                        </div>
+                    </div>
+                    <div class="pulse-actions">
+                        <button class="btn btn-success btn-small">✅ Accept Cluster</button>
+                        <button class="btn btn-secondary btn-small">📝 Edit</button>
+                        <button class="btn btn-danger btn-small">💥 Break Apart</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Update stats in header
+        function updateStats() {
+            const pulseCount = window.LivePulse.State.pulsePoints?.length || 0;
+            const clusterCount = window.LivePulse.State.semanticClusters?.length || 0;
+            
+            window.LivePulse.Elements.activePulseCount.textContent = pulseCount;
+            window.LivePulse.Elements.clusterCount.textContent = clusterCount;
+            window.LivePulse.Elements.pulseCount.textContent = `${pulseCount} detected`;
+        }
+        
+        // Update preview with highlighting
+        function updatePreview() {
+            let content = window.LivePulse.Elements.articleContent.value;
+            
+            // Highlight detected pulse points
+            window.LivePulse.State.pulsePoints.forEach(pulse => {
+                const text = pulse.selectedText;
+                if (text) {
+                    const regex = new RegExp(escapeRegExp(text), 'g');
+                    content = content.replace(regex, `<span class="pulse-highlight">${text}</span>`);
+                }
+            });
+            
+            window.LivePulse.Elements.previewContent.innerHTML = 
+                content.split('\n').map(p => `<p>${p}</p>`).join('');
+        }
+        
+        // Utility function for regex escaping
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\                // Find percentages
+                const percentages = content.match(patterns.percentage');
+        }
+        
+        console.log('🚀 LivePulse ready!');
+        
+        // Initial preview update
+        updatePreview();
     </script>
 </body>
 </html>

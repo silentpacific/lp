@@ -1,489 +1,620 @@
-// js/core/app.js - Main App Initialization & Coordination
-// Entry point for the LivePulse application
-
-import { CONFIG } from './config.js';
-import { debounce, formatFrequency } from './utils.js';
-import { NotificationSystem } from '../ui/notification-system.js';
-import { PulseAnalyzer } from '../analysis/pulse-analyzer.js';
-import { PulseCreator } from '../pulse-management/pulse-creator.js';
-import { PreviewManager } from '../preview/preview-manager.js';
-import { StatsDisplay } from '../ui/stats-display.js';
-import { MobileMenu } from '../ui/mobile-menu.js';
-import { EnhancedControls } from '../enhanced-controls/filter-system.js';
-import { ArticleManagement } from '../storage/article-management.js';
-
 /**
- * Main LivePulse Application Class
+ * LivePulse Main Application Controller
  * Coordinates all subsystems and manages application state
  */
+
 class LivePulseApp {
     constructor() {
-        this.isEditorMode = false;
-        this.currentAnalysis = null;
-        this.pulses = [];
-        this.semanticClusters = [];
-        this.pulseCounter = 1;
-        this.clusterCounter = 1;
+        this.currentArticle = null;
+        this.pulsePoints = [];
+        this.clusters = [];
+        this.isAnalyzing = false;
         
-        // Subsystem instances
-        this.notifications = null;
-        this.analyzer = null;
-        this.pulseCreator = null;
-        this.previewManager = null;
-        this.statsDisplay = null;
-        this.mobileMenu = null;
-        this.enhancedControls = null;
-        this.articleManagement = null;
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
     }
 
-    /**
-     * Initialize the application
-     */
-    async init() {
-        console.log('🫀 LivePulse App loading...');
+    init() {
+        console.log('🫀 LivePulse App Initializing...');
+        
+        // Get DOM elements
+        this.elements = this.getDOMElements();
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        // Initialize modules
+        this.initializeModules();
+        
+        // Update initial preview
+        this.updatePreview();
+        
+        console.log('✅ LivePulse App Ready');
+    }
+
+    getDOMElements() {
+        return {
+            // Views
+            articlesView: document.getElementById('articles-view'),
+            articleEditorView: document.getElementById('article-editor-view'),
+            
+            // Controls
+            createArticleBtn: document.getElementById('create-article-btn'),
+            backToStartBtn: document.getElementById('back-to-start'),
+            analyseBtn: document.getElementById('analyse-btn'),
+            
+            // Content
+            articleContent: document.getElementById('article-content'),
+            previewContent: document.getElementById('preview-content'),
+            
+            // Pulse Points
+            pulsePointsList: document.getElementById('pulse-points-list'),
+            pulseCount: document.getElementById('pulse-count'),
+            analysisEmpty: document.getElementById('analysis-empty'),
+            pulsePanelActions: document.getElementById('pulse-panel-actions'),
+            acceptAllBtn: document.getElementById('accept-all'),
+            ignoreAllBtn: document.getElementById('ignore-all'),
+            
+            // Stats
+            activePulseCount: document.getElementById('active-pulse-count'),
+            clusterCount: document.getElementById('cluster-count'),
+            
+            // Sidebar
+            sidebar: document.getElementById('app-sidebar'),
+            sidebarItems: document.querySelectorAll('.sidebar-item')
+        };
+    }
+
+    setupEventListeners() {
+        // Navigation
+        this.elements.createArticleBtn?.addEventListener('click', () => this.showEditor());
+        this.elements.backToStartBtn?.addEventListener('click', () => this.showWelcome());
+        
+        // Analysis
+        this.elements.analyseBtn?.addEventListener('click', () => this.analyzeContent());
+        
+        // Content
+        this.elements.articleContent?.addEventListener('input', () => this.updatePreview());
+        
+        // Bulk Actions
+        this.elements.acceptAllBtn?.addEventListener('click', () => this.acceptAllPulses());
+        this.elements.ignoreAllBtn?.addEventListener('click', () => this.ignoreAllPulses());
+        
+        // Sidebar
+        this.elements.sidebar?.addEventListener('mouseenter', () => {
+            this.elements.sidebar.classList.add('expanded');
+        });
+        this.elements.sidebar?.addEventListener('mouseleave', () => {
+            this.elements.sidebar.classList.remove('expanded');
+        });
+        
+        // Sidebar navigation
+        this.elements.sidebarItems?.forEach(item => {
+            item.addEventListener('click', (e) => this.handleSidebarClick(e));
+        });
+        
+        // Pulse actions delegation
+        document.addEventListener('click', (e) => this.handlePulseActions(e));
+    }
+
+    initializeModules() {
+        // Initialize notification system
+        if (typeof NotificationSystem !== 'undefined') {
+            this.notifications = new NotificationSystem();
+        }
+        
+        // Initialize preview manager
+        if (typeof PreviewManager !== 'undefined') {
+            this.previewManager = new PreviewManager();
+        }
+        
+        // Initialize pulse analyzer
+        if (typeof PulseAnalyzer !== 'undefined') {
+            this.pulseAnalyzer = new PulseAnalyzer();
+        }
+        
+        // Initialize pulse display
+        if (typeof PulseDisplay !== 'undefined') {
+            this.pulseDisplay = new PulseDisplay();
+        }
+    }
+
+    // Navigation Methods
+    showEditor() {
+        this.elements.articlesView?.classList.add('hidden');
+        this.elements.articleEditorView?.classList.remove('hidden');
+        this.elements.articleContent?.focus();
+        
+        console.log('📝 Switched to Article Editor');
+    }
+
+    showWelcome() {
+        this.elements.articleEditorView?.classList.add('hidden');
+        this.elements.articlesView?.classList.remove('hidden');
+        
+        // Reset analysis state
+        this.resetAnalysis();
+        
+        console.log('🏠 Switched to Welcome View');
+    }
+
+    handleSidebarClick(e) {
+        e.preventDefault();
+        
+        const clickedItem = e.currentTarget;
+        const viewName = clickedItem.dataset.view;
+        
+        // Update active state
+        this.elements.sidebarItems.forEach(item => item.classList.remove('active'));
+        clickedItem.classList.add('active');
+        
+        // For now, only handle articles view
+        if (viewName === 'articles') {
+            this.showWelcome();
+        } else {
+            this.showNotification(`${viewName} view coming soon!`, 'info');
+        }
+        
+        console.log(`📍 Navigated to: ${viewName}`);
+    }
+
+    // Content Management
+    updatePreview() {
+        const content = this.elements.articleContent?.value.trim() || '';
+        
+        if (content) {
+            const paragraphs = content
+                .split('\n')
+                .filter(p => p.trim())
+                .map(p => `<p>${this.escapeHtml(p)}</p>`)
+                .join('');
+            
+            if (this.elements.previewContent) {
+                this.elements.previewContent.innerHTML = paragraphs;
+            }
+        } else {
+            if (this.elements.previewContent) {
+                this.elements.previewContent.innerHTML = `
+                    <div style="text-align: center; color: #6b7280; padding: 2rem;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">👁️</div>
+                        <p>Your article preview will appear here</p>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // Analysis Methods
+    async analyzeContent() {
+        const content = this.elements.articleContent?.value.trim();
+        
+        if (!content) {
+            this.showNotification('Please write some content first!', 'warning');
+            return;
+        }
+        
+        if (this.isAnalyzing) {
+            console.log('⏳ Analysis already in progress...');
+            return;
+        }
+        
+        console.log('🔍 Starting content analysis...');
+        this.isAnalyzing = true;
+        
+        // Update UI to show loading state
+        this.setAnalysisLoadingState();
         
         try {
-            // Detect application mode
-            this.detectMode();
+            // Call the analysis function
+            const results = await this.performAnalysis(content);
             
-            // Initialize core subsystems
-            await this.initializeSubsystems();
+            // Process results
+            this.handleAnalysisResults(results);
             
-            // Setup event listeners and UI
-            this.setupEventListeners();
-            
-            // Initialize mode-specific features
-            if (this.isEditorMode) {
-                await this.initializeEditorMode();
-                console.log('✅ Editor mode fully loaded!');
-            } else {
-                this.initializeLandingPage();
-                console.log('✅ Landing page mode loaded!');
-            }
+            // Show success notification
+            this.showNotification('Analysis complete! Review the pulse points found.', 'success');
             
         } catch (error) {
-            console.error('❌ App initialization failed:', error);
-            this.showError('Application failed to initialize: ' + error.message);
+            console.error('❌ Analysis failed:', error);
+            this.showNotification('Analysis failed. Please try again.', 'error');
+            this.resetAnalysis();
+        } finally {
+            this.isAnalyzing = false;
+            this.resetAnalyzeButton();
         }
     }
 
-    /**
-     * Detect if we're in editor mode or landing page mode
-     */
-    detectMode() {
-        this.isEditorMode = document.body.classList.contains('app-body') || 
-                           document.querySelector('.app-header') !== null;
-        
-        console.log(`Mode detected: ${this.isEditorMode ? 'Editor' : 'Landing Page'}`);
-    }
-
-    /**
-     * Initialize all subsystems
-     */
-    async initializeSubsystems() {
-        console.log('🔧 Initializing subsystems...');
-        
-        // Core UI systems (always needed)
-        this.notifications = new NotificationSystem();
-        this.mobileMenu = new MobileMenu();
-        
-        // Editor-specific systems
-        if (this.isEditorMode) {
-            this.analyzer = new PulseAnalyzer();
-            this.pulseCreator = new PulseCreator();
-            this.previewManager = new PreviewManager();
-            this.statsDisplay = new StatsDisplay();
-            this.enhancedControls = new EnhancedControls();
-            this.articleManagement = new ArticleManagement();
-            
-            // Initialize with app reference
-            this.analyzer.init(this);
-            this.pulseCreator.init(this);
-            this.previewManager.init(this);
-            this.statsDisplay.init(this);
-            this.enhancedControls.init(this);
-            this.articleManagement.init(this);
+    async performAnalysis(content) {
+        // Use mock analysis for now - replace with real API call later
+        if (typeof MockAnalysis !== 'undefined') {
+            return await MockAnalysis.analyzeContent(content);
         }
         
-        console.log('✅ Subsystems initialized');
+        // Fallback mock analysis
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(this.generateMockResults(content));
+            }, 2000);
+        });
     }
 
-    /**
-     * Setup global event listeners
-     */
-    setupEventListeners() {
-        console.log('🔧 Setting up global event listeners...');
+    generateMockResults(content) {
+        const results = [];
         
-        if (this.isEditorMode) {
-            // Article content changes
-            const articleContent = document.getElementById('article-content');
-            if (articleContent) {
-                articleContent.addEventListener('input', debounce(() => {
-                    this.handleArticleContentChange();
-                }, CONFIG.DEBOUNCE_DELAY));
-            }
-            
-            // Selected text changes
-            const selectedText = document.getElementById('selected-text');
-            if (selectedText) {
-                selectedText.addEventListener('input', () => {
-                    this.handleSelectedTextChange();
-                });
-            }
-            
-            // Main action buttons
-            this.setupActionButtons();
-        } else {
-            // Landing page specific listeners
-            this.setupLandingPageListeners();
+        // Check for Bitcoin price
+        if (content.includes('$67,500') || content.includes('Bitcoin')) {
+            results.push({
+                id: 'btc-price',
+                text: '$67,500',
+                type: 'crypto',
+                entity: 'Bitcoin (BTC)',
+                confidence: 'high',
+                source: 'CoinGecko API',
+                quality: 'premium',
+                lastUpdated: '2 minutes ago',
+                nextUpdate: 'In 58 minutes',
+                frequency: 'hourly'
+            });
         }
         
-        console.log('✅ Event listeners set up');
+        // Check for temperature
+        if (content.includes('22 degrees') || content.includes('weather')) {
+            results.push({
+                id: 'adelaide-temp',
+                text: '22°C',
+                type: 'weather',
+                entity: 'Temperature',
+                location: 'Adelaide, SA',
+                confidence: 'high',
+                source: 'OpenWeather API',
+                quality: 'premium',
+                lastUpdated: '15 minutes ago',
+                nextUpdate: 'In 3 hours',
+                frequency: 'daily'
+            });
+        }
+        
+        // Check for year
+        if (content.includes('2025')) {
+            results.push({
+                id: 'current-year',
+                text: '2025',
+                type: 'date',
+                entity: 'Current Year',
+                context: 'Current year reference',
+                confidence: 'medium',
+                source: 'System Date',
+                quality: 'standard',
+                lastUpdated: 'Today',
+                nextUpdate: 'January 1st',
+                frequency: 'yearly'
+            });
+        }
+        
+        return results;
     }
 
-    /**
-     * Setup main action buttons for editor mode
-     */
-    setupActionButtons() {
-        const buttons = [
-            { id: 'analyze-btn', handler: () => this.handleAnalyzeClick() },
-            { id: 'create-pulse-btn', handler: () => this.handleCreatePulseClick() },
-            { id: 'scan-full-article', handler: () => this.handleScanArticleClick() }
+    handleAnalysisResults(results) {
+        this.pulsePoints = results;
+        
+        // Update UI
+        this.displayPulsePoints(results);
+        this.updateStats();
+        
+        console.log(`✅ Found ${results.length} pulse points`);
+    }
+
+    displayPulsePoints(pulsePoints) {
+        if (!this.elements.pulsePointsList) return;
+        
+        if (pulsePoints.length === 0) {
+            this.elements.pulsePointsList.innerHTML = `
+                <div class="analysis-empty">
+                    <div class="analysis-empty-icon">🤷‍♂️</div>
+                    <h3>No Pulse Points Found</h3>
+                    <p>Try adding some dynamic content like prices, dates, or statistics.</p>
+                </div>
+            `;
+            this.elements.pulsePanelActions.style.display = 'none';
+            return;
+        }
+        
+        // Generate pulse point cards
+        const cardsHtml = pulsePoints.map(pulse => this.generatePulseCard(pulse)).join('');
+        this.elements.pulsePointsList.innerHTML = cardsHtml;
+        
+        // Update pulse count
+        this.elements.pulseCount.textContent = `${pulsePoints.length} pulse points found`;
+        
+        // Show panel actions
+        this.elements.pulsePanelActions.style.display = 'flex';
+    }
+
+    generatePulseCard(pulse) {
+        const confidenceClass = pulse.confidence.toLowerCase();
+        const confidenceIcon = pulse.confidence === 'high' ? '🔥' : '⚡';
+        
+        return `
+            <div class="pulse-point-card" data-pulse-id="${pulse.id}">
+                <div class="pulse-card-header">
+                    <div class="pulse-text">"${pulse.text}"</div>
+                    <div class="pulse-confidence ${confidenceClass}">${confidenceIcon} ${pulse.confidence.toUpperCase()}</div>
+                </div>
+                
+                <div class="pulse-card-body">
+                    ${this.generatePulseMetaItems(pulse)}
+                    
+                    <div class="pulse-frequency">
+                        <label>Update Frequency:</label>
+                        <select data-pulse-id="${pulse.id}">
+                            <option value="hourly" ${pulse.frequency === 'hourly' ? 'selected' : ''}>Hourly</option>
+                            <option value="daily" ${pulse.frequency === 'daily' ? 'selected' : ''}>Daily</option>
+                            <option value="weekly" ${pulse.frequency === 'weekly' ? 'selected' : ''}>Weekly</option>
+                            <option value="yearly" ${pulse.frequency === 'yearly' ? 'selected' : ''}>Yearly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pulse-actions">
+                    <button class="btn btn-success btn-small accept-pulse" data-pulse-id="${pulse.id}">✅ Accept</button>
+                    <button class="btn btn-danger btn-small ignore-pulse" data-pulse-id="${pulse.id}">❌ Ignore</button>
+                    <button class="btn btn-secondary btn-small pulse-details" data-pulse-id="${pulse.id}">⚙️ Details</button>
+                </div>
+            </div>
+        `;
+    }
+
+    generatePulseMetaItems(pulse) {
+        const items = [
+            { label: 'Type:', value: pulse.type },
+            { label: 'Entity:', value: pulse.entity || pulse.text }
         ];
         
-        buttons.forEach(({ id, handler }) => {
-            const button = document.getElementById(id);
-            if (button) {
-                button.addEventListener('click', handler);
-            }
-        });
-    }
-
-    /**
-     * Setup landing page specific listeners
-     */
-    setupLandingPageListeners() {
-        // Smooth scrolling for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.querySelector(anchor.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (pulse.location) {
+            items.push({ label: 'Location:', value: pulse.location });
+        }
+        
+        if (pulse.context) {
+            items.push({ label: 'Context:', value: pulse.context });
+        }
+        
+        items.push(
+            { label: 'Source:', value: pulse.source, isLink: true },
+            { label: 'Quality:', value: pulse.quality, isQuality: true },
+            { label: 'Last Updated:', value: pulse.lastUpdated },
+            { label: 'Next Update:', value: pulse.nextUpdate }
+        );
+        
+        return items.map(item => `
+            <div class="pulse-meta-item">
+                <span class="label">${item.label}</span>
+                ${item.isLink ? 
+                    `<a href="#" class="pulse-source">${item.value}</a>` :
+                    item.isQuality ?
+                        `<span class="source-quality ${item.value.toLowerCase()}">${item.value.toUpperCase()}</span>` :
+                        `<span class="value">${item.value}</span>`
                 }
-            });
-        });
+            </div>
+        `).join('');
+    }
+
+    // Pulse Actions
+    handlePulseActions(e) {
+        const pulseId = e.target.dataset.pulseId;
         
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('.header');
-            if (header) {
-                header.style.background = window.scrollY > 100 
-                    ? 'rgba(255, 255, 255, 0.98)' 
-                    : 'rgba(255, 255, 255, 0.95)';
+        if (e.target.classList.contains('accept-pulse')) {
+            this.acceptPulse(pulseId, e.target);
+        } else if (e.target.classList.contains('ignore-pulse')) {
+            this.ignorePulse(pulseId, e.target);
+        } else if (e.target.classList.contains('pulse-details')) {
+            this.showPulseDetails(pulseId);
+        }
+    }
+
+    acceptPulse(pulseId, button) {
+        const card = button.closest('.pulse-point-card');
+        
+        // Update visual state
+        card.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+        card.style.background = 'rgba(16, 185, 129, 0.1)';
+        
+        // Update button
+        button.textContent = '✅ Accepted';
+        button.disabled = true;
+        button.style.opacity = '0.6';
+        
+        // Hide ignore button
+        const ignoreBtn = card.querySelector('.ignore-pulse');
+        if (ignoreBtn) ignoreBtn.style.display = 'none';
+        
+        // Update pulse state
+        const pulse = this.pulsePoints.find(p => p.id === pulseId);
+        if (pulse) {
+            pulse.status = 'accepted';
+        }
+        
+        this.updateStats();
+        this.showNotification(`Pulse point "${pulse?.text}" accepted!`, 'success');
+        
+        console.log(`✅ Accepted pulse: ${pulseId}`);
+    }
+
+    ignorePulse(pulseId, button) {
+        const card = button.closest('.pulse-point-card');
+        
+        // Update visual state
+        card.style.opacity = '0.3';
+        card.style.filter = 'grayscale(1)';
+        
+        // Update button
+        button.textContent = '❌ Ignored';
+        button.disabled = true;
+        
+        // Hide accept button
+        const acceptBtn = card.querySelector('.accept-pulse');
+        if (acceptBtn) acceptBtn.style.display = 'none';
+        
+        // Update pulse state
+        const pulse = this.pulsePoints.find(p => p.id === pulseId);
+        if (pulse) {
+            pulse.status = 'ignored';
+        }
+        
+        this.updateStats();
+        this.showNotification(`Pulse point "${pulse?.text}" ignored.`, 'info');
+        
+        console.log(`❌ Ignored pulse: ${pulseId}`);
+    }
+
+    showPulseDetails(pulseId) {
+        const pulse = this.pulsePoints.find(p => p.id === pulseId);
+        if (!pulse) return;
+        
+        // For now, just show a notification - later implement modal
+        this.showNotification(`Details for "${pulse.text}" - coming soon!`, 'info');
+        
+        console.log(`ℹ️ Showing details for pulse: ${pulseId}`, pulse);
+    }
+
+    acceptAllPulses() {
+        const acceptButtons = document.querySelectorAll('.accept-pulse:not([disabled])');
+        let count = 0;
+        
+        acceptButtons.forEach(btn => {
+            if (btn.textContent.includes('Accept')) {
+                btn.click();
+                count++;
             }
         });
-    }
-
-    /**
-     * Initialize editor mode specific features
-     */
-    async initializeEditorMode() {
-        console.log('🎨 Initializing editor mode...');
         
-        // Update initial displays
-        this.updatePreview();
-        this.updateStatsDisplay();
-        
-        // Initialize enhanced controls
-        this.enhancedControls.initialize();
-        
-        // Setup editor preferences
-        this.setupEditorPreferences();
-        
-        console.log('✅ Editor mode initialized');
-    }
-
-    /**
-     * Initialize landing page mode
-     */
-    initializeLandingPage() {
-        console.log('🏠 Initializing landing page mode...');
-        // Landing page is mostly static, minimal initialization needed
-    }
-
-    /**
-     * Setup editor preferences (footnotes, superscripts, etc.)
-     */
-    setupEditorPreferences() {
-        const toggleFootnotesBtn = document.getElementById('toggle-footnotes');
-        const toggleSuperscriptsBtn = document.getElementById('toggle-superscripts');
-        const exportHtmlBtn = document.getElementById('export-html');
-
-        if (toggleFootnotesBtn) {
-            toggleFootnotesBtn.addEventListener('click', () => {
-                this.previewManager.toggleFootnotes();
-            });
-        }
-
-        if (toggleSuperscriptsBtn) {
-            toggleSuperscriptsBtn.addEventListener('click', () => {
-                this.previewManager.toggleSuperscripts();
-            });
-        }
-
-        if (exportHtmlBtn) {
-            exportHtmlBtn.addEventListener('click', () => {
-                this.previewManager.exportHtml();
-            });
+        if (count > 0) {
+            this.showNotification(`Accepted ${count} pulse points!`, 'success');
         }
     }
 
-    /**
-     * Event Handlers
-     */
-    
-    async handleAnalyzeClick() {
-        try {
-            const result = await this.analyzer.analyzeSinglePulse();
-            if (result) {
-                this.currentAnalysis = result;
-                this.showCreatePulseButton();
+    ignoreAllPulses() {
+        const ignoreButtons = document.querySelectorAll('.ignore-pulse:not([disabled])');
+        let count = 0;
+        
+        ignoreButtons.forEach(btn => {
+            if (btn.textContent.includes('Ignore')) {
+                btn.click();
+                count++;
             }
-        } catch (error) {
-            this.showError('Analysis failed: ' + error.message);
-        }
-    }
-
-    async handleCreatePulseClick() {
-        if (!this.currentAnalysis) return;
+        });
         
-        try {
-            const result = await this.pulseCreator.createFromAnalysis(this.currentAnalysis);
-            if (result) {
-                this.addPulses(result.pulses);
-                if (result.cluster) {
-                    this.addCluster(result.cluster);
-                }
-                this.clearCurrentAnalysis();
-                this.updateAllDisplays();
-            }
-        } catch (error) {
-            this.showError('Pulse creation failed: ' + error.message);
+        if (count > 0) {
+            this.showNotification(`Ignored ${count} pulse points.`, 'info');
         }
     }
 
-    async handleScanArticleClick() {
-        try {
-            const results = await this.analyzer.scanFullArticle();
-            if (results) {
-                // Display scan results
-                this.displayScanResults(results);
-            }
-        } catch (error) {
-            this.showError('Article scan failed: ' + error.message);
+    // UI State Management
+    setAnalysisLoadingState() {
+        if (this.elements.analysisEmpty) {
+            this.elements.analysisEmpty.innerHTML = `
+                <div class="analysis-empty-icon">⏳</div>
+                <h3>Analysing...</h3>
+                <p>Detecting pulse points in your content...</p>
+            `;
+        }
+        
+        if (this.elements.analyseBtn) {
+            this.elements.analyseBtn.textContent = '⏳ Analysing...';
+            this.elements.analyseBtn.disabled = true;
+        }
+        
+        if (this.elements.pulseCount) {
+            this.elements.pulseCount.textContent = 'Analysing content...';
         }
     }
 
-    handleArticleContentChange() {
-        this.updatePreview();
-        this.clearScanResults();
-        this.statsDisplay.update();
-    }
-
-    handleSelectedTextChange() {
-        if (this.currentAnalysis) {
-            this.clearCurrentAnalysis();
+    resetAnalyzeButton() {
+        if (this.elements.analyseBtn) {
+            this.elements.analyseBtn.textContent = '🔍 Analyse';
+            this.elements.analyseBtn.disabled = false;
+            this.elements.analyseBtn.style.background = '';
         }
     }
 
-    /**
-     * State Management Methods
-     */
-    
-    addPulses(newPulses) {
-        if (Array.isArray(newPulses)) {
-            this.pulses.push(...newPulses);
+    resetAnalysis() {
+        this.pulsePoints = [];
+        this.clusters = [];
+        
+        if (this.elements.analysisEmpty) {
+            this.elements.analysisEmpty.innerHTML = `
+                <div class="analysis-empty-icon">🔍</div>
+                <h3>Ready to Analyse</h3>
+                <p>Write your article content and click "Analyse" to discover pulse points.</p>
+            `;
+        }
+        
+        if (this.elements.pulsePointsList) {
+            this.elements.pulsePointsList.innerHTML = `
+                <div class="analysis-empty" id="analysis-empty">
+                    <div class="analysis-empty-icon">🔍</div>
+                    <h3>Ready to Analyse</h3>
+                    <p>Write your article content and click "Analyse" to discover pulse points.</p>
+                </div>
+            `;
+        }
+        
+        if (this.elements.pulseCount) {
+            this.elements.pulseCount.textContent = 'Ready to analyse';
+        }
+        
+        if (this.elements.pulsePanelActions) {
+            this.elements.pulsePanelActions.style.display = 'none';
+        }
+        
+        this.updateStats();
+    }
+
+    updateStats() {
+        const acceptedPulses = this.pulsePoints.filter(p => p.status === 'accepted');
+        const activeClusters = this.clusters.length;
+        
+        if (this.elements.activePulseCount) {
+            this.elements.activePulseCount.textContent = acceptedPulses.length;
+        }
+        
+        if (this.elements.clusterCount) {
+            this.elements.clusterCount.textContent = activeClusters;
+        }
+    }
+
+    // Utility Methods
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    showNotification(message, type = 'info') {
+        if (this.notifications) {
+            this.notifications.show(message, type);
         } else {
-            this.pulses.push(newPulses);
+            // Fallback to console
+            console.log(`📢 ${type.toUpperCase()}: ${message}`);
         }
     }
 
-    addCluster(cluster) {
-        this.semanticClusters.push(cluster);
-    }
-
-    removePulse(pulseId) {
-        this.pulses = this.pulses.filter(p => p.id !== pulseId);
-        this.updateAllDisplays();
-    }
-
-    removeCluster(clusterId) {
-        this.semanticClusters = this.semanticClusters.filter(c => c.id !== clusterId);
-        this.pulses = this.pulses.filter(p => p.clusterId !== clusterId);
-        this.updateAllDisplays();
-    }
-
-    clearCurrentAnalysis() {
-        this.currentAnalysis = null;
-        this.hideAnalysisResults();
-        this.hideCreatePulseButton();
-        this.clearSelectedText();
-    }
-
-    clearScanResults() {
-        const scanResults = document.getElementById('full-scan-results');
-        if (scanResults) {
-            scanResults.classList.add('hidden');
-        }
-        this.resetScanButton();
-    }
-
-    /**
-     * UI Update Methods
-     */
-    
-    updateAllDisplays() {
-        this.updatePreview();
-        this.updatePulseList();
-        this.updateStatsDisplay();
-    }
-
-    updatePreview() {
-        if (this.previewManager) {
-            this.previewManager.update(this.pulses, this.semanticClusters);
-        }
-    }
-
-    updatePulseList() {
-        if (this.pulseCreator) {
-            this.pulseCreator.updatePulseList(this.pulses, this.semanticClusters);
-        }
-    }
-
-    updateStatsDisplay() {
-        if (this.statsDisplay) {
-            this.statsDisplay.update(this.pulses, this.semanticClusters);
-        }
-    }
-
-    showCreatePulseButton() {
-        const button = document.getElementById('create-pulse-btn');
-        if (button) {
-            button.classList.remove('hidden');
-        }
-    }
-
-    hideCreatePulseButton() {
-        const button = document.getElementById('create-pulse-btn');
-        if (button) {
-            button.classList.add('hidden');
-        }
-    }
-
-    hideAnalysisResults() {
-        const results = document.getElementById('analysis-result');
-        if (results) {
-            results.classList.add('hidden');
-        }
-    }
-
-    clearSelectedText() {
-        const selectedText = document.getElementById('selected-text');
-        if (selectedText) {
-            selectedText.value = '';
-        }
-    }
-
-    resetScanButton() {
-        const scanBtn = document.getElementById('scan-full-article');
-        if (scanBtn) {
-            scanBtn.textContent = '🔍 Scan Full Article for Pulse Points';
-            scanBtn.classList.remove('btn-disabled');
-            scanBtn.disabled = false;
-        }
-    }
-
-    displayScanResults(results) {
-        // This will be handled by the analyzer module
-        if (this.analyzer) {
-            this.analyzer.displayScanResults(results);
-        }
-    }
-
-    /**
-     * Notification wrapper methods
-     */
-    
-    showSuccess(message) {
-        if (this.notifications) {
-            this.notifications.showSuccess(message);
-        }
-    }
-
-    showError(message) {
-        if (this.notifications) {
-            this.notifications.showError(message);
-        }
-    }
-
-    showInfo(message) {
-        if (this.notifications) {
-            this.notifications.showInfo(message);
-        }
-    }
-
-    /**
-     * Public API for external access
-     */
-    
-    getPulses() {
-        return this.pulses;
-    }
-
-    getClusters() {
-        return this.semanticClusters;
-    }
-
-    getCurrentAnalysis() {
-        return this.currentAnalysis;
-    }
-
-    isInEditorMode() {
-        return this.isEditorMode;
-    }
-
-    /**
-     * Debug information
-     */
+    // Debug Methods
     getDebugInfo() {
         return {
-            editorMode: this.isEditorMode,
-            currentAnalysis: this.currentAnalysis,
-            pulses: this.pulses?.length || 0,
-            clusters: this.semanticClusters?.length || 0,
-            subsystems: {
-                notifications: !!this.notifications,
-                analyzer: !!this.analyzer,
-                pulseCreator: !!this.pulseCreator,
-                previewManager: !!this.previewManager,
-                statsDisplay: !!this.statsDisplay
-            }
+            pulsePoints: this.pulsePoints,
+            clusters: this.clusters,
+            isAnalyzing: this.isAnalyzing,
+            currentArticle: this.currentArticle
         };
     }
 }
 
-// Initialize the application when DOM is ready
-let app;
+// Initialize the app
+const livePulseApp = new LivePulseApp();
 
-document.addEventListener('DOMContentLoaded', async function() {
-    app = new LivePulseApp();
-    await app.init();
-    
-    // Make app globally available for debugging
-    window.livePulseApp = app;
-    window.debugLivePulse = () => app.getDebugInfo();
-});
-
-// Export for module usage
-export { LivePulseApp };
+// Make it globally available for debugging
+window.livePulseApp = livePulseApp;
