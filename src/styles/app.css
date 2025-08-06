@@ -1,0 +1,328 @@
+/*
+ * LivePulse App Interface Styles
+ * Modular CSS Architecture - Main App File
+ */
+
+/* Base Styles */
+@import url('./base/variables.css');
+@import url('./base/reset.css');
+
+/* Components */
+@import url('./components/buttons.css');
+@import url('./components/cards.css');
+@import url('./components/forms.css');
+
+/* Layout */
+@import url('./layout/header.css');
+@import url('./layout/footer.css');
+@import url('./layout/mobile-menu.css');
+
+/* Pages */
+@import url('./pages/app.css');
+
+/* Utilities */
+@import url('./utilities/responsive.css');
+@import url('./utilities/animations.css');
+
+/* App-Specific Styles */
+
+/* Notifications */
+.notifications-container {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: var(--z-toast);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.notification {
+    background: var(--app-glass-bg);
+    backdrop-filter: blur(30px);
+    border: 1px solid var(--app-glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    max-width: 400px;
+    box-shadow: var(--shadow-glass);
+    animation: slideIn 0.3s ease;
+    color: white;
+}
+
+.notification.success {
+    border-color: var(--success-color);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.notification.error {
+    border-color: var(--error-color);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.notification.warning {
+    border-color: var(--warning-color);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.notification.info {
+    border-color: var(--info-color);
+    background: rgba(14, 165, 233, 0.1);
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: var(--font-size-lg);
+    margin-left: auto;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
+}
+
+.notification-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* Modals */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: var(--z-modal-backdrop);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal {
+    background: var(--app-glass-bg);
+    backdrop-filter: blur(30px);
+    border: 1px solid var(--app-glass-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-glass);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: fadeInScale 0.3s ease;
+}
+
+.modal-header {
+    padding: var(--space-xl);
+    border-bottom: 1px solid var(--app-glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    color: white;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    font-size: var(--font-size-2xl);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.modal-body {
+    padding: var(--space-xl);
+    color: white;
+    overflow-y: auto;
+    max-height: calc(90vh - 200px);
+}
+
+.modal-footer {
+    padding: var(--space-xl);
+    border-top: 1px solid var(--app-glass-border);
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+}
+
+/* Text Breakdown Styles */
+.text-breakdown {
+    margin: var(--space-md) 0;
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.text-parts {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+}
+
+.static-text {
+    color: #4b5563;
+}
+
+.dynamic-text {
+    color: #dc2626;
+    font-weight: 600;
+    background: rgba(220, 38, 38, 0.1);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed #dc2626;
+}
+
+/* Detail Rows */
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-sm);
+    align-items: center;
+}
+
+.detail-row label {
+    font-weight: 500;
+    color: #6b7280;
+    min-width: 120px;
+}
+
+.detail-row span {
+    color: #374151;
+    flex: 1;
+    text-align: right;
+}
+
+/* Cluster Info */
+.cluster-info {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.cluster-info h4 {
+    color: #1e40af;
+    margin-bottom: var(--space-sm);
+}
+
+.cluster-description {
+    color: #374151;
+    margin-bottom: var(--space-md);
+    font-style: italic;
+}
+
+/* Pulse Meta */
+.pulse-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin: var(--space-md) 0;
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.pulse-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    margin-top: var(--space-md);
+}
+
+/* Confidence Indicators */
+.confidence-high { color: var(--success-color); }
+.confidence-medium { color: var(--warning-color); }
+.confidence-low { color: var(--error-color); }
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    margin-right: var(--space-sm);
+}
+
+.status-indicator.active {
+    background: var(--success-color);
+    animation: pulse-indicator 2s infinite;
+}
+
+.status-indicator.paused {
+    background: var(--warning-color);
+}
+
+.status-indicator.error {
+    background: var(--error-color);
+}
+
+/* App-specific utility classes */
+.app-body .error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border-left: 4px solid #ef4444;
+    margin-top: var(--space-md);
+}
+
+.app-body .success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--success-color);
+    margin-top: var(--space-md);
+}
+
+.app-body .warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--warning-color);
+    margin-top: var(--space-md);
+}
+
+/* Responsive Adjustments for App */
+@media (max-width: 768px) {
+    .notifications-container {
+        top: 80px;
+        right: var(--space-md);
+        left: var(--space-md);
+    }
+    
+    .notification {
+        max-width: none;
+    }
+    
+    .modal {
+        margin: var(--space-md);
+        max-width: calc(100vw - 2rem);
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: var(--space-lg);
+    }
+}
