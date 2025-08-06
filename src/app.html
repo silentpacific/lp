@@ -7,11 +7,6 @@
     <link rel="stylesheet" href="styles/app.css">
     <meta name="description" content="LivePulse Editor - Create and manage dynamic pulse points in your content">
     
-    <!-- Open Graph / Social Media -->
-    <meta property="og:title" content="LivePulse Editor - Intelligent Content Analysis">
-    <meta property="og:description" content="AI-powered system that automatically updates facts in your blog posts">
-    <meta property="og:type" content="website">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
 </head>
@@ -57,358 +52,125 @@
 
         <!-- Main Panel -->
         <main class="app-main" id="app-main">
-            <!-- Articles View -->
+            <!-- Articles View - Clean Slate -->
             <div class="articles-view" id="articles-view">
-                <div class="articles-search">
-                    <input type="text" class="articles-search-input" placeholder="🔍 Search articles..." id="article-search">
-                    <button class="btn btn-secondary btn-small" id="filter-toggle">Filter</button>
-                </div>
-                
-                <div class="articles-filters" id="articles-filters">
-                    <div class="filter-group">
-                        <label>📅 Date Range</label>
-                        <select id="date-filter">
-                            <option value="all">All Time</option>
-                            <option value="week">Last Week</option>
-                            <option value="month">Last Month</option>
-                            <option value="quarter">Last 3 Months</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>📂 Category</label>
-                        <select id="category-filter">
-                            <option value="all">All Categories</option>
-                            <option value="technology">Technology</option>
-                            <option value="finance">Finance</option>
-                            <option value="health">Health</option>
-                            <option value="science">Science</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>🏷️ Tags</label>
-                        <select id="tags-filter">
-                            <option value="all">All Tags</option>
-                            <option value="crypto">crypto</option>
-                            <option value="weather">weather</option>
-                            <option value="stocks">stocks</option>
-                            <option value="blockchain">blockchain</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>🌐 Website</label>
-                        <select id="website-filter">
-                            <option value="all">All Websites</option>
-                            <option value="wordpress">WordPress</option>
-                            <option value="shopify">Shopify</option>
-                            <option value="ghost">Ghost</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="articles-list" id="articles-list">
-                    <!-- Sample Articles -->
-                    <div class="article-item" data-article-id="1">
-                        <div class="article-title">
-                            📄 "How Bitcoin Mining Works in 2024"
-                        </div>
-                        <div class="article-meta">
-                            <span>Dec 15, 2024</span>
-                            <div class="article-tags">
-                                <span class="article-tag">crypto</span>
-                                <span class="article-tag">blockchain</span>
-                                <span class="article-tag">technology</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="article-item" data-article-id="2">
-                        <div class="article-title">
-                            📄 "Weather Patterns and Climate Change"
-                        </div>
-                        <div class="article-meta">
-                            <span>Dec 14, 2024</span>
-                            <div class="article-tags">
-                                <span class="article-tag">weather</span>
-                                <span class="article-tag">climate</span>
-                                <span class="article-tag">science</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="article-item" data-article-id="3">
-                        <div class="article-title">
-                            📄 "Stock Market Analysis Q4 2024"
-                        </div>
-                        <div class="article-meta">
-                            <span>Dec 13, 2024</span>
-                            <div class="article-tags">
-                                <span class="article-tag">stocks</span>
-                                <span class="article-tag">finance</span>
-                                <span class="article-tag">analysis</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="article-item" data-article-id="4">
-                        <div class="article-title">
-                            📄 "AI and Machine Learning Trends"
-                        </div>
-                        <div class="article-meta">
-                            <span>Dec 12, 2024</span>
-                            <div class="article-tags">
-                                <span class="article-tag">ai</span>
-                                <span class="article-tag">technology</span>
-                                <span class="article-tag">trends</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="article-item" data-article-id="5">
-                        <div class="article-title">
-                            📄 "Global Health Statistics 2024"
-                        </div>
-                        <div class="article-meta">
-                            <span>Dec 11, 2024</span>
-                            <div class="article-tags">
-                                <span class="article-tag">health</span>
-                                <span class="article-tag">statistics</span>
-                                <span class="article-tag">global</span>
-                            </div>
-                        </div>
+                <div class="clean-start-container">
+                    <div class="clean-start-content">
+                        <div class="clean-start-icon">📄</div>
+                        <h2>Welcome to LivePulse</h2>
+                        <p>Create your first article and let AI identify dynamic content for automatic updates.</p>
+                        <button class="btn btn-primary btn-large" id="create-article-btn">✨ Create New Article</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Article Editor View (Hidden by default) -->
-            <div class="article-editor" id="article-editor" style="display: none;">
-                <!-- Back Button -->
-                <div class="editor-back">
-                    <button class="btn btn-secondary btn-small" id="back-to-articles">← Back to Articles</button>
-                </div>
-                
-                <div class="editor-left">
-                    <!-- WYSIWYG Editor Section -->
-                    <div class="wysiwyg-section">
-                        <div class="wysiwyg-header">
-                            <h3>✏️ Article Editor</h3>
-                            <div class="wysiwyg-actions">
-                                <button class="btn btn-primary btn-small" id="scan-article">✨ Scan Entire Article</button>
-                                <button class="btn btn-secondary btn-small" id="analyze-selected">🔍 Analyse Selected</button>
-                            </div>
-                        </div>
-                        <textarea class="wysiwyg-editor" id="article-content" placeholder="Enter your article content here...">Bitcoin continues to show strong performance this year. Currently trading at $67,500, it has increased by 3.2% from yesterday's close. 
-
-Meanwhile, weather conditions in Adelaide are pleasant today with temperatures reaching 25°C, which is 5 degrees warmer than yesterday's temperature.
-
-This analysis was last updated on December 15, 2024 at 2:30 PM.</textarea>
-                    </div>
-
-                    <!-- Pulse Points Section -->
-                    <div class="pulse-points-section">
-                        <div class="pulse-points-header">
-                            <h3>🎯 Pulse Point Suggestions</h3>
-                            <span class="pulse-count" id="pulse-count">3 suggestions</span>
-                        </div>
-                        
-                        <div class="pulse-points-list" id="pulse-points-list">
-                            <!-- Sample Pulse Point Suggestions -->
-                            <div class="pulse-point-suggestion" data-pulse-id="1">
-                                <div class="pulse-point-text">"$67,500"</div>
-                                <div class="pulse-point-meta">
-                                    <div class="pulse-point-source">
-                                        Source: <a href="#" target="_blank">CoinGecko API</a>
-                                    </div>
-                                    <div class="pulse-point-confidence confidence-high">
-                                        🔥 High Confidence
-                                    </div>
-                                </div>
-                                <div class="pulse-point-frequency">
-                                    <select>
-                                        <option value="hourly" selected>Hourly</option>
-                                        <option value="4hours">Every 4 hours</option>
-                                        <option value="daily">Daily</option>
-                                        <option value="weekly">Weekly</option>
-                                    </select>
-                                </div>
-                                <div class="pulse-point-actions">
-                                    <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
-                                    <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
-                                </div>
-                            </div>
-
-                            <div class="pulse-point-suggestion" data-pulse-id="2">
-                                <div class="pulse-point-text">"25°C"</div>
-                                <div class="pulse-point-meta">
-                                    <div class="pulse-point-source">
-                                        Source: <a href="#" target="_blank">OpenWeather API</a>
-                                    </div>
-                                    <div class="pulse-point-confidence confidence-high">
-                                        🔥 High Confidence
-                                    </div>
-                                </div>
-                                <div class="pulse-point-frequency">
-                                    <select>
-                                        <option value="3hours" selected>Every 3 hours</option>
-                                        <option value="6hours">Every 6 hours</option>
-                                        <option value="daily">Daily</option>
-                                    </select>
-                                </div>
-                                <div class="pulse-point-actions">
-                                    <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
-                                    <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
-                                </div>
-                            </div>
-
-                            <div class="pulse-point-suggestion" data-pulse-id="3">
-                                <div class="pulse-point-text">"December 15, 2024"</div>
-                                <div class="pulse-point-meta">
-                                    <div class="pulse-point-source">
-                                        Source: <a href="#" target="_blank">System Date</a>
-                                    </div>
-                                    <div class="pulse-point-confidence confidence-medium">
-                                        ⚡ Medium Confidence
-                                    </div>
-                                </div>
-                                <div class="pulse-point-frequency">
-                                    <select>
-                                        <option value="realtime" selected>Real-time</option>
-                                        <option value="daily">Daily</option>
-                                        <option value="manual">Manual</option>
-                                    </select>
-                                </div>
-                                <div class="pulse-point-actions">
-                                    <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
-                                    <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pulse-bulk-actions">
-                            <button class="btn btn-primary btn-small" id="update-all">🔁 Update All</button>
-                            <button class="btn btn-warning btn-small" id="pause-all">⏸ Pause All</button>
-                            <button class="btn btn-danger btn-small" id="remove-all">❌ Remove All</button>
-                        </div>
-                    </div>
-
-                    <!-- Footnotes Section -->
-                    <div class="footnotes-section">
-                        <h3>📝 Footnotes</h3>
-                        <div id="footnotes-content">
-                            <div class="footnote-item">
-                                <span class="footnote-number">¹</span>
-                                CoinGecko API - Updates every hour
-                            </div>
-                            <div class="footnote-item">
-                                <span class="footnote-number">²</span>
-                                OpenWeather API - Updates every 3 hours
-                            </div>
-                            <div class="footnote-item">
-                                <span class="footnote-number">³</span>
-                                System Date - Updates in real-time
-                            </div>
-                        </div>
-                    </div>
+            <!-- Article Editor View -->
+            <div class="article-editor-view" id="article-editor-view" style="display: none;">
+                <!-- Editor Header -->
+                <div class="editor-header">
+                    <button class="btn btn-secondary btn-small" id="back-to-start">← Back</button>
+                    <h2>📝 Article Editor</h2>
+                    <button class="btn btn-primary" id="analyse-btn">🔍 Analyse</button>
                 </div>
 
-                <div class="editor-right">
-                    <!-- Live Preview Section -->
-                    <div class="live-preview-section">
-                        <div class="preview-header">
-                            <h3>👁️ Live Preview</h3>
-                            <div class="preview-controls">
-                                <select id="platform-select">
-                                    <option value="wordpress">WordPress</option>
-                                    <option value="shopify">Shopify</option>
-                                    <option value="ghost">Ghost</option>
-                                </select>
-                                <button class="btn btn-primary btn-small" id="push-to-cms">🚀 Push to CMS</button>
-                            </div>
+                <!-- Editor Layout -->
+                <div class="editor-layout">
+                    <!-- Left Side: WYSIWYG Editor -->
+                    <div class="editor-main">
+                        <div class="wysiwyg-container">
+                            <textarea 
+                                id="article-content" 
+                                class="wysiwyg-editor" 
+                                placeholder="Start writing your article here...
+
+Try adding some dynamic content like:
+• Bitcoin prices: $67,500
+• Weather data: 25°C in Adelaide  
+• Stock prices: AAPL at $180
+• Current dates: December 15, 2024
+
+Click 'Analyse' when ready to detect pulse points!"></textarea>
                         </div>
-                        <div class="preview-content" id="preview-content">
-                            <h2>Sample Article Preview</h2>
-                            <p>
-                                Bitcoin continues to show strong performance this year. Currently trading at 
-                                <span class="highlight-fact">$67,500<sup>1</sup></span>, it has 
-                                <span class="highlight-cluster">increased by 3.2%<sup>2</sup></span> from yesterday's close.
-                            </p>
-                            <p>
-                                Meanwhile, weather conditions in Adelaide are pleasant today with temperatures reaching 
-                                <span class="highlight-fact">25°C<sup>3</sup></span>, which is 
-                                <span class="highlight-cluster">5 degrees warmer<sup>4</sup></span> than yesterday's temperature.
-                            </p>
-                            <p>
-                                This analysis was last updated on 
-                                <span class="highlight-fact">December 15, 2024 at 2:30 PM<sup>5</sup></span>.
-                            </p>
+                    </div>
+
+                    <!-- Right Side: Analysis Results -->
+                    <div class="analysis-panel" id="analysis-panel">
+                        <div class="analysis-empty" id="analysis-empty">
+                            <div class="analysis-empty-icon">🔍</div>
+                            <h3>Ready to Analyse</h3>
+                            <p>Write your article content and click "Analyse" to discover pulse points.</p>
+                        </div>
+
+                        <!-- Pulse Points Results (Hidden initially) -->
+                        <div class="analysis-results" id="analysis-results" style="display: none;">
+                            <div class="analysis-header">
+                                <h3>🎯 Pulse Points Found</h3>
+                                <span class="pulse-count" id="pulse-count">0 suggestions</span>
+                            </div>
                             
-                            <div class="preview-footnotes">
-                                <h4>References</h4>
-                                <ol>
-                                    <li>CoinGecko API - Updates every hour</li>
-                                    <li>Calculated from price change</li>
-                                    <li>OpenWeather API - Updates every 3 hours</li>
-                                    <li>Calculated from temperature difference</li>
-                                    <li>System Date - Updates in real-time</li>
-                                </ol>
+                            <div class="pulse-points-list" id="pulse-points-list">
+                                <!-- Dynamic content will be inserted here -->
                             </div>
+
+                            <div class="pulse-actions" id="pulse-actions">
+                                <button class="btn btn-success btn-small" id="accept-all">✅ Accept All</button>
+                                <button class="btn btn-danger btn-small" id="ignore-all">❌ Ignore All</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Preview -->
+                <div class="live-preview-container">
+                    <div class="preview-header">
+                        <h3>👁️ Live Preview</h3>
+                        <div class="preview-controls">
+                            <select id="platform-select">
+                                <option value="wordpress">WordPress</option>
+                                <option value="shopify">Shopify</option>
+                                <option value="ghost">Ghost</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="preview-content" id="preview-content">
+                        <div class="preview-empty">
+                            <div class="preview-empty-icon">👁️</div>
+                            <p>Your article preview will appear here</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Integrations View (Hidden by default) -->
+            <!-- Integrations View -->
             <div class="integrations-view" id="integrations-view" style="display: none;">
-                <h2 style="color: white; margin-bottom: var(--space-xl);">🔌 Platform Integrations</h2>
-                <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: var(--space-2xl);">
-                    Connect LivePulse to your content management systems to automatically sync your pulse points.
-                </p>
+                <h2>🔌 Platform Integrations</h2>
+                <p>Connect LivePulse to your content management systems.</p>
                 
                 <div class="integrations-grid">
-                    <div class="integration-card" data-integration="wordpress">
+                    <div class="integration-card">
                         <span class="integration-icon">🟦</span>
                         <div class="integration-name">WordPress</div>
                         <div class="integration-status">Ready to connect</div>
-                        <button class="btn btn-primary connect-integration">🔗 Connect</button>
+                        <button class="btn btn-primary">🔗 Connect</button>
                     </div>
                     
-                    <div class="integration-card" data-integration="shopify">
+                    <div class="integration-card">
                         <span class="integration-icon">🛒</span>
                         <div class="integration-name">Shopify</div>
                         <div class="integration-status">Ready to connect</div>
-                        <button class="btn btn-primary connect-integration">🔗 Connect</button>
+                        <button class="btn btn-primary">🔗 Connect</button>
                     </div>
                     
-                    <div class="integration-card" data-integration="ghost">
+                    <div class="integration-card">
                         <span class="integration-icon">👻</span>
                         <div class="integration-name">Ghost</div>
                         <div class="integration-status">Coming Soon</div>
                         <button class="btn btn-secondary" disabled>Coming Soon</button>
                     </div>
-                    
-                    <div class="integration-card" data-integration="webflow">
-                        <span class="integration-icon">🌊</span>
-                        <div class="integration-name">Webflow</div>
-                        <div class="integration-status">Coming Soon</div>
-                        <button class="btn btn-secondary" disabled>Coming Soon</button>
-                    </div>
-                    
-                    <div class="integration-card" data-integration="medium">
-                        <span class="integration-icon">📝</span>
-                        <div class="integration-name">Medium</div>
-                        <div class="integration-status">Coming Soon</div>
-                        <button class="btn btn-secondary" disabled>Coming Soon</button>
-                    </div>
-                    
-                    <div class="integration-card" data-integration="request">
-                        <span class="integration-icon">➕</span>
-                        <div class="integration-name">Request Integration</div>
-                        <div class="integration-status">Need something else?</div>
-                        <button class="btn btn-info" id="request-integration">📧 Request</button>
-                    </div>
                 </div>
             </div>
 
-            <!-- Settings View (Hidden by default) -->
+            <!-- Settings View -->
             <div class="settings-view" id="settings-view" style="display: none;">
                 <div class="settings-section">
                     <h3>👤 Profile Information</h3>
@@ -426,12 +188,8 @@ This analysis was last updated on December 15, 2024 at 2:30 PM.</textarea>
                             <span style="color: rgba(255, 255, 255, 0.8);">Creator Tier</span>
                         </div>
                         <div class="form-row">
-                            <label>Member Since:</label>
-                            <span style="color: rgba(255, 255, 255, 0.8);">December 2024</span>
-                        </div>
-                        <div class="form-row">
                             <label></label>
-                            <button class="btn btn-primary" id="edit-profile">📝 Edit Profile</button>
+                            <button class="btn btn-primary">📝 Edit Profile</button>
                         </div>
                     </div>
                 </div>
@@ -441,37 +199,19 @@ This analysis was last updated on December 15, 2024 at 2:30 PM.</textarea>
                     <div class="settings-form">
                         <div class="form-row">
                             <label>Current Password:</label>
-                            <input type="password" id="current-password" placeholder="••••••••••">
+                            <input type="password" placeholder="••••••••••">
                         </div>
                         <div class="form-row">
                             <label>New Password:</label>
-                            <input type="password" id="new-password" placeholder="••••••••••">
+                            <input type="password" placeholder="••••••••••">
                         </div>
                         <div class="form-row">
                             <label>Confirm Password:</label>
-                            <input type="password" id="confirm-password" placeholder="••••••••••">
+                            <input type="password" placeholder="••••••••••">
                         </div>
                         <div class="form-row">
                             <label></label>
-                            <button class="btn btn-warning" id="update-password">🔄 Update Password</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>🔔 Notification Settings</h3>
-                    <div class="settings-form">
-                        <div class="form-row">
-                            <label>Email notifications for pulse updates:</label>
-                            <input type="checkbox" id="email-notifications" checked>
-                        </div>
-                        <div class="form-row">
-                            <label>Browser notifications:</label>
-                            <input type="checkbox" id="browser-notifications">
-                        </div>
-                        <div class="form-row">
-                            <label>Weekly summary reports:</label>
-                            <input type="checkbox" id="weekly-reports" checked>
+                            <button class="btn btn-warning">🔄 Update Password</button>
                         </div>
                     </div>
                 </div>
@@ -479,25 +219,10 @@ This analysis was last updated on December 15, 2024 at 2:30 PM.</textarea>
         </main>
     </div>
 
-    <!-- Mobile Menu -->
-    <nav id="mobile-menu" class="mobile-menu">
-        <div class="mobile-menu-content">
-            <a href="#articles" class="mobile-menu-item">📝 Articles</a>
-            <a href="#integrations" class="mobile-menu-item">🔌 Integrations</a>
-            <a href="#settings" class="mobile-menu-item">⚙️ Settings</a>
-        </div>
-    </nav>
-
     <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay"></div>
 
-    <!-- Notifications Container -->
-    <div class="notifications-container" id="notifications-container"></div>
-
-    <!-- Load the modular JavaScript application -->
-    <script type="module" src="../js/core/app.js"></script>
-    
-    <!-- New App Layout JavaScript -->
+    <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('app-sidebar');
@@ -507,16 +232,16 @@ This analysis was last updated on December 15, 2024 at 2:30 PM.</textarea>
                 'integrations': document.getElementById('integrations-view'),
                 'settings': document.getElementById('settings-view')
             };
-            const articleEditor = document.getElementById('article-editor');
+            const articleEditorView = document.getElementById('article-editor-view');
+            const articleContent = document.getElementById('article-content');
+            const previewContent = document.getElementById('preview-content');
+            const analysisPanel = document.getElementById('analysis-panel');
+            const analysisEmpty = document.getElementById('analysis-empty');
+            const analysisResults = document.getElementById('analysis-results');
             
-            // Sidebar hover/click expansion
-            sidebar.addEventListener('mouseenter', function() {
-                sidebar.classList.add('expanded');
-            });
-            
-            sidebar.addEventListener('mouseleave', function() {
-                sidebar.classList.remove('expanded');
-            });
+            // Sidebar functionality
+            sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+            sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
             
             // Sidebar navigation
             sidebarItems.forEach(item => {
@@ -527,7 +252,7 @@ This analysis was last updated on December 15, 2024 at 2:30 PM.</textarea>
                     this.classList.add('active');
                     
                     Object.values(views).forEach(view => view.style.display = 'none');
-                    articleEditor.style.display = 'none';
+                    articleEditorView.style.display = 'none';
                     
                     const viewName = this.dataset.view;
                     if (views[viewName]) {
@@ -536,62 +261,401 @@ This analysis was last updated on December 15, 2024 at 2:30 PM.</textarea>
                 });
             });
             
-            // Article item clicks
-            document.querySelectorAll('.article-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    views.articles.style.display = 'none';
-                    articleEditor.style.display = 'grid';
-                    
-                    const articleId = this.dataset.articleId;
-                    console.log('Loading article:', articleId);
-                });
+            // Create article
+            document.getElementById('create-article-btn').addEventListener('click', function() {
+                Object.values(views).forEach(view => view.style.display = 'none');
+                articleEditorView.style.display = 'flex';
+                articleContent.focus();
             });
             
-            // Back to articles
-            document.getElementById('back-to-articles').addEventListener('click', function() {
-                articleEditor.style.display = 'none';
+            // Back to start
+            document.getElementById('back-to-start').addEventListener('click', function() {
+                articleEditorView.style.display = 'none';
                 views.articles.style.display = 'flex';
+                
+                // Reset analysis panel
+                analysisEmpty.style.display = 'block';
+                analysisResults.style.display = 'none';
             });
             
-            // Pulse point actions
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('accept-pulse')) {
-                    const pulseItem = e.target.closest('.pulse-point-suggestion');
-                    pulseItem.style.opacity = '0.5';
-                    e.target.textContent = '✅ Accepted';
-                    e.target.disabled = true;
-                    e.target.nextElementSibling.style.display = 'none';
+            // Live preview update
+            function updatePreview() {
+                const content = articleContent.value.trim();
+                if (content) {
+                    const paragraphs = content.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
+                    previewContent.innerHTML = paragraphs;
+                } else {
+                    previewContent.innerHTML = '<div class="preview-empty"><div class="preview-empty-icon">👁️</div><p>Your article preview will appear here</p></div>';
+                }
+            }
+            
+            articleContent.addEventListener('input', updatePreview);
+            
+            // Analyse functionality
+            document.getElementById('analyse-btn').addEventListener('click', function() {
+                const content = articleContent.value.trim();
+                if (!content) {
+                    alert('Please write some content first!');
+                    return;
                 }
                 
-                if (e.target.classList.contains('ignore-pulse')) {
-                    const pulseItem = e.target.closest('.pulse-point-suggestion');
-                    pulseItem.style.display = 'none';
-                }
+                // Show loading state
+                analysisEmpty.innerHTML = '<div class="analysis-empty-icon">⏳</div><h3>Analysing...</h3><p>Detecting pulse points in your content...</p>';
+                
+                // Mock analysis (replace with real API call)
+                setTimeout(() => {
+                    const mockPulses = [
+                        { text: '$67,500', type: 'crypto', confidence: 'high', source: 'CoinGecko API' },
+                        { text: '25°C', type: 'weather', confidence: 'high', source: 'OpenWeather API' },
+                        { text: 'December 15, 2024', type: 'date', confidence: 'medium', source: 'System Date' }
+                    ];
+                    
+                    // Update UI
+                    const pulseCount = document.getElementById('pulse-count');
+                    const pulseList = document.getElementById('pulse-points-list');
+                    
+                    pulseCount.textContent = `${mockPulses.length} pulse points found`;
+                    
+                    let pulsesHTML = '';
+                    mockPulses.forEach((pulse, index) => {
+                        const confidenceColor = pulse.confidence === 'high' ? '#10b981' : pulse.confidence === 'medium' ? '#f59e0b' : '#ef4444';
+                        const confidenceIcon = pulse.confidence === 'high' ? '🔥' : '⚡';
+                        
+                        pulsesHTML += `
+                            <div class="pulse-suggestion" data-pulse-id="${index}">
+                                <div class="pulse-text">"${pulse.text}"</div>
+                                <div class="pulse-meta">
+                                    <span class="pulse-source">📡 ${pulse.source}</span>
+                                    <span class="pulse-confidence" style="color: ${confidenceColor}">
+                                        ${confidenceIcon} ${pulse.confidence.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div class="pulse-frequency">
+                                    <select>
+                                        <option>Hourly</option>
+                                        <option>Daily</option>
+                                        <option>Weekly</option>
+                                    </select>
+                                </div>
+                                <div class="pulse-buttons">
+                                    <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
+                                    <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    pulseList.innerHTML = pulsesHTML;
+                    
+                    // Show results
+                    analysisEmpty.style.display = 'none';
+                    analysisResults.style.display = 'block';
+                    
+                    // Add pulse action handlers
+                    document.querySelectorAll('.accept-pulse').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const suggestion = this.closest('.pulse-suggestion');
+                            suggestion.style.opacity = '0.5';
+                            this.textContent = '✅ Accepted';
+                            this.disabled = true;
+                            this.nextElementSibling.style.display = 'none';
+                        });
+                    });
+                    
+                    document.querySelectorAll('.ignore-pulse').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const suggestion = this.closest('.pulse-suggestion');
+                            suggestion.style.display = 'none';
+                        });
+                    });
+                    
+                }, 2000); // 2 second delay to simulate analysis
             });
             
-            // Keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && articleEditor.style.display === 'grid') {
-                    articleEditor.style.display = 'none';
-                    views.articles.style.display = 'flex';
-                }
+            // Accept all / Ignore all
+            document.getElementById('accept-all').addEventListener('click', function() {
+                document.querySelectorAll('.accept-pulse').forEach(btn => btn.click());
             });
             
-            // Mobile menu toggle
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
-            
-            mobileMenuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('open');
-                mobileMenuOverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+            document.getElementById('ignore-all').addEventListener('click', function() {
+                document.querySelectorAll('.ignore-pulse').forEach(btn => btn.click());
             });
             
-            mobileMenuOverlay.addEventListener('click', function() {
-                sidebar.classList.remove('open');
-                this.style.display = 'none';
-            });
+            // Initialize
+            updatePreview();
         });
     </script>
+
+    <style>
+        /* Clean Start Styles */
+        .clean-start-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: var(--space-2xl);
+        }
+
+        .clean-start-content {
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .clean-start-icon {
+            font-size: 4rem;
+            margin-bottom: var(--space-xl);
+            opacity: 0.8;
+        }
+
+        .clean-start-content h2 {
+            color: white;
+            font-size: var(--font-size-3xl);
+            margin-bottom: var(--space-lg);
+        }
+
+        .clean-start-content p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-2xl);
+            line-height: 1.6;
+        }
+
+        /* Article Editor View */
+        .article-editor-view {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: var(--space-lg);
+            gap: var(--space-lg);
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .editor-header h2 {
+            color: white;
+            margin: 0;
+            font-size: var(--font-size-xl);
+        }
+
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: var(--space-lg);
+            flex: 1;
+            min-height: 0;
+        }
+
+        .editor-main {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wysiwyg-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--app-glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+
+        .wysiwyg-editor {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            font-family: 'Georgia', serif;
+            font-size: var(--font-size-base);
+            line-height: 1.7;
+            resize: none;
+            outline: none;
+        }
+
+        .analysis-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--app-glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .analysis-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .analysis-empty-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-lg);
+        }
+
+        .analysis-empty h3 {
+            color: white;
+            margin-bottom: var(--space-md);
+        }
+
+        .analysis-results {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            flex-shrink: 0;
+        }
+
+        .analysis-header h3 {
+            color: white;
+            margin: 0;
+        }
+
+        .pulse-count {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: var(--font-size-sm);
+        }
+
+        .pulse-points-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .pulse-suggestion {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--app-glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+        }
+
+        .pulse-text {
+            color: white;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+
+        .pulse-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-md);
+            font-size: var(--font-size-sm);
+        }
+
+        .pulse-source {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .pulse-frequency {
+            margin-bottom: var(--space-md);
+        }
+
+        .pulse-frequency select {
+            width: 100%;
+            padding: var(--space-xs) var(--space-sm);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--app-glass-border);
+            border-radius: var(--radius-sm);
+            color: white;
+        }
+
+        .pulse-buttons {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .pulse-actions {
+            display: flex;
+            gap: var(--space-sm);
+            flex-shrink: 0;
+        }
+
+        .live-preview-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--app-glass-border);
+            border-radius: var(--radius-lg);
+            flex-shrink: 0;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--app-glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .preview-header h3 {
+            color: white;
+            margin: 0;
+        }
+
+        .preview-controls select {
+            padding: var(--space-xs) var(--space-sm);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--app-glass-border);
+            border-radius: var(--radius-sm);
+            color: white;
+        }
+
+        .preview-content {
+            flex: 1;
+            padding: var(--space-lg);
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-primary);
+            font-family: 'Georgia', serif;
+            line-height: 1.7;
+        }
+
+        .preview-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .preview-empty-icon {
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .analysis-panel {
+                order: -1;
+                max-height: 300px;
+            }
+        }
+    </style>
 </body>
 </html>
