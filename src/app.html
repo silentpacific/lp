@@ -4,14 +4,610 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LivePulse Editor - Intelligent Content Analysis</title>
-    <link rel="stylesheet" href="styles/app.css">
     <meta name="description" content="LivePulse Editor - Create and manage dynamic pulse points in your content">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
+    
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Fixed Header */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            z-index: 100;
+            height: 70px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24, #ff9ff3, #54a0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .version {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .header-stats span {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* Main Layout */
+        .app-layout {
+            margin-top: 70px;
+            height: calc(100vh - 70px);
+            display: flex;
+        }
+
+        /* Sidebar */
+        .app-sidebar {
+            width: 60px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem 0;
+            transition: width 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .app-sidebar:hover {
+            width: 200px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .sidebar-item-icon {
+            font-size: 1.2rem;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-item-label {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .app-sidebar:hover .sidebar-item-label {
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .app-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Article Editor */
+        .article-editor-view {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .editor-header h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Split Layout: 2/3 + 1/3 */
+        .editor-content {
+            flex: 1;
+            display: flex;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Left Side (2/3): Editor + Preview */
+        .editor-left {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 1.5rem;
+            gap: 1rem;
+            overflow: hidden;
+        }
+
+        /* WYSIWYG Editor */
+        .wysiwyg-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wysiwyg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .wysiwyg-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .wysiwyg-editor {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Georgia', serif;
+            font-size: 1rem;
+            line-height: 1.7;
+            resize: none;
+            outline: none;
+            color: #1a202c;
+            min-height: 300px;
+        }
+
+        /* Live Preview */
+        .preview-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .preview-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a202c;
+            font-family: 'Georgia', serif;
+            line-height: 1.7;
+        }
+
+        /* Right Side (1/3): Pulse Points */
+        .pulse-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .pulse-panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pulse-panel-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pulse-count {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Pulse Points List */
+        .pulse-points-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .pulse-point-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .pulse-point-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .pulse-card-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pulse-text {
+            color: #ff6b6b;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .pulse-confidence {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .pulse-confidence.high {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .pulse-confidence.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .pulse-card-body {
+            padding: 1rem;
+        }
+
+        .pulse-meta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+        }
+
+        .pulse-meta-item:last-child {
+            border-bottom: none;
+        }
+
+        .pulse-meta-item .label {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .pulse-meta-item .value {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        .pulse-source {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .pulse-source:hover {
+            text-decoration: underline;
+        }
+
+        .source-quality {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .source-quality.premium {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .source-quality.standard {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .pulse-frequency {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pulse-frequency label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pulse-frequency select {
+            width: 100%;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .pulse-actions {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-small {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        /* Pulse Panel Actions */
+        .pulse-panel-actions {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Welcome Screen */
+        .clean-start-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 2rem;
+        }
+
+        .clean-start-content {
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .clean-start-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .clean-start-content h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .clean-start-content p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .editor-content {
+                flex-direction: column;
+            }
+            
+            .editor-left {
+                flex: none;
+                height: 60vh;
+            }
+            
+            .pulse-panel {
+                flex: none;
+                height: 40vh;
+                border-left: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .app-sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                justify-content: center;
+                padding: 0.5rem;
+            }
+        }
+
+        /* Hidden by default */
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
-<body class="app-body">
-    <!-- Fixed App Header -->
+<body>
+    <!-- Fixed Header -->
     <header class="app-header">
         <div class="header-content">
             <div class="header-left">
@@ -23,18 +619,13 @@
                     <span id="active-pulse-count">3</span> active pulses
                     <span id="cluster-count">1</span> clusters
                 </div>
-                <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle menu">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main App Layout -->
+    <!-- Main Layout -->
     <div class="app-layout">
-        <!-- Collapsible Sidebar -->
+        <!-- Sidebar -->
         <aside class="app-sidebar" id="app-sidebar">
             <a href="#" class="sidebar-item active" data-view="articles">
                 <span class="sidebar-item-icon">📄</span>
@@ -50,9 +641,9 @@
             </a>
         </aside>
 
-        <!-- Main Panel -->
-        <main class="app-main" id="app-main">
-            <!-- Articles View - Clean Slate -->
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Welcome View -->
             <div class="articles-view" id="articles-view">
                 <div class="clean-start-container">
                     <div class="clean-start-content">
@@ -64,8 +655,8 @@
                 </div>
             </div>
 
-            <!-- Article Editor View -->
-            <div class="article-editor-view" id="article-editor-view" style="display: none;">
+            <!-- Article Editor -->
+            <div class="article-editor-view hidden" id="article-editor-view">
                 <!-- Editor Header -->
                 <div class="editor-header">
                     <button class="btn btn-secondary btn-small" id="back-to-start">← Back</button>
@@ -73,17 +664,15 @@
                     <button class="btn btn-primary" id="analyse-btn">🔍 Analyse</button>
                 </div>
 
-                <!-- Split Screen Layout: 2/3 Editor + Preview | 1/3 Pulse Points -->
-                <div class="editor-split-layout">
+                <!-- Editor Content: 2/3 + 1/3 Split -->
+                <div class="editor-content">
                     <!-- Left Side (2/3): Editor + Preview -->
-                    <div class="editor-workspace">
-                        <!-- WYSIWYG Editor Section -->
-                        <div class="wysiwyg-section">
+                    <div class="editor-left">
+                        <!-- WYSIWYG Editor -->
+                        <div class="wysiwyg-container">
                             <div class="wysiwyg-header">
                                 <h3>📝 Content Editor</h3>
-                                <div class="wysiwyg-actions">
-                                    <button class="btn btn-secondary btn-small">📄 Save Draft</button>
-                                </div>
+                                <button class="btn btn-secondary btn-small">💾 Save Draft</button>
                             </div>
                             <textarea 
                                 id="article-content" 
@@ -100,17 +689,15 @@ Click 'Analyse' when ready to detect pulse points!">Bitcoin is currently trading
 The weather in Adelaide is sunny with 22 degrees today. We've had record rainfall this year (2025) compared to previous decades.</textarea>
                         </div>
 
-                        <!-- Live Preview Section -->
-                        <div class="live-preview-section">
+                        <!-- Live Preview -->
+                        <div class="preview-container">
                             <div class="preview-header">
                                 <h3>👁️ Live Preview</h3>
-                                <div class="preview-controls">
-                                    <select id="platform-select">
-                                        <option value="wordpress">WordPress</option>
-                                        <option value="shopify">Shopify</option>
-                                        <option value="ghost">Ghost</option>
-                                    </select>
-                                </div>
+                                <select>
+                                    <option>WordPress</option>
+                                    <option>Shopify</option>
+                                    <option>Ghost</option>
+                                </select>
                             </div>
                             <div class="preview-content" id="preview-content">
                                 <p>Bitcoin is currently trading at $67,500 and showing high volatility.</p>
@@ -120,174 +707,166 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
                     </div>
 
                     <!-- Right Side (1/3): Pulse Points Panel -->
-                    <div class="pulse-points-panel">
+                    <div class="pulse-panel">
                         <div class="pulse-panel-header">
                             <h3>🎯 Pulse Points</h3>
-                            <span class="pulse-count" id="pulse-count">3 pulse points found</span>
+                            <span class="pulse-count">3 pulse points found</span>
                         </div>
 
-                        <div class="pulse-points-container" id="pulse-points-container">
-                            <div class="pulse-points-list" id="pulse-points-list">
-                                <!-- Pulse Point 1: Bitcoin Price -->
-                                <div class="pulse-point-card enhanced">
-                                    <div class="pulse-card-header">
-                                        <div class="pulse-text">"$67,500"</div>
-                                        <div class="pulse-confidence high">🔥 HIGH</div>
+                        <div class="pulse-points-list">
+                            <!-- Pulse Point 1 -->
+                            <div class="pulse-point-card">
+                                <div class="pulse-card-header">
+                                    <div class="pulse-text">"$67,500"</div>
+                                    <div class="pulse-confidence high">🔥 HIGH</div>
+                                </div>
+                                
+                                <div class="pulse-card-body">
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Type:</span>
+                                        <span class="value">Cryptocurrency</span>
                                     </div>
-                                    
-                                    <div class="pulse-card-body">
-                                        <div class="pulse-meta-grid">
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Type:</span>
-                                                <span class="value crypto">Cryptocurrency</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Entity:</span>
-                                                <span class="value">Bitcoin (BTC)</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Source:</span>
-                                                <a href="#" class="pulse-source">CoinGecko API</a>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Quality:</span>
-                                                <span class="source-quality premium">Premium</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Last Updated:</span>
-                                                <span class="value time">2 minutes ago</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Next Update:</span>
-                                                <span class="value time">In 58 minutes</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="pulse-frequency-control">
-                                            <label>Update Frequency:</label>
-                                            <select class="pulse-frequency-select">
-                                                <option selected>Hourly</option>
-                                                <option>Daily</option>
-                                                <option>Weekly</option>
-                                            </select>
-                                        </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Entity:</span>
+                                        <span class="value">Bitcoin (BTC)</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Source:</span>
+                                        <a href="#" class="pulse-source">CoinGecko API</a>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Quality:</span>
+                                        <span class="source-quality premium">PREMIUM</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Last Updated:</span>
+                                        <span class="value">2 minutes ago</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Next Update:</span>
+                                        <span class="value">In 58 minutes</span>
                                     </div>
 
-                                    <div class="pulse-card-actions">
-                                        <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
-                                        <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
-                                        <button class="btn btn-secondary btn-small pulse-details">⚙️ Details</button>
+                                    <div class="pulse-frequency">
+                                        <label>Update Frequency:</label>
+                                        <select>
+                                            <option selected>Hourly</option>
+                                            <option>Daily</option>
+                                            <option>Weekly</option>
+                                        </select>
                                     </div>
                                 </div>
 
-                                <!-- Pulse Point 2: Weather Temperature -->
-                                <div class="pulse-point-card enhanced">
-                                    <div class="pulse-card-header">
-                                        <div class="pulse-text">"22°C"</div>
-                                        <div class="pulse-confidence high">🔥 HIGH</div>
-                                    </div>
-                                    
-                                    <div class="pulse-card-body">
-                                        <div class="pulse-meta-grid">
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Type:</span>
-                                                <span class="value weather">Weather</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Location:</span>
-                                                <span class="value">Adelaide, SA</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Source:</span>
-                                                <a href="#" class="pulse-source">OpenWeather API</a>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Quality:</span>
-                                                <span class="source-quality premium">Premium</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Last Updated:</span>
-                                                <span class="value time">15 minutes ago</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Next Update:</span>
-                                                <span class="value time">In 3 hours</span>
-                                            </div>
-                                        </div>
+                                <div class="pulse-actions">
+                                    <button class="btn btn-success btn-small">✅ Accept</button>
+                                    <button class="btn btn-danger btn-small">❌ Ignore</button>
+                                    <button class="btn btn-secondary btn-small">⚙️ Details</button>
+                                </div>
+                            </div>
 
-                                        <div class="pulse-frequency-control">
-                                            <label>Update Frequency:</label>
-                                            <select class="pulse-frequency-select">
-                                                <option>Hourly</option>
-                                                <option selected>Daily</option>
-                                                <option>Weekly</option>
-                                            </select>
-                                        </div>
+                            <!-- Pulse Point 2 -->
+                            <div class="pulse-point-card">
+                                <div class="pulse-card-header">
+                                    <div class="pulse-text">"22°C"</div>
+                                    <div class="pulse-confidence high">🔥 HIGH</div>
+                                </div>
+                                
+                                <div class="pulse-card-body">
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Type:</span>
+                                        <span class="value">Weather</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Location:</span>
+                                        <span class="value">Adelaide, SA</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Source:</span>
+                                        <a href="#" class="pulse-source">OpenWeather API</a>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Quality:</span>
+                                        <span class="source-quality premium">PREMIUM</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Last Updated:</span>
+                                        <span class="value">15 minutes ago</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Next Update:</span>
+                                        <span class="value">In 3 hours</span>
                                     </div>
 
-                                    <div class="pulse-card-actions">
-                                        <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
-                                        <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
-                                        <button class="btn btn-secondary btn-small pulse-details">⚙️ Details</button>
+                                    <div class="pulse-frequency">
+                                        <label>Update Frequency:</label>
+                                        <select>
+                                            <option>Hourly</option>
+                                            <option selected>Daily</option>
+                                            <option>Weekly</option>
+                                        </select>
                                     </div>
                                 </div>
 
-                                <!-- Pulse Point 3: Year Reference -->
-                                <div class="pulse-point-card enhanced">
-                                    <div class="pulse-card-header">
-                                        <div class="pulse-text">"2025"</div>
-                                        <div class="pulse-confidence medium">⚡ MEDIUM</div>
-                                    </div>
-                                    
-                                    <div class="pulse-card-body">
-                                        <div class="pulse-meta-grid">
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Type:</span>
-                                                <span class="value date">Date/Year</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Context:</span>
-                                                <span class="value">Current year reference</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Source:</span>
-                                                <span class="pulse-source">System Date</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Quality:</span>
-                                                <span class="source-quality standard">Standard</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Last Updated:</span>
-                                                <span class="value time">Today</span>
-                                            </div>
-                                            <div class="pulse-meta-item">
-                                                <span class="label">Next Update:</span>
-                                                <span class="value time">January 1st</span>
-                                            </div>
-                                        </div>
+                                <div class="pulse-actions">
+                                    <button class="btn btn-success btn-small">✅ Accept</button>
+                                    <button class="btn btn-danger btn-small">❌ Ignore</button>
+                                    <button class="btn btn-secondary btn-small">⚙️ Details</button>
+                                </div>
+                            </div>
 
-                                        <div class="pulse-frequency-control">
-                                            <label>Update Frequency:</label>
-                                            <select class="pulse-frequency-select">
-                                                <option>Hourly</option>
-                                                <option>Daily</option>
-                                                <option>Weekly</option>
-                                                <option selected>Yearly</option>
-                                            </select>
-                                        </div>
+                            <!-- Pulse Point 3 -->
+                            <div class="pulse-point-card">
+                                <div class="pulse-card-header">
+                                    <div class="pulse-text">"2025"</div>
+                                    <div class="pulse-confidence medium">⚡ MEDIUM</div>
+                                </div>
+                                
+                                <div class="pulse-card-body">
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Type:</span>
+                                        <span class="value">Date/Year</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Context:</span>
+                                        <span class="value">Current year reference</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Source:</span>
+                                        <span class="pulse-source">System Date</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Quality:</span>
+                                        <span class="source-quality standard">STANDARD</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Last Updated:</span>
+                                        <span class="value">Today</span>
+                                    </div>
+                                    <div class="pulse-meta-item">
+                                        <span class="label">Next Update:</span>
+                                        <span class="value">January 1st</span>
                                     </div>
 
-                                    <div class="pulse-card-actions">
-                                        <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
-                                        <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
-                                        <button class="btn btn-secondary btn-small pulse-details">⚙️ Details</button>
+                                    <div class="pulse-frequency">
+                                        <label>Update Frequency:</label>
+                                        <select>
+                                            <option>Hourly</option>
+                                            <option>Daily</option>
+                                            <option>Weekly</option>
+                                            <option selected>Yearly</option>
+                                        </select>
                                     </div>
+                                </div>
+
+                                <div class="pulse-actions">
+                                    <button class="btn btn-success btn-small">✅ Accept</button>
+                                    <button class="btn btn-danger btn-small">❌ Ignore</button>
+                                    <button class="btn btn-secondary btn-small">⚙️ Details</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Pulse Panel Actions -->
+                        <!-- Panel Actions -->
                         <div class="pulse-panel-actions">
                             <button class="btn btn-success btn-small" id="accept-all">✅ Accept All</button>
                             <button class="btn btn-danger btn-small" id="ignore-all">❌ Ignore All</button>
@@ -295,100 +874,14 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
                     </div>
                 </div>
             </div>
-
-            <!-- Integrations View -->
-            <div class="integrations-view" id="integrations-view" style="display: none;">
-                <h2>🔌 Platform Integrations</h2>
-                <p>Connect LivePulse to your content management systems.</p>
-                
-                <div class="integrations-grid">
-                    <div class="integration-card">
-                        <span class="integration-icon">🟦</span>
-                        <div class="integration-name">WordPress</div>
-                        <div class="integration-status">Ready to connect</div>
-                        <button class="btn btn-primary">🔗 Connect</button>
-                    </div>
-                    
-                    <div class="integration-card">
-                        <span class="integration-icon">🛒</span>
-                        <div class="integration-name">Shopify</div>
-                        <div class="integration-status">Ready to connect</div>
-                        <button class="btn btn-primary">🔗 Connect</button>
-                    </div>
-                    
-                    <div class="integration-card">
-                        <span class="integration-icon">👻</span>
-                        <div class="integration-name">Ghost</div>
-                        <div class="integration-status">Coming Soon</div>
-                        <button class="btn btn-secondary" disabled>Coming Soon</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings View -->
-            <div class="settings-view" id="settings-view" style="display: none;">
-                <div class="settings-section">
-                    <h3>👤 Profile Information</h3>
-                    <div class="settings-form">
-                        <div class="form-row">
-                            <label>Name:</label>
-                            <input type="text" id="profile-name" value="John Doe">
-                        </div>
-                        <div class="form-row">
-                            <label>Email:</label>
-                            <input type="email" id="profile-email" value="john@example.com">
-                        </div>
-                        <div class="form-row">
-                            <label>Plan:</label>
-                            <span style="color: rgba(255, 255, 255, 0.8);">Creator Tier</span>
-                        </div>
-                        <div class="form-row">
-                            <label></label>
-                            <button class="btn btn-primary">📝 Edit Profile</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>🔒 Change Password</h3>
-                    <div class="settings-form">
-                        <div class="form-row">
-                            <label>Current Password:</label>
-                            <input type="password" placeholder="••••••••••">
-                        </div>
-                        <div class="form-row">
-                            <label>New Password:</label>
-                            <input type="password" placeholder="••••••••••">
-                        </div>
-                        <div class="form-row">
-                            <label>Confirm Password:</label>
-                            <input type="password" placeholder="••••••••••">
-                        </div>
-                        <div class="form-row">
-                            <label></label>
-                            <button class="btn btn-warning">🔄 Update Password</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </main>
     </div>
-
-    <!-- Mobile Menu Overlay -->
-    <div class="mobile-menu-overlay"></div>
-
-    <!-- JavaScript -->
-    <script src="js/core/app.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('app-sidebar');
             const sidebarItems = document.querySelectorAll('.sidebar-item');
-            const views = {
-                'articles': document.getElementById('articles-view'),
-                'integrations': document.getElementById('integrations-view'),
-                'settings': document.getElementById('settings-view')
-            };
+            const articlesView = document.getElementById('articles-view');
             const articleEditorView = document.getElementById('article-editor-view');
             const articleContent = document.getElementById('article-content');
             const previewContent = document.getElementById('preview-content');
@@ -397,35 +890,17 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
             sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
             sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
             
-            // Sidebar navigation
-            sidebarItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    sidebarItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    Object.values(views).forEach(view => view.style.display = 'none');
-                    articleEditorView.style.display = 'none';
-                    
-                    const viewName = this.dataset.view;
-                    if (views[viewName]) {
-                        views[viewName].style.display = 'flex';
-                    }
-                });
-            });
-            
             // Create article
             document.getElementById('create-article-btn').addEventListener('click', function() {
-                Object.values(views).forEach(view => view.style.display = 'none');
-                articleEditorView.style.display = 'flex';
+                articlesView.style.display = 'none';
+                articleEditorView.classList.remove('hidden');
                 articleContent.focus();
             });
             
             // Back to start
             document.getElementById('back-to-start').addEventListener('click', function() {
-                articleEditorView.style.display = 'none';
-                views.articles.style.display = 'flex';
+                articleEditorView.classList.add('hidden');
+                articlesView.style.display = 'flex';
             });
             
             // Live preview update
@@ -435,7 +910,7 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
                     const paragraphs = content.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
                     previewContent.innerHTML = paragraphs;
                 } else {
-                    previewContent.innerHTML = '<div class="preview-empty"><div class="preview-empty-icon">👁️</div><p>Your article preview will appear here</p></div>';
+                    previewContent.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 2rem;"><div style="font-size: 2rem; margin-bottom: 1rem;">👁️</div><p>Your article preview will appear here</p></div>';
                 }
             }
             
@@ -463,35 +938,41 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
             
             // Pulse action handlers
             document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('accept-pulse')) {
+                if (e.target.classList.contains('btn-success') && e.target.textContent.includes('Accept')) {
                     const card = e.target.closest('.pulse-point-card');
                     card.style.borderColor = 'rgba(16, 185, 129, 0.5)';
                     card.style.background = 'rgba(16, 185, 129, 0.1)';
                     e.target.textContent = '✅ Accepted';
                     e.target.disabled = true;
                     e.target.style.opacity = '0.6';
-                    const ignoreBtn = card.querySelector('.ignore-pulse');
-                    if (ignoreBtn) ignoreBtn.style.display = 'none';
                 }
                 
-                if (e.target.classList.contains('ignore-pulse')) {
+                if (e.target.classList.contains('btn-danger') && e.target.textContent.includes('Ignore')) {
                     const card = e.target.closest('.pulse-point-card');
                     card.style.opacity = '0.3';
                     card.style.filter = 'grayscale(1)';
                     e.target.textContent = '❌ Ignored';
                     e.target.disabled = true;
-                    const acceptBtn = card.querySelector('.accept-pulse');
-                    if (acceptBtn) acceptBtn.style.display = 'none';
                 }
             });
             
             // Accept all / Ignore all
             document.getElementById('accept-all').addEventListener('click', function() {
-                document.querySelectorAll('.accept-pulse').forEach(btn => btn.click());
+                const acceptButtons = document.querySelectorAll('.pulse-actions .btn-success');
+                acceptButtons.forEach(btn => {
+                    if (btn.textContent.includes('Accept')) {
+                        btn.click();
+                    }
+                });
             });
             
             document.getElementById('ignore-all').addEventListener('click', function() {
-                document.querySelectorAll('.ignore-pulse').forEach(btn => btn.click());
+                const ignoreButtons = document.querySelectorAll('.pulse-actions .btn-danger');
+                ignoreButtons.forEach(btn => {
+                    if (btn.textContent.includes('Ignore')) {
+                        btn.click();
+                    }
+                });
             });
             
             // Initialize
