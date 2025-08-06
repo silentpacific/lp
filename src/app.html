@@ -11,7 +11,7 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>">
 </head>
 <body class="app-body">
-    <!-- App Header -->
+    <!-- Fixed App Header -->
     <header class="app-header">
         <div class="header-content">
             <div class="header-left">
@@ -20,8 +20,8 @@
             </div>
             <div class="header-right">
                 <div class="header-stats">
-                    <span id="active-pulse-count">0</span> active pulses
-                    <span id="cluster-count">0</span> clusters
+                    <span id="active-pulse-count">3</span> active pulses
+                    <span id="cluster-count">1</span> clusters
                 </div>
                 <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle menu">
                     <span class="hamburger-line"></span>
@@ -73,11 +73,18 @@
                     <button class="btn btn-primary" id="analyse-btn">🔍 Analyse</button>
                 </div>
 
-                <!-- Editor Layout -->
-                <div class="editor-layout">
-                    <!-- Left Side: WYSIWYG Editor -->
-                    <div class="editor-main">
-                        <div class="wysiwyg-container">
+                <!-- Split Screen Layout: 2/3 Editor + Preview | 1/3 Pulse Points -->
+                <div class="editor-split-layout">
+                    <!-- Left Side (2/3): Editor + Preview -->
+                    <div class="editor-workspace">
+                        <!-- WYSIWYG Editor Section -->
+                        <div class="wysiwyg-section">
+                            <div class="wysiwyg-header">
+                                <h3>📝 Content Editor</h3>
+                                <div class="wysiwyg-actions">
+                                    <button class="btn btn-secondary btn-small">📄 Save Draft</button>
+                                </div>
+                            </div>
                             <textarea 
                                 id="article-content" 
                                 class="wysiwyg-editor" 
@@ -89,53 +96,201 @@ Try adding some dynamic content like:
 • Stock prices: AAPL at $180
 • Current dates: December 15, 2024
 
-Click 'Analyse' when ready to detect pulse points!"></textarea>
+Click 'Analyse' when ready to detect pulse points!">Bitcoin is currently trading at $67,500 and showing high volatility.
+The weather in Adelaide is sunny with 22 degrees today. We've had record rainfall this year (2025) compared to previous decades.</textarea>
+                        </div>
+
+                        <!-- Live Preview Section -->
+                        <div class="live-preview-section">
+                            <div class="preview-header">
+                                <h3>👁️ Live Preview</h3>
+                                <div class="preview-controls">
+                                    <select id="platform-select">
+                                        <option value="wordpress">WordPress</option>
+                                        <option value="shopify">Shopify</option>
+                                        <option value="ghost">Ghost</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="preview-content" id="preview-content">
+                                <p>Bitcoin is currently trading at $67,500 and showing high volatility.</p>
+                                <p>The weather in Adelaide is sunny with 22 degrees today. We've had record rainfall this year (2025) compared to previous decades.</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right Side: Analysis Results -->
-                    <div class="analysis-panel" id="analysis-panel">
-                        <div class="analysis-empty" id="analysis-empty">
-                            <div class="analysis-empty-icon">🔍</div>
-                            <h3>Ready to Analyse</h3>
-                            <p>Write your article content and click "Analyse" to discover pulse points.</p>
+                    <!-- Right Side (1/3): Pulse Points Panel -->
+                    <div class="pulse-points-panel">
+                        <div class="pulse-panel-header">
+                            <h3>🎯 Pulse Points</h3>
+                            <span class="pulse-count" id="pulse-count">3 pulse points found</span>
                         </div>
 
-                        <!-- Pulse Points Results (Hidden initially) -->
-                        <div class="analysis-results" id="analysis-results" style="display: none;">
-                            <div class="analysis-header">
-                                <h3>🎯 Pulse Points Found</h3>
-                                <span class="pulse-count" id="pulse-count">0 suggestions</span>
-                            </div>
-                            
+                        <div class="pulse-points-container" id="pulse-points-container">
                             <div class="pulse-points-list" id="pulse-points-list">
-                                <!-- Dynamic content will be inserted here -->
-                            </div>
+                                <!-- Pulse Point 1: Bitcoin Price -->
+                                <div class="pulse-point-card enhanced">
+                                    <div class="pulse-card-header">
+                                        <div class="pulse-text">"$67,500"</div>
+                                        <div class="pulse-confidence high">🔥 HIGH</div>
+                                    </div>
+                                    
+                                    <div class="pulse-card-body">
+                                        <div class="pulse-meta-grid">
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Type:</span>
+                                                <span class="value crypto">Cryptocurrency</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Entity:</span>
+                                                <span class="value">Bitcoin (BTC)</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Source:</span>
+                                                <a href="#" class="pulse-source">CoinGecko API</a>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Quality:</span>
+                                                <span class="source-quality premium">Premium</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Last Updated:</span>
+                                                <span class="value time">2 minutes ago</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Next Update:</span>
+                                                <span class="value time">In 58 minutes</span>
+                                            </div>
+                                        </div>
 
-                            <div class="pulse-actions" id="pulse-actions">
-                                <button class="btn btn-success btn-small" id="accept-all">✅ Accept All</button>
-                                <button class="btn btn-danger btn-small" id="ignore-all">❌ Ignore All</button>
+                                        <div class="pulse-frequency-control">
+                                            <label>Update Frequency:</label>
+                                            <select class="pulse-frequency-select">
+                                                <option selected>Hourly</option>
+                                                <option>Daily</option>
+                                                <option>Weekly</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="pulse-card-actions">
+                                        <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
+                                        <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
+                                        <button class="btn btn-secondary btn-small pulse-details">⚙️ Details</button>
+                                    </div>
+                                </div>
+
+                                <!-- Pulse Point 2: Weather Temperature -->
+                                <div class="pulse-point-card enhanced">
+                                    <div class="pulse-card-header">
+                                        <div class="pulse-text">"22°C"</div>
+                                        <div class="pulse-confidence high">🔥 HIGH</div>
+                                    </div>
+                                    
+                                    <div class="pulse-card-body">
+                                        <div class="pulse-meta-grid">
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Type:</span>
+                                                <span class="value weather">Weather</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Location:</span>
+                                                <span class="value">Adelaide, SA</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Source:</span>
+                                                <a href="#" class="pulse-source">OpenWeather API</a>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Quality:</span>
+                                                <span class="source-quality premium">Premium</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Last Updated:</span>
+                                                <span class="value time">15 minutes ago</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Next Update:</span>
+                                                <span class="value time">In 3 hours</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="pulse-frequency-control">
+                                            <label>Update Frequency:</label>
+                                            <select class="pulse-frequency-select">
+                                                <option>Hourly</option>
+                                                <option selected>Daily</option>
+                                                <option>Weekly</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="pulse-card-actions">
+                                        <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
+                                        <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
+                                        <button class="btn btn-secondary btn-small pulse-details">⚙️ Details</button>
+                                    </div>
+                                </div>
+
+                                <!-- Pulse Point 3: Year Reference -->
+                                <div class="pulse-point-card enhanced">
+                                    <div class="pulse-card-header">
+                                        <div class="pulse-text">"2025"</div>
+                                        <div class="pulse-confidence medium">⚡ MEDIUM</div>
+                                    </div>
+                                    
+                                    <div class="pulse-card-body">
+                                        <div class="pulse-meta-grid">
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Type:</span>
+                                                <span class="value date">Date/Year</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Context:</span>
+                                                <span class="value">Current year reference</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Source:</span>
+                                                <span class="pulse-source">System Date</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Quality:</span>
+                                                <span class="source-quality standard">Standard</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Last Updated:</span>
+                                                <span class="value time">Today</span>
+                                            </div>
+                                            <div class="pulse-meta-item">
+                                                <span class="label">Next Update:</span>
+                                                <span class="value time">January 1st</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="pulse-frequency-control">
+                                            <label>Update Frequency:</label>
+                                            <select class="pulse-frequency-select">
+                                                <option>Hourly</option>
+                                                <option>Daily</option>
+                                                <option>Weekly</option>
+                                                <option selected>Yearly</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="pulse-card-actions">
+                                        <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
+                                        <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
+                                        <button class="btn btn-secondary btn-small pulse-details">⚙️ Details</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Live Preview -->
-                <div class="live-preview-container">
-                    <div class="preview-header">
-                        <h3>👁️ Live Preview</h3>
-                        <div class="preview-controls">
-                            <select id="platform-select">
-                                <option value="wordpress">WordPress</option>
-                                <option value="shopify">Shopify</option>
-                                <option value="ghost">Ghost</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="preview-content" id="preview-content">
-                        <div class="preview-empty">
-                            <div class="preview-empty-icon">👁️</div>
-                            <p>Your article preview will appear here</p>
+                        <!-- Pulse Panel Actions -->
+                        <div class="pulse-panel-actions">
+                            <button class="btn btn-success btn-small" id="accept-all">✅ Accept All</button>
+                            <button class="btn btn-danger btn-small" id="ignore-all">❌ Ignore All</button>
                         </div>
                     </div>
                 </div>
@@ -223,6 +378,8 @@ Click 'Analyse' when ready to detect pulse points!"></textarea>
     <div class="mobile-menu-overlay"></div>
 
     <!-- JavaScript -->
+    <script src="js/core/app.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('app-sidebar');
@@ -235,9 +392,6 @@ Click 'Analyse' when ready to detect pulse points!"></textarea>
             const articleEditorView = document.getElementById('article-editor-view');
             const articleContent = document.getElementById('article-content');
             const previewContent = document.getElementById('preview-content');
-            const analysisPanel = document.getElementById('analysis-panel');
-            const analysisEmpty = document.getElementById('analysis-empty');
-            const analysisResults = document.getElementById('analysis-results');
             
             // Sidebar functionality
             sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
@@ -272,10 +426,6 @@ Click 'Analyse' when ready to detect pulse points!"></textarea>
             document.getElementById('back-to-start').addEventListener('click', function() {
                 articleEditorView.style.display = 'none';
                 views.articles.style.display = 'flex';
-                
-                // Reset analysis panel
-                analysisEmpty.style.display = 'block';
-                analysisResults.style.display = 'none';
             });
             
             // Live preview update
@@ -299,77 +449,40 @@ Click 'Analyse' when ready to detect pulse points!"></textarea>
                     return;
                 }
                 
-                // Show loading state
-                analysisEmpty.innerHTML = '<div class="analysis-empty-icon">⏳</div><h3>Analysing...</h3><p>Detecting pulse points in your content...</p>';
+                console.log('Analysing content...');
                 
-                // Mock analysis (replace with real API call)
+                // Update UI to show analysis complete
+                this.textContent = '✅ Analysis Complete';
+                this.style.background = 'linear-gradient(45deg, #10b981, #059669)';
+                
                 setTimeout(() => {
-                    const mockPulses = [
-                        { text: '$67,500', type: 'crypto', confidence: 'high', source: 'CoinGecko API' },
-                        { text: '25°C', type: 'weather', confidence: 'high', source: 'OpenWeather API' },
-                        { text: 'December 15, 2024', type: 'date', confidence: 'medium', source: 'System Date' }
-                    ];
-                    
-                    // Update UI
-                    const pulseCount = document.getElementById('pulse-count');
-                    const pulseList = document.getElementById('pulse-points-list');
-                    
-                    pulseCount.textContent = `${mockPulses.length} pulse points found`;
-                    
-                    let pulsesHTML = '';
-                    mockPulses.forEach((pulse, index) => {
-                        const confidenceColor = pulse.confidence === 'high' ? '#10b981' : pulse.confidence === 'medium' ? '#f59e0b' : '#ef4444';
-                        const confidenceIcon = pulse.confidence === 'high' ? '🔥' : '⚡';
-                        
-                        pulsesHTML += `
-                            <div class="pulse-suggestion" data-pulse-id="${index}">
-                                <div class="pulse-text">"${pulse.text}"</div>
-                                <div class="pulse-meta">
-                                    <span class="pulse-source">📡 ${pulse.source}</span>
-                                    <span class="pulse-confidence" style="color: ${confidenceColor}">
-                                        ${confidenceIcon} ${pulse.confidence.toUpperCase()}
-                                    </span>
-                                </div>
-                                <div class="pulse-frequency">
-                                    <select>
-                                        <option>Hourly</option>
-                                        <option>Daily</option>
-                                        <option>Weekly</option>
-                                    </select>
-                                </div>
-                                <div class="pulse-buttons">
-                                    <button class="btn btn-success btn-small accept-pulse">✅ Accept</button>
-                                    <button class="btn btn-danger btn-small ignore-pulse">❌ Ignore</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    pulseList.innerHTML = pulsesHTML;
-                    
-                    // Show results
-                    analysisEmpty.style.display = 'none';
-                    analysisResults.style.display = 'block';
-                    
-                    // Add pulse action handlers
-                    document.querySelectorAll('.accept-pulse').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const suggestion = this.closest('.pulse-suggestion');
-                            suggestion.style.opacity = '0.5';
-                            this.textContent = '✅ Accepted';
-                            this.disabled = true;
-                            this.nextElementSibling.style.display = 'none';
-                        });
-                    });
-                    
-                    document.querySelectorAll('.ignore-pulse').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const suggestion = this.closest('.pulse-suggestion');
-                            suggestion.style.display = 'none';
-                        });
-                    });
-                    
-                }, 2000); // 2 second delay to simulate analysis
+                    this.textContent = '🔍 Analyse';
+                    this.style.background = '';
+                }, 2000);
+            });
+            
+            // Pulse action handlers
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('accept-pulse')) {
+                    const card = e.target.closest('.pulse-point-card');
+                    card.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+                    card.style.background = 'rgba(16, 185, 129, 0.1)';
+                    e.target.textContent = '✅ Accepted';
+                    e.target.disabled = true;
+                    e.target.style.opacity = '0.6';
+                    const ignoreBtn = card.querySelector('.ignore-pulse');
+                    if (ignoreBtn) ignoreBtn.style.display = 'none';
+                }
+                
+                if (e.target.classList.contains('ignore-pulse')) {
+                    const card = e.target.closest('.pulse-point-card');
+                    card.style.opacity = '0.3';
+                    card.style.filter = 'grayscale(1)';
+                    e.target.textContent = '❌ Ignored';
+                    e.target.disabled = true;
+                    const acceptBtn = card.querySelector('.accept-pulse');
+                    if (acceptBtn) acceptBtn.style.display = 'none';
+                }
             });
             
             // Accept all / Ignore all
@@ -385,277 +498,5 @@ Click 'Analyse' when ready to detect pulse points!"></textarea>
             updatePreview();
         });
     </script>
-
-    <style>
-        /* Clean Start Styles */
-        .clean-start-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            padding: var(--space-2xl);
-        }
-
-        .clean-start-content {
-            text-align: center;
-            max-width: 500px;
-        }
-
-        .clean-start-icon {
-            font-size: 4rem;
-            margin-bottom: var(--space-xl);
-            opacity: 0.8;
-        }
-
-        .clean-start-content h2 {
-            color: white;
-            font-size: var(--font-size-3xl);
-            margin-bottom: var(--space-lg);
-        }
-
-        .clean-start-content p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: var(--font-size-lg);
-            margin-bottom: var(--space-2xl);
-            line-height: 1.6;
-        }
-
-        /* Article Editor View */
-        .article-editor-view {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            padding: var(--space-lg);
-            gap: var(--space-lg);
-        }
-
-        .editor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .editor-header h2 {
-            color: white;
-            margin: 0;
-            font-size: var(--font-size-xl);
-        }
-
-        .editor-layout {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: var(--space-lg);
-            flex: 1;
-            min-height: 0;
-        }
-
-        .editor-main {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .wysiwyg-container {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--app-glass-border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-        }
-
-        .wysiwyg-editor {
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            border: none;
-            border-radius: var(--radius-md);
-            padding: var(--space-lg);
-            font-family: 'Georgia', serif;
-            font-size: var(--font-size-base);
-            line-height: 1.7;
-            resize: none;
-            outline: none;
-        }
-
-        .analysis-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--app-glass-border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .analysis-empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .analysis-empty-icon {
-            font-size: 3rem;
-            margin-bottom: var(--space-lg);
-        }
-
-        .analysis-empty h3 {
-            color: white;
-            margin-bottom: var(--space-md);
-        }
-
-        .analysis-results {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .analysis-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-lg);
-            flex-shrink: 0;
-        }
-
-        .analysis-header h3 {
-            color: white;
-            margin: 0;
-        }
-
-        .pulse-count {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: var(--font-size-sm);
-        }
-
-        .pulse-points-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-            margin-bottom: var(--space-lg);
-        }
-
-        .pulse-suggestion {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--app-glass-border);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-        }
-
-        .pulse-text {
-            color: white;
-            font-weight: 600;
-            margin-bottom: var(--space-sm);
-        }
-
-        .pulse-meta {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: var(--space-md);
-            font-size: var(--font-size-sm);
-        }
-
-        .pulse-source {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .pulse-frequency {
-            margin-bottom: var(--space-md);
-        }
-
-        .pulse-frequency select {
-            width: 100%;
-            padding: var(--space-xs) var(--space-sm);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--app-glass-border);
-            border-radius: var(--radius-sm);
-            color: white;
-        }
-
-        .pulse-buttons {
-            display: flex;
-            gap: var(--space-sm);
-        }
-
-        .pulse-actions {
-            display: flex;
-            gap: var(--space-sm);
-            flex-shrink: 0;
-        }
-
-        .live-preview-container {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--app-glass-border);
-            border-radius: var(--radius-lg);
-            flex-shrink: 0;
-            height: 250px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .preview-header {
-            padding: var(--space-md);
-            border-bottom: 1px solid var(--app-glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .preview-header h3 {
-            color: white;
-            margin: 0;
-        }
-
-        .preview-controls select {
-            padding: var(--space-xs) var(--space-sm);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--app-glass-border);
-            border-radius: var(--radius-sm);
-            color: white;
-        }
-
-        .preview-content {
-            flex: 1;
-            padding: var(--space-lg);
-            overflow-y: auto;
-            background: rgba(255, 255, 255, 0.95);
-            color: var(--text-primary);
-            font-family: 'Georgia', serif;
-            line-height: 1.7;
-        }
-
-        .preview-empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        .preview-empty-icon {
-            font-size: 2rem;
-            margin-bottom: var(--space-md);
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .editor-layout {
-                grid-template-columns: 1fr;
-                gap: var(--space-md);
-            }
-            
-            .analysis-panel {
-                order: -1;
-                max-height: 300px;
-            }
-        }
-    </style>
 </body>
 </html>
