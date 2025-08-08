@@ -345,16 +345,14 @@ function calculateClusterConfidence(baseAnalysis, semanticConnections, extracted
  * Enhanced with new clustering logic
  */
 async function analyzeSinglePulse(selectedText, articleContent, articleTitle, headers) {
-  const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
-    generationConfig: {
-      temperature: 0.1, // Low temperature for precise analysis
-      topP: 0.95,
-      topK: 64,
-      maxOutputTokens: 1500,
-      responseMimeType: "application/json",
-    },
-  });
+const model = genAI.getGenerativeModel({ 
+  model: "gemini-1.5-flash",
+  generationConfig: {
+    temperature: 0.1,
+    maxOutputTokens: 1500,
+    responseMimeType: "application/json",
+  },
+});
 
   // Enhanced prompt with additional clustering instructions
   const smartAnalysisPrompt = `You are a precision content analyzer for the LivePulse semantic engine. Your job is to analyze selected text and identify:
@@ -562,14 +560,14 @@ Focus on precision in text boundaries, mathematical relationships, AND semantic 
  * Enhanced with new clustering logic
  */
 async function analyzeFullArticle(articleContent, articleTitle, headers) {
-  const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
-    generationConfig: {
-      temperature: 0.2,
-      maxOutputTokens: 2000,
-      responseMimeType: "application/json",
-    },
-  });
+const model = genAI.getGenerativeModel({ 
+  model: "gemini-1.5-flash",
+  generationConfig: {
+    temperature: 0.1,
+    maxOutputTokens: 1500,
+    responseMimeType: "application/json",
+  },
+});
 
   // Enhanced full article prompt
   const fullArticlePrompt = `You are analyzing an entire article to identify ALL potential pulse points and semantic clusters using enhanced detection methods.
