@@ -385,13 +385,160 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
             }
         }
 
-        // Convert frequency minutes to text
-        function getFrequencyText(minutes) {
-            if (!minutes) return '1 day';
-            if (minutes < 60) return `${minutes} minutes`;
-            if (minutes < 1440) return `${Math.round(minutes / 60)} hours`;
-            if (minutes < 43200) return `${Math.round(minutes / 1440)} days`;
-            return `${Math.round(minutes / 43200)} months`;
+        // Smart frequency determination based on content type and context
+        function getSmartFrequency(pulseType, text) {
+            // Year references
+            if (/\b(19|20)\d{2}\b/.test(text)) {
+                return '1 year';
+            }
+            
+            // Quarterly references
+            if (/\b(Q[1-4]|quarter|quarterly)\b/i.test(text)) {
+                return '3 months';
+            }
+            
+            // Monthly references
+            if (/\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/i.test(text)) {
+                return '1 month';
+            }
+            
+            // Daily references
+            if (/\b(today|yesterday|daily)\b/i.test(text)) {
+                return '1 day';
+            }
+            
+            // Currency/Financial amounts
+            if (/\$[\d,]+(\.\d+)?\s*(billion|trillion|million)/i.test(text)) {
+                if (/\b(annual|yearly|year)\b/i.test(text)) return '1 year';
+                if (/\b(quarterly|quarter)\b/i.test(text)) return '3 months';
+                return '6 months'; // Default for large financial figures
+            }
+            
+            // Regular prices
+            if (/\$[\d,]+(\.\d+)?/i.test(text)) {
+                if (pulseType === 'crypto') return '1 hour';
+                if (pulseType === 'stock') return '1 day';
+                return '1 day';
+            }
+            
+            // Percentages
+            if (/\d+\.?\d*%/.test(text)) {
+                if (pulseType === 'crypto') return '1 hour';
+                if (pulseType === 'stock') return '1 day';
+                return '1 week';
+            }
+            
+            // Weather data
+            if (pulseType === 'weather' || /°[CF]|degrees|temperature/i.test(text)) {
+                return '3 hours';
+            }
+            
+            // Population/demographics
+            if (pulseType === 'population' || /population|residents|people/i.test(text)) {
+                return '1 year';
+            }
+            
+            // Technology/versions
+            if (/version|v\d+|\d+\.\d+/i.test(text)) {
+                return '6 months';
+            }
+            
+            // Default frequencies by type
+            const typeDefaults = {
+                'financial': '3 months',
+                'crypto': '1 hour',
+                'stock': '1 day',
+                'weather': '3 hours',
+                'date': '1 day',
+                'population': '1 year',
+                'sports': '1 day',
+                'news': '1 day',
+                'technology': '6 months'
+            };
+            
+            return typeDefaults[pulseType] || '1 day';
+        }
+
+        // Smart data source assignment
+        function getSmartDataSource(pulseType, text) {
+            if (pulseType === 'crypto' || /bitcoin|ethereum|crypto/i.test(text)) {
+                return 'CoinGecko API';
+            }
+            if (pulseType === 'stock' || /stock|shares|NYSE|NASDAQ/i.test(text)) {
+                return 'Alpha Vantage API';
+            }
+            if (pulseType === 'weather' || /°[CF]|degrees|weather/i.test(text)) {
+                return 'OpenWeatherMap API';
+            }
+            if (/\b(19|20)\d{2}\b/.test(text)) {
+                return 'System Date';
+            }
+            if (/\$[\d,]+(\.\d+)?\s*(billion|trillion|million)/i.test(text)) {
+                return 'Financial Reports API';
+            }
+            if (pulseType === 'population') {
+                return 'Census Bureau API';
+            }
+            if (pulseType === 'sports') {
+                return 'Sports Data API';
+            }
+            return 'Manual Research';
+        }
+
+        // Smart reasoning generation
+        function getSmartReasoning(pulseType, text) {
+            if (/\b(19|20)\d{2}\b/.test(text)) {
+                return 'Year references become outdated annually';
+            }
+            if (/\$[\d,]+(\.\d+)?\s*(billion|trillion|million)/i.test(text)) {
+                if (/\b(annual|yearly)\b/i.test(text)) return 'Annual revenue figures change yearly';
+                if (/\b(quarterly|quarter)\b/i.test(text)) return 'Quarterly results change every 3 months';
+                return 'Large financial figures change periodically';
+            }
+            if (pulseType === 'crypto') {
+                return 'Cryptocurrency prices are highly volatile';
+            }
+            if (pulseType === 'stock') {
+                return 'Stock prices change during market hours';
+            }
+            if (pulseType === 'weather') {
+                return 'Weather conditions change frequently';
+            }
+            if (/population|residents|people/i.test(text)) {
+                return 'Population data is updated annually';
+            }
+            return 'Detected as dynamic content that may change';
+        }
+
+        // Extract entity from text
+        function extractEntity(text) {
+            // Company names
+            if (/\b(Apple|Google|Microsoft|Tesla|Amazon|Meta|Netflix|Nvidia)\b/i.test(text)) {
+                return text.match(/\b(Apple|Google|Microsoft|Tesla|Amazon|Meta|Netflix|Nvidia)\b/i)[0];
+            }
+            
+            // Financial terms
+            if (/ecommerce|e-commerce/i.test(text)) return 'eCommerce';
+            if (/retail/i.test(text)) return 'Retail Industry';
+            if (/online.*sales/i.test(text)) return 'Online Sales';
+            
+            // Geographic locations
+            if (/\b(Adelaide|Sydney|Melbourne|Brisbane|Perth)\b/i.test(text)) {
+                return text.match(/\b(Adelaide|Sydney|Melbourne|Brisbane|Perth)\b/i)[0];
+            }
+            
+            // Currencies
+            if (/bitcoin|btc/i.test(text)) return 'Bitcoin';
+            if (/ethereum|eth/i.test(text)) return 'Ethereum';
+            
+            // Extract first significant word
+            const words = text.split(/\s+/);
+            const significantWord = words.find(word => 
+                word.length > 3 && 
+                !/^(the|and|or|but|for|with|from|to|in|on|at|by|is|are|was|were)$/i.test(word)
+            );
+            
+            return significantWord || 'Unknown';
         }
 
         // Analyze button handler
@@ -430,10 +577,11 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
             }
         });
 
-        // Display analysis results
+        // Display analysis results with improved clustering and numbering
         function displayAnalysisResults() {
             const { facts, clusters } = analysisResults;
             let html = '';
+            let itemNumber = 1;
 
             if ((!facts || facts.length === 0) && (!clusters || clusters.length === 0)) {
                 html = '<div class="empty-state">No facts or clusters detected. Try adding some prices, dates, or statistics.</div>';
@@ -443,15 +591,16 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                     clusters.forEach(cluster => {
                         html += `
                             <div class="cluster-item">
-                                <div class="fact-text">🔗 ${cluster.name}</div>
-                                <div class="fact-meta">Source: ${cluster.source} | Updates: Every ${cluster.frequency}</div>
+                                <div class="fact-text">${itemNumber}. 🔗 ${cluster.name}</div>
+                                <div class="fact-meta">Type: ${cluster.type} | Source: ${cluster.facts[0]?.source || 'Multiple sources'}</div>
                                 <div class="cluster-facts">
-                                    ${cluster.facts.map(fact => `
-                                        <div class="cluster-fact">• ${fact.text} (${fact.type})</div>
+                                    ${cluster.facts.map((fact, index) => `
+                                        <div class="cluster-fact">${itemNumber}.${index + 1} ${fact.text} (${fact.type})</div>
                                     `).join('')}
                                 </div>
                             </div>
                         `;
+                        itemNumber++;
                     });
                 }
 
@@ -460,17 +609,18 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                     facts.forEach(fact => {
                         html += `
                             <div class="fact-item">
-                                <div class="fact-text">📊 ${fact.text}</div>
+                                <div class="fact-text">${itemNumber}. 📊 ${fact.text}</div>
                                 <div class="fact-meta">
                                     Type: ${fact.type}<br>
                                     Entity: ${fact.entity}<br>
-                                    Source: ${fact.source}<br>
-                                    Updates: Every ${fact.frequency}<br>
+                                    Reason: ${fact.reasoning}<br>
                                     Confidence: ${fact.confidence}<br>
-                                    Reason: ${fact.reasoning}
+                                    Source: ${fact.source}<br>
+                                    Updates: Every ${fact.frequency}
                                 </div>
                             </div>
                         `;
+                        itemNumber++;
                     });
                 }
             }
