@@ -969,6 +969,7 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
         
         // Navigation between views
         window.LivePulse.Elements.createArticleBtn?.addEventListener('click', () => {
+            console.log('🔥 Create article button clicked!');
             window.LivePulse.Elements.articlesView.classList.add('hidden');
             window.LivePulse.Elements.articleEditorView.classList.remove('hidden');
             window.LivePulse.State.currentView = 'editor';
@@ -1238,8 +1239,8 @@ The weather in Adelaide is sunny with 22 degrees today. We've had record rainfal
         
         // Utility function for regex escaping
         function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\                // Find percentages
-                const percentages = content.match(patterns.percentage');
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\                // Find currency values
+                const currencies = content.match(patterns.currency) || [];');
         }
         
         console.log('🚀 LivePulse ready!');
