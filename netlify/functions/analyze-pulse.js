@@ -350,7 +350,6 @@ const model = genAI.getGenerativeModel({
   generationConfig: {
     temperature: 0.1,
     maxOutputTokens: 1500,
-    responseMimeType: "application/json",
   },
 });
 
@@ -503,6 +502,15 @@ Focus on precision in text boundaries, mathematical relationships, AND semantic 
   const result = await model.generateContent(smartAnalysisPrompt);
   const responseText = result.response.text();
 
+	// Clean up the response to extract JSON
+	let cleanedResponse = responseText.trim();
+	if (cleanedResponse.startsWith('```json')) {
+	  cleanedResponse = cleanedResponse.replace(/```json\s*/g, '').replace(/```\s*$/g, '');
+	}
+	if (cleanedResponse.startsWith('```')) {
+	  cleanedResponse = cleanedResponse.replace(/```\s*/g, '').replace(/```\s*$/g, '');
+	}
+
   let analysis;
   try {
     analysis = JSON.parse(responseText);
@@ -565,7 +573,6 @@ const model = genAI.getGenerativeModel({
   generationConfig: {
     temperature: 0.1,
     maxOutputTokens: 1500,
-    responseMimeType: "application/json",
   },
 });
 
@@ -686,6 +693,15 @@ Focus on finding 3-10 high-quality pulse points with strong semantic relationshi
 
   const result = await model.generateContent(fullArticlePrompt);
   const responseText = result.response.text();
+
+	// Clean up the response to extract JSON
+	let cleanedResponse = responseText.trim();
+	if (cleanedResponse.startsWith('```json')) {
+	  cleanedResponse = cleanedResponse.replace(/```json\s*/g, '').replace(/```\s*$/g, '');
+	}
+	if (cleanedResponse.startsWith('```')) {
+	  cleanedResponse = cleanedResponse.replace(/```\s*/g, '').replace(/```\s*$/g, '');
+	}
 
   let analysis;
   try {
