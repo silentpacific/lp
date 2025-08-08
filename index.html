@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Pulse</title>
+  <style>
+    :root { --max: 880px; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #0b0b0b;
+      background: #ffffff;
+    }
+    header, main, footer { width: 100%; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 24px; }
+    header {
+      border-bottom: 1px solid #e6e6e6;
+    }
+    .brand {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+    }
+    .brand h1 {
+      margin: 0; font-size: 28px; letter-spacing: 0.2px; font-weight: 700;
+    }
+    .cta {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid #111;
+      background: #111;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 120ms ease, opacity 120ms ease;
+    }
+    .cta:focus, .cta:hover { transform: translateY(-1px); opacity: 0.95; }
+    main .hero {
+      padding: 40px 0 16px;
+    }
+    .points {
+      margin: 0; padding: 0; list-style: none;
+      display: grid; gap: 12px;
+      font-size: 20px; font-weight: 600;
+    }
+    .points li { padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+    .points li:last-child { border-bottom: 0; }
+    footer {
+      border-top: 1px solid #e6e6e6;
+      color: #555; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap brand">
+      <h1>Live Pulse</h1>
+      <a class="cta" href="add-article.html">Add Article</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap hero">
+      <ul class="points">
+        <li>Your content. Always current.</li>
+        <li>AI updates it. You stay in control.</li>
+        <li>Fresh facts. Better SEO. Better GEO.</li>
+        <li>Set it up once. Forget about it.</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Built by LoFi Simplify, Adelaide, Australia
+    </div>
+  </footer>
+</body>
+</html>
