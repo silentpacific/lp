@@ -250,6 +250,22 @@
             font-style: italic;
             padding: 20px;
         }
+
+        @media (max-width: 768px) {
+            .editor-section {
+                flex-direction: column;
+            }
+            
+            .preview-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .cms-controls {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
@@ -335,6 +351,27 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
         const pushBtn = document.getElementById('push-btn');
         const cmsSelect = document.getElementById('cms-select');
 
+        // Convert update frequency from minutes to human readable text
+        function getFrequencyText(minutes) {
+            if (!minutes) return '1 day';
+            
+            if (minutes < 60) {
+                return `${minutes} minutes`;
+            } else if (minutes < 1440) {
+                const hours = Math.floor(minutes / 60);
+                return `${hours} hour${hours > 1 ? 's' : ''}`;
+            } else if (minutes < 43800) {
+                const days = Math.floor(minutes / 1440);
+                return `${days} day${days > 1 ? 's' : ''}`;
+            } else if (minutes < 525600) {
+                const months = Math.floor(minutes / 43800);
+                return `${months} month${months > 1 ? 's' : ''}`;
+            } else {
+                const years = Math.floor(minutes / 525600);
+                return `${years} year${years > 1 ? 's' : ''}`;
+            }
+        }
+
         // Real API call to analyze-pulse function
         async function callRealAPI(content) {
             console.log('🔍 Calling REAL LivePulse analyze-pulse function...');
@@ -370,14 +407,26 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                     id: pulse.id || `pulse-${Math.random()}`,
                     text: pulse.selectedText || pulse.text,
                     type: pulse.pulseType || pulse.type || 'other',
-                    source: pulse.dataSource || 'Unknown',
-                    frequency: getFrequencyText(pulse.updateFrequency),
-                    entity: pulse.entity || pulse.specificType || 'Unknown',
+                    source: pulse.dataSource || getSmartDataSource(pulse.pulseType || pulse.type, pulse.selectedText || pulse.text),
+                    frequency: getFrequencyText(pulse.updateFrequency) || getSmartFrequency(pulse.pulseType || pulse.type, pulse.selectedText || pulse.text),
+                    entity: pulse.entity || pulse.specificType || extractEntity(pulse.selectedText || pulse.text),
                     confidence: pulse.confidence || 'medium',
-                    reasoning: pulse.reasoning || 'Detected by AI'
+                    reasoning: pulse.reasoning || getSmartReasoning(pulse.pulseType || pulse.type, pulse.selectedText || pulse.text)
                 }));
 
-                return { facts: pulsePoints, clusters: [] };
+                // Convert clusters if they exist
+                const clusters = (result.analysis?.semanticClusters || []).map(cluster => ({
+                    id: cluster.id || `cluster-${Math.random()}`,
+                    name: cluster.clusterName || cluster.name,
+                    type: cluster.clusterType || cluster.type,
+                    facts: cluster.pulsePoints?.map(pulse => ({
+                        text: pulse.selectedText || pulse.text,
+                        type: pulse.pulseType || pulse.type,
+                        source: pulse.dataSource || getSmartDataSource(pulse.pulseType, pulse.selectedText)
+                    })) || []
+                }));
+
+                return { facts: pulsePoints, clusters: clusters };
 
             } catch (error) {
                 console.error('❌ Real API failed:', error);
