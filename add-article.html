@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LivePulse MVP - Add Article</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        /* Section 1: Editor + Analysis */
+        .editor-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .editor-left {
+            flex: 2;
+            padding: 20px;
+        }
+
+        .editor-right {
+            flex: 1;
+            padding: 20px;
+            border-left: 1px solid #eee;
+            background: #fafafa;
+        }
+
+        .editor-box {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .analyze-btn {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .analyze-btn:hover {
+            background: #2980b9;
+        }
+
+        .analyze-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .analysis-results h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .fact-item, .cluster-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .cluster-item {
+            border-left: 4px solid #3498db;
+        }
+
+        .fact-item {
+            border-left: 4px solid #27ae60;
+        }
+
+        .fact-text {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .fact-meta {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .cluster-facts {
+            margin-top: 10px;
+            padding-left: 15px;
+        }
+
+        .cluster-fact {
+            font-size: 13px;
+            margin: 4px 0;
+            color: #34495e;
+        }
+
+        /* Section 2: Preview */
+        .preview-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .preview-content {
+            min-height: 200px;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        /* Highlighting styles */
+        .fact-highlight {
+            background-color: #d5f4e6;
+            padding: 2px 4px;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .cluster-highlight {
+            background-color: #dae8fc;
+            padding: 2px 4px;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .relation-highlight {
+            background-color: #fff2cc;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .superscript {
+            font-size: 10px;
+            vertical-align: super;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        /* Footnotes */
+        .footnotes {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .footnote {
+            margin-bottom: 8px;
+            color: #7f8c8d;
+        }
+
+        /* CMS Push Section */
+        .cms-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .cms-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .cms-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .push-btn {
+            padding: 12px 30px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .push-btn:hover {
+            background: #229954;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 30px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #3498db;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LivePulse - Add Article</h1>
+
+        <!-- Section 1: Editor + Analysis -->
+        <div class="editor-section">
+            <!-- Left: Text Editor -->
+            <div class="editor-left">
+                <h3>Article Content</h3>
+                <textarea 
+                    id="article-editor" 
+                    class="editor-box" 
+                    placeholder="Paste or type your article content here...
+
+Example content to try:
+Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,421. The weather in Adelaide today is 22°C, which is 5 degrees warmer than the average temperature of 17°C for this time of year. Tesla stock closed at $248.50, down 2.1% from $253.85. The current interest rate set by the Reserve Bank of Australia is 4.35%."
+                ></textarea>
+                <button id="analyze-btn" class="analyze-btn">🔍 Analyze Content</button>
+            </div>
+
+            <!-- Right: Analysis Results -->
+            <div class="editor-right">
+                <div class="analysis-results">
+                    <h3>Facts & Clusters</h3>
+                    <div id="analysis-output">
+                        <div class="empty-state">
+                            Click "Analyze Content" to detect facts and clusters in your article.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Live Preview -->
+        <div class="preview-section">
+            <div class="preview-header">
+                <h3>📄 Live Preview</h3>
+                <span id="update-frequency">Auto-update frequency: Not set</span>
+            </div>
+            <div id="preview-content" class="preview-content">
+                <div class="empty-state">
+                    Your article preview will appear here after analysis.
+                </div>
+            </div>
+            <div id="footnotes" class="footnotes" style="display: none;">
+                <h4>Sources & Update Frequencies:</h4>
+            </div>
+        </div>
+
+        <!-- Section 3: CMS Push -->
+        <div class="cms-section">
+            <h3>🚀 Publish to CMS</h3>
+            <p>Push this article with automatic fact updates to your content management system.</p>
+            <div class="cms-controls">
+                <select id="cms-select" class="cms-select">
+                    <option value="wordpress">WordPress</option>
+                    <option value="ghost">Ghost CMS</option>
+                    <option value="shopify">Shopify</option>
+                </select>
+                <button id="push-btn" class="push-btn" disabled>📤 Push to CMS</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application state
+        let analysisResults = null;
+        let isAnalyzing = false;
+
+        // DOM elements
+        const editor = document.getElementById('article-editor');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const analysisOutput = document.getElementById('analysis-output');
+        const previewContent = document.getElementById('preview-content');
+        const footnotes = document.getElementById('footnotes');
+        const updateFrequency = document.getElementById('update-frequency');
+        const pushBtn = document.getElementById('push-btn');
+        const cmsSelect = document.getElementById('cms-select');
+
+        // Mock analysis engine
+        class PulseAnalyzer {
+            static async analyze(content) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const facts = [];
+                const clusters = [];
+                let factId = 1;
+                let clusterId = 1;
+
+                // Detect crypto prices and changes
+                const cryptoPattern = /(\w+)\s+(?:is\s+)?(?:currently\s+)?(?:trading\s+at\s+)?\$?([\d,]+(?:\.\d{2})?),?\s+(?:up|down)\s+([\d.]+)%\s+from\s+(?:yesterday's\s+close\s+of\s+)?\$?([\d,]+(?:\.\d{2})?)/gi;
+                let match;
+                while ((match = cryptoPattern.exec(content)) !== null) {
+                    const clusterFacts = [
+                        {
+                            id: factId++,
+                            text: `$${match[2]}`,
+                            type: 'crypto_price',
+                            entity: match[1],
+                            source: 'CoinGecko API',
+                            frequency: '5 minutes'
+                        },
+                        {
+                            id: factId++,
+                            text: `${match[3]}%`,
+                            type: 'crypto_change',
+                            entity: match[1],
+                            source: 'CoinGecko API',
+                            frequency: '5 minutes'
+                        }
+                    ];
+
+                    clusters.push({
+                        id: clusterId++,
+                        name: `${match[1]} Price Cluster`,
+                        facts: clusterFacts,
+                        source: 'CoinGecko API',
+                        frequency: '5 minutes'
+                    });
+                }
+
+                // Detect weather data
+                const weatherPattern = /weather\s+in\s+(\w+)\s+(?:today\s+)?is\s+([\d.]+)°C(?:,\s+which\s+is\s+([\d.]+)\s+degrees\s+(warmer|cooler)\s+than\s+(?:the\s+)?average\s+temperature\s+of\s+([\d.]+)°C)?/gi;
+                while ((match = weatherPattern.exec(content)) !== null) {
+                    if (match[3] && match[4] && match[5]) {
+                        // Weather cluster with comparison
+                        const clusterFacts = [
+                            {
+                                id: factId++,
+                                text: `${match[2]}°C`,
+                                type: 'temperature',
+                                entity: match[1],
+                                source: 'OpenWeatherMap API',
+                                frequency: '1 hour'
+                            },
+                            {
+                                id: factId++,
+                                text: `${match[3]} degrees ${match[4]}`,
+                                type: 'temperature_comparison',
+                                entity: match[1],
+                                source: 'Weather Averages DB',
+                                frequency: '1 hour'
+                            }
+                        ];
+
+                        clusters.push({
+                            id: clusterId++,
+                            name: `${match[1]} Weather Cluster`,
+                            facts: clusterFacts,
+                            source: 'OpenWeatherMap API',
+                            frequency: '1 hour'
+                        });
+                    } else {
+                        // Simple temperature fact
+                        facts.push({
+                            id: factId++,
+                            text: `${match[2]}°C`,
+                            type: 'temperature',
+                            entity: match[1],
+                            source: 'OpenWeatherMap API',
+                            frequency: '1 hour'
+                        });
+                    }
+                }
+
+                // Detect stock data
+                const stockPattern = /(\w+)\s+stock\s+closed\s+at\s+\$?([\d,]+(?:\.\d{2})?),?\s+(?:up|down)\s+([\d.]+)%\s+from\s+\$?([\d,]+(?:\.\d{2})?)/gi;
+                while ((match = stockPattern.exec(content)) !== null) {
+                    const clusterFacts = [
+                        {
+                            id: factId++,
+                            text: `$${match[2]}`,
+                            type: 'stock_price',
+                            entity: match[1],
+                            source: 'Alpha Vantage API',
+                            frequency: '15 minutes'
+                        },
+                        {
+                            id: factId++,
+                            text: `${match[3]}%`,
+                            type: 'stock_change',
+                            entity: match[1],
+                            source: 'Alpha Vantage API',
+                            frequency: '15 minutes'
+                        }
+                    ];
+
+                    clusters.push({
+                        id: clusterId++,
+                        name: `${match[1]} Stock Cluster`,
+                        facts: clusterFacts,
+                        source: 'Alpha Vantage API',
+                        frequency: '15 minutes'
+                    });
+                }
+
+                // Detect interest rates
+                const ratePattern = /(?:current\s+)?interest\s+rate\s+(?:set\s+by\s+[^is]+\s+)?is\s+([\d.]+)%/gi;
+                while ((match = ratePattern.exec(content)) !== null) {
+                    facts.push({
+                        id: factId++,
+                        text: `${match[1]}%`,
+                        type: 'interest_rate',
+                        entity: 'RBA Interest Rate',
+                        source: 'RBA Official Rate',
+                        frequency: '1 month'
+                    });
+                }
+
+                // Simple price detection (fallback)
+                const pricePattern = /\$[\d,]+(?:\.\d{2})?/g;
+                const prices = content.match(pricePattern) || [];
+                prices.forEach(price => {
+                    // Only add if not already in a cluster
+                    const alreadyInCluster = clusters.some(cluster => 
+                        cluster.facts.some(fact => fact.text === price)
+                    );
+                    if (!alreadyInCluster) {
+                        facts.push({
+                            id: factId++,
+                            text: price,
+                            type: 'price',
+                            entity: 'Unknown',
+                            source: 'Manual Research',
+                            frequency: '1 day'
+                        });
+                    }
+                });
+
+                return { facts, clusters };
+            }
+        }
+
+        // Analyze button handler
+        analyzeBtn.addEventListener('click', async () => {
+            const content = editor.value.trim();
+            if (!content) {
+                alert('Please enter some content to analyze.');
+                return;
+            }
+
+            if (isAnalyzing) return;
+
+            isAnalyzing = true;
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = '⏳ Analyzing...';
+            
+            analysisOutput.innerHTML = '<div class="loading">Analyzing content for facts and clusters...</div>';
+
+            try {
+                analysisResults = await PulseAnalyzer.analyze(content);
+                displayAnalysisResults();
+                generatePreview();
+                enableCMSPush();
+            } catch (error) {
+                analysisOutput.innerHTML = '<div style="color: red;">Analysis failed. Please try again.</div>';
+            } finally {
+                isAnalyzing = false;
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = '🔍 Analyze Content';
+            }
+        });
+
+        // Display analysis results
+        function displayAnalysisResults() {
+            const { facts, clusters } = analysisResults;
+            let html = '';
+
+            if (clusters.length === 0 && facts.length === 0) {
+                html = '<div class="empty-state">No facts or clusters detected. Try adding some prices, dates, or statistics.</div>';
+            } else {
+                // Display clusters first
+                clusters.forEach(cluster => {
+                    html += `
+                        <div class="cluster-item">
+                            <div class="fact-text">🔗 ${cluster.name}</div>
+                            <div class="fact-meta">Source: ${cluster.source} | Updates: Every ${cluster.frequency}</div>
+                            <div class="cluster-facts">
+                                ${cluster.facts.map(fact => `
+                                    <div class="cluster-fact">• ${fact.text} (${fact.type})</div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Display individual facts
+                facts.forEach(fact => {
+                    html += `
+                        <div class="fact-item">
+                            <div class="fact-text">📊 ${fact.text}</div>
+                            <div class="fact-meta">
+                                Type: ${fact.type}<br>
+                                Source: ${fact.source}<br>
+                                Updates: Every ${fact.frequency}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            analysisOutput.innerHTML = html;
+        }
+
+        // Generate preview with highlighting
+        function generatePreview() {
+            const { facts, clusters } = analysisResults;
+            let content = editor.value;
+            let footnoteNumber = 1;
+            let footnotesList = [];
+
+            // Get minimum frequency for auto-update
+            const allFrequencies = [
+                ...clusters.map(c => c.frequency),
+                ...facts.map(f => f.frequency)
+            ];
+            const minFrequency = getMinimumFrequency(allFrequencies);
+            updateFrequency.textContent = `Auto-update frequency: Every ${minFrequency}`;
+
+            // Process clusters first (longer matches)
+            clusters.forEach(cluster => {
+                cluster.facts.forEach(fact => {
+                    const regex = new RegExp(escapeRegExp(fact.text), 'g');
+                    content = content.replace(regex, 
+                        `<span class="cluster-highlight">${fact.text}<span class="superscript">${footnoteNumber}</span></span>`
+                    );
+                    footnotesList.push(`${footnoteNumber}. ${fact.text} - Source: ${fact.source}, Updates: Every ${fact.frequency}`);
+                    footnoteNumber++;
+                });
+            });
+
+            // Process individual facts
+            facts.forEach(fact => {
+                const regex = new RegExp(escapeRegExp(fact.text), 'g');
+                content = content.replace(regex, 
+                    `<span class="fact-highlight">${fact.text}<span class="superscript">${footnoteNumber}</span></span>`
+                );
+                footnotesList.push(`${footnoteNumber}. ${fact.text} - Source: ${fact.source}, Updates: Every ${fact.frequency}`);
+                footnoteNumber++;
+            });
+
+            // Add relation highlighting (simple patterns)
+            content = content.replace(/(up|down|increased|decreased|higher|lower)\s+[\d.]+%/gi, 
+                (match) => `<span class="relation-highlight">${match}</span>`
+            );
+
+            // Display preview
+            previewContent.innerHTML = content.split('\n').map(p => `<p>${p}</p>`).join('');
+
+            // Display footnotes
+            if (footnotesList.length > 0) {
+                footnotes.style.display = 'block';
+                footnotes.innerHTML = `
+                    <h4>Sources & Update Frequencies:</h4>
+                    ${footnotesList.map(footnote => `<div class="footnote">${footnote}</div>`).join('')}
+                `;
+            }
+        }
+
+        // Enable CMS push
+        function enableCMSPush() {
+            pushBtn.disabled = false;
+        }
+
+        // CMS push handler
+        pushBtn.addEventListener('click', () => {
+            const cms = cmsSelect.value;
+            const { facts, clusters } = analysisResults;
+            const totalItems = facts.length + clusters.length;
+            
+            alert(`Would push article to ${cms.toUpperCase()} with ${totalItems} tracked facts/clusters.\n\nThis would set up automatic updates for all detected facts.`);
+        });
+
+        // Utility functions
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function getMinimumFrequency(frequencies) {
+            const frequencyMap = {
+                '5 minutes': 5,
+                '15 minutes': 15,
+                '1 hour': 60,
+                '1 day': 1440,
+                '1 month': 43200
+            };
+
+            let minMinutes = Infinity;
+            let minFreq = '1 day';
+
+            frequencies.forEach(freq => {
+                if (frequencyMap[freq] < minMinutes) {
+                    minMinutes = frequencyMap[freq];
+                    minFreq = freq;
+                }
+            });
+
+            return minFreq;
+        }
+    </script>
+</body>
+</html>
