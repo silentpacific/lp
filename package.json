@@ -1,56 +1,26 @@
 {
-  "name": "livepulse-mvp",
-  "version": "1.0.0",
-  "description": "Smart content-refresh engine that dynamically updates specific words, numbers, phrases, or paragraphs in published blog articles using real-time data and AI models",
-  "main": "src/app.js",
-  "type": "commonjs",
+  "name": "livepulse",
+  "version": "3.0.0",
+  "description": "AI-powered content intelligence platform",
+  "main": "index.js",
   "scripts": {
     "dev": "netlify dev",
-    "build": "npm install && npm run build-css",
-    "start": "netlify dev",
-    "build-css": "postcss src/styles/landing.css -o dist/styles/landing.min.css --use autoprefixer cssnano",
-    "build-css:app": "postcss src/styles/app.css -o dist/styles/app.min.css --use autoprefixer cssnano",
-    "build-css:all": "npm run build-css && npm run build-css:app",
-    "watch-css": "postcss src/styles/landing.css -o dist/styles/landing.min.css --use autoprefixer cssnano --watch",
-    "watch-css:app": "postcss src/styles/app.css -o dist/styles/app.min.css --use autoprefixer cssnano --watch",
-    "clean": "rm -rf dist",
-    "clean:css": "rm -rf dist/styles"
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests yet'"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
-    "@supabase/supabase-js": "^2.45.4",
-    "dotenv": "^16.4.5"
+    "@google/generative-ai": "^0.5.0",
+    "@supabase/supabase-js": "^2.38.0",
+    "jsonwebtoken": "^9.0.2"
   },
-  "devDependencies": {
-    "netlify-cli": "^17.34.2",
-    "postcss": "^8.4.32",
-    "postcss-cli": "^11.0.0",
-    "autoprefixer": "^10.4.16",
-    "cssnano": "^6.0.3"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/silentpacific/lp.git"
-  },
+  "devDependencies": {},
   "keywords": [
-    "content-management",
     "ai",
-    "dynamic-content",
-    "netlify-functions",
-    "gemini-ai",
-    "real-time-data",
-    "css-modular",
-    "responsive-design"
+    "content",
+    "cms",
+    "automation",
+    "pulse-points"
   ],
-  "author": "LivePulse Team",
-  "license": "MIT",
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+  "author": "Your Name",
+  "license": "MIT"
 }
