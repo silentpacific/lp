@@ -243,6 +243,13 @@
             font-style: italic;
             padding: 20px;
         }
+
+        .error {
+            text-align: center;
+            color: #e74c3c;
+            font-style: italic;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -260,8 +267,8 @@
                     placeholder="Paste or type your article content here...
 
 Example content to try:
-Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,421. The weather in Adelaide today is 22°C, which is 5 degrees warmer than the average temperature of 17°C for this time of year. Tesla stock closed at $248.50, down 2.1% from $253.85. The current interest rate set by the Reserve Bank of Australia is 4.35%."
-                ></textarea>
+The growth of eCommerce in recent years has been extraordinary. In 2021, global online retail sales reached $4.98 trillion, and by 2024, this figure surged to $5.8 trillion."
+                >The growth of eCommerce in recent years has been extraordinary. In 2021, global online retail sales reached $4.98 trillion, and by 2024, this figure surged to $5.8 trillion.</textarea>
                 <button id="analyze-btn" class="analyze-btn">🔍 Analyze Content</button>
             </div>
 
@@ -310,6 +317,10 @@ Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,4
     </div>
 
     <script>
+        console.log('🚀 ADD-ARTICLE.HTML SCRIPT LOADED!');
+        console.log('🔍 LivePulse object:', window.LivePulse);
+        console.log('🔧 Loading LivePulse...');
+
         // Application state
         let analysisResults = null;
         let isAnalyzing = false;
@@ -324,159 +335,63 @@ Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,4
         const pushBtn = document.getElementById('push-btn');
         const cmsSelect = document.getElementById('cms-select');
 
-        // Mock analysis engine
-        class PulseAnalyzer {
-            static async analyze(content) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                const facts = [];
-                const clusters = [];
-                let factId = 1;
-                let clusterId = 1;
-
-                // Detect crypto prices and changes
-                const cryptoPattern = /(\w+)\s+(?:is\s+)?(?:currently\s+)?(?:trading\s+at\s+)?\$?([\d,]+(?:\.\d{2})?),?\s+(?:up|down)\s+([\d.]+)%\s+from\s+(?:yesterday's\s+close\s+of\s+)?\$?([\d,]+(?:\.\d{2})?)/gi;
-                let match;
-                while ((match = cryptoPattern.exec(content)) !== null) {
-                    const clusterFacts = [
-                        {
-                            id: factId++,
-                            text: `$${match[2]}`,
-                            type: 'crypto_price',
-                            entity: match[1],
-                            source: 'CoinGecko API',
-                            frequency: '5 minutes'
-                        },
-                        {
-                            id: factId++,
-                            text: `${match[3]}%`,
-                            type: 'crypto_change',
-                            entity: match[1],
-                            source: 'CoinGecko API',
-                            frequency: '5 minutes'
-                        }
-                    ];
-
-                    clusters.push({
-                        id: clusterId++,
-                        name: `${match[1]} Price Cluster`,
-                        facts: clusterFacts,
-                        source: 'CoinGecko API',
-                        frequency: '5 minutes'
-                    });
-                }
-
-                // Detect weather data
-                const weatherPattern = /weather\s+in\s+(\w+)\s+(?:today\s+)?is\s+([\d.]+)°C(?:,\s+which\s+is\s+([\d.]+)\s+degrees\s+(warmer|cooler)\s+than\s+(?:the\s+)?average\s+temperature\s+of\s+([\d.]+)°C)?/gi;
-                while ((match = weatherPattern.exec(content)) !== null) {
-                    if (match[3] && match[4] && match[5]) {
-                        // Weather cluster with comparison
-                        const clusterFacts = [
-                            {
-                                id: factId++,
-                                text: `${match[2]}°C`,
-                                type: 'temperature',
-                                entity: match[1],
-                                source: 'OpenWeatherMap API',
-                                frequency: '1 hour'
-                            },
-                            {
-                                id: factId++,
-                                text: `${match[3]} degrees ${match[4]}`,
-                                type: 'temperature_comparison',
-                                entity: match[1],
-                                source: 'Weather Averages DB',
-                                frequency: '1 hour'
-                            }
-                        ];
-
-                        clusters.push({
-                            id: clusterId++,
-                            name: `${match[1]} Weather Cluster`,
-                            facts: clusterFacts,
-                            source: 'OpenWeatherMap API',
-                            frequency: '1 hour'
-                        });
-                    } else {
-                        // Simple temperature fact
-                        facts.push({
-                            id: factId++,
-                            text: `${match[2]}°C`,
-                            type: 'temperature',
-                            entity: match[1],
-                            source: 'OpenWeatherMap API',
-                            frequency: '1 hour'
-                        });
-                    }
-                }
-
-                // Detect stock data
-                const stockPattern = /(\w+)\s+stock\s+closed\s+at\s+\$?([\d,]+(?:\.\d{2})?),?\s+(?:up|down)\s+([\d.]+)%\s+from\s+\$?([\d,]+(?:\.\d{2})?)/gi;
-                while ((match = stockPattern.exec(content)) !== null) {
-                    const clusterFacts = [
-                        {
-                            id: factId++,
-                            text: `$${match[2]}`,
-                            type: 'stock_price',
-                            entity: match[1],
-                            source: 'Alpha Vantage API',
-                            frequency: '15 minutes'
-                        },
-                        {
-                            id: factId++,
-                            text: `${match[3]}%`,
-                            type: 'stock_change',
-                            entity: match[1],
-                            source: 'Alpha Vantage API',
-                            frequency: '15 minutes'
-                        }
-                    ];
-
-                    clusters.push({
-                        id: clusterId++,
-                        name: `${match[1]} Stock Cluster`,
-                        facts: clusterFacts,
-                        source: 'Alpha Vantage API',
-                        frequency: '15 minutes'
-                    });
-                }
-
-                // Detect interest rates
-                const ratePattern = /(?:current\s+)?interest\s+rate\s+(?:set\s+by\s+[^is]+\s+)?is\s+([\d.]+)%/gi;
-                while ((match = ratePattern.exec(content)) !== null) {
-                    facts.push({
-                        id: factId++,
-                        text: `${match[1]}%`,
-                        type: 'interest_rate',
-                        entity: 'RBA Interest Rate',
-                        source: 'RBA Official Rate',
-                        frequency: '1 month'
-                    });
-                }
-
-                // Simple price detection (fallback)
-                const pricePattern = /\$[\d,]+(?:\.\d{2})?/g;
-                const prices = content.match(pricePattern) || [];
-                prices.forEach(price => {
-                    // Only add if not already in a cluster
-                    const alreadyInCluster = clusters.some(cluster => 
-                        cluster.facts.some(fact => fact.text === price)
-                    );
-                    if (!alreadyInCluster) {
-                        facts.push({
-                            id: factId++,
-                            text: price,
-                            type: 'price',
-                            entity: 'Unknown',
-                            source: 'Manual Research',
-                            frequency: '1 day'
-                        });
-                    }
+        // Real API call to analyze-pulse function
+        async function callRealAPI(content) {
+            console.log('🔍 Calling REAL LivePulse analyze-pulse function...');
+            
+            try {
+                const response = await fetch('/.netlify/functions/analyze-pulse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        selectedText: content,
+                        articleContent: content,
+                        articleTitle: 'MVP Test Article',
+                        mode: 'full_article_scan'
+                    })
                 });
 
-                return { facts, clusters };
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Analysis failed');
+                }
+
+                console.log('✅ Real API Success:', result);
+
+                // Convert API response to display format
+                const pulsePoints = (result.analysis?.pulsePoints || []).map(pulse => ({
+                    id: pulse.id || `pulse-${Math.random()}`,
+                    text: pulse.selectedText || pulse.text,
+                    type: pulse.pulseType || pulse.type || 'other',
+                    source: pulse.dataSource || 'Unknown',
+                    frequency: getFrequencyText(pulse.updateFrequency),
+                    entity: pulse.entity || pulse.specificType || 'Unknown',
+                    confidence: pulse.confidence || 'medium',
+                    reasoning: pulse.reasoning || 'Detected by AI'
+                }));
+
+                return { facts: pulsePoints, clusters: [] };
+
+            } catch (error) {
+                console.error('❌ Real API failed:', error);
+                throw error;
             }
+        }
+
+        // Convert frequency minutes to text
+        function getFrequencyText(minutes) {
+            if (!minutes) return '1 day';
+            if (minutes < 60) return `${minutes} minutes`;
+            if (minutes < 1440) return `${Math.round(minutes / 60)} hours`;
+            if (minutes < 43200) return `${Math.round(minutes / 1440)} days`;
+            return `${Math.round(minutes / 43200)} months`;
         }
 
         // Analyze button handler
@@ -493,15 +408,21 @@ Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,4
             analyzeBtn.disabled = true;
             analyzeBtn.textContent = '⏳ Analyzing...';
             
-            analysisOutput.innerHTML = '<div class="loading">Analyzing content for facts and clusters...</div>';
+            analysisOutput.innerHTML = '<div class="loading">Calling LivePulse AI engine...</div>';
 
             try {
-                analysisResults = await PulseAnalyzer.analyze(content);
+                console.log('🎯 Starting real API analysis...');
+                analysisResults = await callRealAPI(content);
+                console.log('📊 Analysis Results:', analysisResults);
+                
                 displayAnalysisResults();
                 generatePreview();
                 enableCMSPush();
+                
+                console.log('✅ Analysis complete!');
             } catch (error) {
-                analysisOutput.innerHTML = '<div style="color: red;">Analysis failed. Please try again.</div>';
+                console.error('💥 Analysis failed:', error);
+                analysisOutput.innerHTML = `<div class="error">Analysis failed: ${error.message}</div>`;
             } finally {
                 isAnalyzing = false;
                 analyzeBtn.disabled = false;
@@ -514,37 +435,44 @@ Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,4
             const { facts, clusters } = analysisResults;
             let html = '';
 
-            if (clusters.length === 0 && facts.length === 0) {
+            if ((!facts || facts.length === 0) && (!clusters || clusters.length === 0)) {
                 html = '<div class="empty-state">No facts or clusters detected. Try adding some prices, dates, or statistics.</div>';
             } else {
                 // Display clusters first
-                clusters.forEach(cluster => {
-                    html += `
-                        <div class="cluster-item">
-                            <div class="fact-text">🔗 ${cluster.name}</div>
-                            <div class="fact-meta">Source: ${cluster.source} | Updates: Every ${cluster.frequency}</div>
-                            <div class="cluster-facts">
-                                ${cluster.facts.map(fact => `
-                                    <div class="cluster-fact">• ${fact.text} (${fact.type})</div>
-                                `).join('')}
+                if (clusters && clusters.length > 0) {
+                    clusters.forEach(cluster => {
+                        html += `
+                            <div class="cluster-item">
+                                <div class="fact-text">🔗 ${cluster.name}</div>
+                                <div class="fact-meta">Source: ${cluster.source} | Updates: Every ${cluster.frequency}</div>
+                                <div class="cluster-facts">
+                                    ${cluster.facts.map(fact => `
+                                        <div class="cluster-fact">• ${fact.text} (${fact.type})</div>
+                                    `).join('')}
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
+                }
 
                 // Display individual facts
-                facts.forEach(fact => {
-                    html += `
-                        <div class="fact-item">
-                            <div class="fact-text">📊 ${fact.text}</div>
-                            <div class="fact-meta">
-                                Type: ${fact.type}<br>
-                                Source: ${fact.source}<br>
-                                Updates: Every ${fact.frequency}
+                if (facts && facts.length > 0) {
+                    facts.forEach(fact => {
+                        html += `
+                            <div class="fact-item">
+                                <div class="fact-text">📊 ${fact.text}</div>
+                                <div class="fact-meta">
+                                    Type: ${fact.type}<br>
+                                    Entity: ${fact.entity}<br>
+                                    Source: ${fact.source}<br>
+                                    Updates: Every ${fact.frequency}<br>
+                                    Confidence: ${fact.confidence}<br>
+                                    Reason: ${fact.reasoning}
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
+                }
             }
 
             analysisOutput.innerHTML = html;
@@ -557,28 +485,21 @@ Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,4
             let footnoteNumber = 1;
             let footnotesList = [];
 
-            // Get minimum frequency for auto-update
-            const allFrequencies = [
-                ...clusters.map(c => c.frequency),
-                ...facts.map(f => f.frequency)
-            ];
-            const minFrequency = getMinimumFrequency(allFrequencies);
-            updateFrequency.textContent = `Auto-update frequency: Every ${minFrequency}`;
-
-            // Process clusters first (longer matches)
-            clusters.forEach(cluster => {
-                cluster.facts.forEach(fact => {
-                    const regex = new RegExp(escapeRegExp(fact.text), 'g');
-                    content = content.replace(regex, 
-                        `<span class="cluster-highlight">${fact.text}<span class="superscript">${footnoteNumber}</span></span>`
-                    );
-                    footnotesList.push(`${footnoteNumber}. ${fact.text} - Source: ${fact.source}, Updates: Every ${fact.frequency}`);
-                    footnoteNumber++;
+            // Get all facts from both individual facts and clusters
+            let allFacts = [...(facts || [])];
+            if (clusters) {
+                clusters.forEach(cluster => {
+                    allFacts.push(...cluster.facts);
                 });
-            });
+            }
+
+            // Set update frequency based on facts found
+            if (allFacts.length > 0) {
+                updateFrequency.textContent = `Auto-update frequency: Every ${allFacts[0].frequency}`;
+            }
 
             // Process individual facts
-            facts.forEach(fact => {
+            allFacts.forEach(fact => {
                 const regex = new RegExp(escapeRegExp(fact.text), 'g');
                 content = content.replace(regex, 
                     `<span class="fact-highlight">${fact.text}<span class="superscript">${footnoteNumber}</span></span>`
@@ -588,12 +509,12 @@ Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,4
             });
 
             // Add relation highlighting (simple patterns)
-            content = content.replace(/(up|down|increased|decreased|higher|lower)\s+[\d.]+%/gi, 
+            content = content.replace(/(up|down|increased|decreased|higher|lower|surged|reached)\s/gi, 
                 (match) => `<span class="relation-highlight">${match}</span>`
             );
 
             // Display preview
-            previewContent.innerHTML = content.split('\n').map(p => `<p>${p}</p>`).join('');
+            previewContent.innerHTML = content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('');
 
             // Display footnotes
             if (footnotesList.length > 0) {
@@ -614,7 +535,7 @@ Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,4
         pushBtn.addEventListener('click', () => {
             const cms = cmsSelect.value;
             const { facts, clusters } = analysisResults;
-            const totalItems = facts.length + clusters.length;
+            const totalItems = (facts?.length || 0) + (clusters?.length || 0);
             
             alert(`Would push article to ${cms.toUpperCase()} with ${totalItems} tracked facts/clusters.\n\nThis would set up automatic updates for all detected facts.`);
         });
@@ -624,27 +545,7 @@ Bitcoin is currently trading at $67,500, up 3.2% from yesterday's close of $65,4
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
-        function getMinimumFrequency(frequencies) {
-            const frequencyMap = {
-                '5 minutes': 5,
-                '15 minutes': 15,
-                '1 hour': 60,
-                '1 day': 1440,
-                '1 month': 43200
-            };
-
-            let minMinutes = Infinity;
-            let minFreq = '1 day';
-
-            frequencies.forEach(freq => {
-                if (frequencyMap[freq] < minMinutes) {
-                    minMinutes = frequencyMap[freq];
-                    minFreq = freq;
-                }
-            });
-
-            return minFreq;
-        }
+        console.log('🚀 LivePulse ready - will call REAL API!');
     </script>
 </body>
 </html>
