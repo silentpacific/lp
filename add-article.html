@@ -474,7 +474,7 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
         const pushBtn = document.getElementById('push-btn');
         const cmsSelect = document.getElementById('cms-select');
 
-        // Call the enhanced backend API
+        // Call the enhanced backend API with robust error handling
         async function callUniversalEngine(content) {
             console.log('🧠 Calling LivePulse Universal Engine...');
             
@@ -493,7 +493,16 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
+                    // Try to get error details from response
+                    let errorDetails = `HTTP ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorDetails = errorData.error || errorDetails;
+                    } catch (parseError) {
+                        // If we can't parse the error response, use status
+                        errorDetails = `HTTP ${response.status} - ${response.statusText}`;
+                    }
+                    throw new Error(errorDetails);
                 }
 
                 const result = await response.json();
@@ -503,10 +512,27 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                 }
 
                 console.log('✅ Universal Engine Success:', result);
+                
+                // Handle fallback mode
+                if (result.fallback) {
+                    console.log('⚠️ Using fallback analysis mode');
+                }
+                
                 return result.analysis;
 
             } catch (error) {
                 console.error('❌ Universal Engine failed:', error);
+                
+                // Check if it's a network error
+                if (error.message.includes('fetch')) {
+                    throw new Error('Network connection failed. Please check your internet connection.');
+                }
+                
+                // Check if it's a server error
+                if (error.message.includes('500')) {
+                    throw new Error('Server error. The Universal Engine may be experiencing issues. Please try again.');
+                }
+                
                 throw error;
             }
         }
@@ -539,7 +565,35 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                 console.log('✅ Universal Engine analysis complete!');
             } catch (error) {
                 console.error('💥 Analysis failed:', error);
-                analysisOutput.innerHTML = `<div class="error">Universal Engine failed: ${error.message}</div>`;
+                
+                let errorMessage = error.message;
+                let errorClass = 'error';
+                
+                // Handle different error types with better messaging
+                if (error.message.includes('Network connection failed')) {
+                    errorMessage = '🌐 Network Error: Please check your internet connection and try again.';
+                } else if (error.message.includes('Server error')) {
+                    errorMessage = '⚙️ Server Error: The Universal Engine is temporarily unavailable. Please try again in a few moments.';
+                    errorClass = 'error';
+                } else if (error.message.includes('HTTP 500')) {
+                    errorMessage = '🔧 Universal Engine Error: There was an issue processing your content. Please try with different text or contact support.';
+                } else if (error.message.includes('timeout')) {
+                    errorMessage = '⏱️ Timeout Error: The analysis took too long. Please try with shorter content.';
+                } else {
+                    errorMessage = `🚨 Analysis Error: ${error.message}`;
+                }
+                
+                analysisOutput.innerHTML = `
+                    <div class="${errorClass}">
+                        ${errorMessage}
+                        <br><br>
+                        <strong>Troubleshooting Tips:</strong><br>
+                        • Try with shorter content (under 1000 words)<br>
+                        • Ensure your content contains numbers, dates, or statistics<br>
+                        • Check your internet connection<br>
+                        • Refresh the page and try again
+                    </div>
+                `;
             } finally {
                 isAnalyzing = false;
                 analyzeBtn.disabled = false;
@@ -556,18 +610,20 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
             if ((!facts || facts.length === 0) && (!clusters || clusters.length === 0)) {
                 html = '<div class="empty-state">No facts or clusters detected by the Universal Engine. Try adding some prices, dates, or statistics.</div>';
             } else {
-                // Display clusters first (most relevant)
+                // Always show Clusters section first
+                html += '<h4 style="color: #1e293b; margin-bottom: 12px; font-weight: 600;">🔗 Clusters</h4>';
+                
                 if (clusters && clusters.length > 0) {
                     clusters.forEach(cluster => {
                         html += `
                             <div class="cluster-item">
                                 <div class="item-header">
-                                    ${itemNumber}. 🔗 ${cluster.title}
+                                    ${itemNumber}. ${cluster.title}
                                 </div>
                                 <div class="item-meta">
                                     <strong>Relation:</strong> ${cluster.relation}<br>
                                     <strong>Summary:</strong> ${cluster.summary}<br>
-                                    <strong>Stale when:</strong> ${cluster.stale_when}
+                                    <strong>Frequency:</strong> ${getClusterFrequency(cluster)}
                                 </div>
                                 <div class="cluster-facts">
                                     ${cluster.facts.map((fact, index) => `
@@ -585,24 +641,29 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                         `;
                         itemNumber++;
                     });
+                } else {
+                    html += '<div class="empty-state" style="margin-bottom: 20px;">No clusters detected in this content.</div>';
                 }
 
-                // Display standalone facts
+                // Check for standalone facts (though as you noted, there should always be clusters)
                 const standaloneFacts = facts.filter(fact => 
                     !clusters.some(cluster => cluster.members.includes(fact.id))
                 );
                 
                 if (standaloneFacts.length > 0) {
+                    html += '<h4 style="color: #1e293b; margin: 20px 0 12px 0; font-weight: 600;">📊 Facts</h4>';
+                    
                     standaloneFacts.forEach(fact => {
                         html += `
                             <div class="fact-item">
                                 <div class="item-header">
-                                    ${itemNumber}. 📊 ${fact.title} <span class="kind-badge kind-${fact.kind}">${fact.kind}</span>
+                                    ${itemNumber}. ${fact.title} <span class="kind-badge kind-${fact.kind}">${fact.kind}</span>
                                 </div>
                                 <div class="item-meta">
                                     <strong>Value:</strong> ${getFactDisplayValue(fact)}<br>
                                     <strong>Subject:</strong> ${fact.subject} • <strong>Geography:</strong> ${fact.geo}<br>
-                                    <strong>Source:</strong> ${fact.source} • <strong>Updates:</strong> ${fact.updates_every} • <strong>Confidence:</strong> <span class="confidence-${fact.confidence.toLowerCase()}">${fact.confidence}</span>
+                                    <strong>Frequency:</strong> ${getFactFrequency(fact)}<br>
+                                    <strong>Source:</strong> ${fact.source} • <strong>Confidence:</strong> <span class="confidence-${fact.confidence.toLowerCase()}">${fact.confidence}</span>
                                 </div>
                             </div>
                         `;
@@ -612,6 +673,50 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
             }
 
             analysisOutput.innerHTML = html;
+        }
+
+        // Get cluster frequency information
+        function getClusterFrequency(cluster) {
+            if (!cluster.facts || cluster.facts.length === 0) {
+                return 'Not applicable';
+            }
+            
+            // Check if any facts contain historical data (years like 2021, 2024)
+            const hasHistoricalData = cluster.facts.some(fact => 
+                fact.kind === 'time' && fact.value.year && fact.value.year < new Date().getFullYear()
+            );
+            
+            if (hasHistoricalData) {
+                return 'Not applicable (historical data)';
+            }
+            
+            // Get the most frequent update from cluster facts
+            const frequencies = cluster.facts
+                .map(f => f.updates_every)
+                .filter(f => f);
+                
+            if (frequencies.length === 0) {
+                return 'Not applicable';
+            }
+            
+            // Return the most frequent (shortest interval)
+            const mostFrequent = frequencies.reduce((min, freq) => {
+                if (freq.includes('hour')) return freq;
+                if (freq.includes('day') && !min.includes('hour')) return freq;
+                return min;
+            }, frequencies[0]);
+            
+            return `Every ${mostFrequent}`;
+        }
+
+        // Get individual fact frequency
+        function getFactFrequency(fact) {
+            // Check if it's historical data
+            if (fact.kind === 'time' && fact.value.year && fact.value.year < new Date().getFullYear()) {
+                return 'Not applicable (historical data)';
+            }
+            
+            return fact.updates_every ? `Every ${fact.updates_every}` : 'Not applicable';
         }
 
         // Get display value based on Universal Data Model structure
@@ -665,6 +770,7 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
             let content = editor.value;
             let footnoteNumber = 1;
             let footnotesList = [];
+            let processedTexts = new Set(); // Track processed text to avoid duplicates
 
             // Get all facts
             const allFacts = [...facts];
@@ -685,13 +791,15 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
             // Process clusters first (primary facts get highlighted)
             clusters.forEach(cluster => {
                 cluster.facts.forEach(fact => {
-                    if (fact.kind === 'metric' || fact.kind === 'computed') {
+                    // Only highlight metric and computed facts, skip if already processed
+                    if ((fact.kind === 'metric' || fact.kind === 'computed') && !processedTexts.has(fact.original_text)) {
                         const regex = new RegExp(escapeRegExp(fact.original_text), 'g');
                         content = content.replace(regex, 
                             `<span class="cluster-highlight">${fact.original_text}<span class="superscript">${footnoteNumber}</span></span>`
                         );
                         footnotesList.push(`${footnoteNumber}. ${fact.title} - ${getFactDisplayValue(fact).replace(/<[^>]*>/g, '')} • ${fact.source} • ${fact.updates_every} • ${fact.confidence}`);
                         footnoteNumber++;
+                        processedTexts.add(fact.original_text);
                     }
                 });
             });
@@ -702,16 +810,22 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
             );
             
             standaloneFacts.forEach(fact => {
-                const regex = new RegExp(escapeRegExp(fact.original_text), 'g');
-                content = content.replace(regex, 
-                    `<span class="fact-highlight">${fact.original_text}<span class="superscript">${footnoteNumber}</span></span>`
-                );
-                footnotesList.push(`${footnoteNumber}. ${fact.title} - ${getFactDisplayValue(fact).replace(/<[^>]*>/g, '')} • ${fact.source} • ${fact.updates_every} • ${fact.confidence}`);
-                footnoteNumber++;
+                // Only highlight if not already processed
+                if (!processedTexts.has(fact.original_text)) {
+                    const regex = new RegExp(escapeRegExp(fact.original_text), 'g');
+                    content = content.replace(regex, 
+                        `<span class="fact-highlight">${fact.original_text}<span class="superscript">${footnoteNumber}</span></span>`
+                    );
+                    footnotesList.push(`${footnoteNumber}. ${fact.title} - ${getFactDisplayValue(fact).replace(/<[^>]*>/g, '')} • ${fact.source} • ${fact.updates_every} • ${fact.confidence}`);
+                    footnoteNumber++;
+                    processedTexts.add(fact.original_text);
+                }
             });
 
-            // Add enhanced relation highlighting
-            content = content.replace(/(up|down|increased|decreased|higher|lower|surged|reached|grew|extraordinary|significant|massive|dramatic)/gi, 
+            // Only highlight specific qualifiers, not general words
+            const specificQualifiers = ['extraordinary', 'unprecedented', 'remarkable', 'exceptional', 'outstanding', 'dramatic', 'substantial', 'significant'];
+            const qualifierPattern = new RegExp(`\\b(${specificQualifiers.join('|')})\\b`, 'gi');
+            content = content.replace(qualifierPattern, 
                 (match) => `<span class="relation-highlight">${match}</span>`
             );
 
