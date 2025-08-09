@@ -329,6 +329,79 @@
         .kind-qualifier { background: #fce7f3; color: #be185d; }
         .kind-subject { background: #ecfdf5; color: #047857; }
 
+        .update-btn {
+            margin-left: 8px;
+            padding: 4px 8px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .update-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .update-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .update-btn.updating {
+            background: #f59e0b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Update notifications */
+        .update-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .update-notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .update-notification.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .update-notification.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         /* States */
         .empty-state {
             text-align: center;
@@ -631,7 +704,8 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                                             ${itemNumber}.${index + 1} <span class="kind-badge kind-${fact.kind}">${fact.kind}</span> 
                                             <span class="fact-value">${getFactDisplayValue(fact)}</span>
                                             ${fact.kind === 'metric' || fact.kind === 'computed' ? 
-                                                `<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="fact-source">${fact.source} • ${fact.updates_every} • <span class="confidence-${fact.confidence.toLowerCase()}">${fact.confidence}</span></span>` : 
+                                                `<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="fact-source">${fact.source} • ${fact.updates_every} • <span class="confidence-${fact.confidence.toLowerCase()}">${fact.confidence}</span></span>
+                                                 <button class="update-btn" onclick="updateFactRealTime('${fact.id}', '${fact.kind}', '${fact.subject}')">🔄 Update Now</button>` : 
                                                 ''
                                             }
                                         </div>
@@ -664,6 +738,7 @@ The growth of eCommerce in recent years has been extraordinary. In 2021, global 
                                     <strong>Subject:</strong> ${fact.subject} • <strong>Geography:</strong> ${fact.geo}<br>
                                     <strong>Frequency:</strong> ${getFactFrequency(fact)}<br>
                                     <strong>Source:</strong> ${fact.source} • <strong>Confidence:</strong> <span class="confidence-${fact.confidence.toLowerCase()}">${fact.confidence}</span>
+                                    <button class="update-btn" onclick="updateFactRealTime('${fact.id}', '${fact.kind}', '${fact.subject}')">🔄 Update Now</button>
                                 </div>
                             </div>
                         `;
